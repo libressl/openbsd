@@ -1,7 +1,8 @@
-#	$OpenBSD: Makefile,v 1.2 2002/09/02 19:59:51 avsm Exp $
+#	$OpenBSD: Makefile,v 1.3 2002/09/14 22:03:14 dhartmei Exp $
 
 NOMAN=
 PROG=atexit_test
+CPPFLAGS+=-I${.CURDIR}/../../../../lib/libc
 
 run-regress-atexit_test: ${PROG}
 	./${PROG} -valid 2>${.OBJDIR}/valid.out
