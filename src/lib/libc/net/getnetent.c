@@ -102,7 +102,7 @@ again:
 	p = strpbrk(cp, " \t");
 	if (p != NULL)
 		*p++ = '\0';
-	net.n_net = htonl(inet_network(cp));
+	net.n_net = inet_network(cp);
 	net.n_addrtype = AF_INET;
 	q = net.n_aliases = net_aliases;
 	if (p != NULL) 
