@@ -1,3 +1,4 @@
+#	$OpenBSD: Makefile,v 1.2 1995/04/20 22:40:40 cgd Exp $
 #	$NetBSD: Makefile,v 1.2 1995/04/20 22:40:40 cgd Exp $
 
 PROG=	sigsetjmptest
