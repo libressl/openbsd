@@ -1,4 +1,4 @@
-/*	$OpenBSD: rcmdsh.c,v 1.8 2003/05/05 22:13:03 millert Exp $	*/ 
+/*	$OpenBSD: rcmdsh.c,v 1.9 2004/04/01 04:14:29 marc Exp $	*/ 
 
 /*
  * Copyright (c) 2001, MagniComp
@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmdsh.c,v 1.8 2003/05/05 22:13:03 millert Exp $";
+static char *rcsid = "$OpenBSD: rcmdsh.c,v 1.9 2004/04/01 04:14:29 marc Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include      <sys/types.h>
@@ -57,11 +57,8 @@ static char *rcsid = "$OpenBSD: rcmdsh.c,v 1.8 2003/05/05 22:13:03 millert Exp $
  */
 /* ARGSUSED */
 int
-rcmdsh(ahost, rport, locuser, remuser, cmd, rshprog)
-	char **ahost;
-	int rport;
-	const char *locuser, *remuser, *cmd;
-	char *rshprog;
+rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
+    const char *cmd, char *rshprog)
 {
 	struct hostent *hp;
 	int sp[2];

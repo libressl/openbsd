@@ -1,4 +1,4 @@
-/* $OpenBSD: getrrsetbyname.c,v 1.7 2003/03/07 07:34:14 itojun Exp $ */
+/* $OpenBSD: getrrsetbyname.c,v 1.8 2004/07/18 19:07:38 jakob Exp $ */
 
 /*
  * Copyright (c) 2001 Jakob Schlyter. All rights reserved.
@@ -397,7 +397,8 @@ parse_dns_qsection(const u_char *answer, int size, const u_char **cp, int count)
 }
 
 static struct dns_rr *
-parse_dns_rrsection(const u_char *answer, int size, const u_char **cp, int count)
+parse_dns_rrsection(const u_char *answer, int size, const u_char **cp,
+    int count)
 {
 	struct dns_rr *head, *curr, *prev;
 	int i, length;
