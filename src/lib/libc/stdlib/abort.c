@@ -32,12 +32,14 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: abort.c,v 1.2 1996/08/19 08:33:20 tholo Exp $";
+static char *rcsid = "$OpenBSD: abort.c,v 1.3 1996/10/25 03:09:15 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+void (*__cleanup)();
 
 void
 abort()
