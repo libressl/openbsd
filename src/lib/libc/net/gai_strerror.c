@@ -1,7 +1,6 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: gai_strerror.c,v 1.4 1999/12/30 08:54:20 itojun Exp $	*/
 
 /*
- * %%% copyright-cmetz-97-bsd
  * Copyright (c) 1997-1999, Craig Metz, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
