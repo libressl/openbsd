@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.5 1996/08/19 08:33:37 tholo Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.6 1996/08/20 17:30:49 downsj Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -1260,10 +1260,17 @@ free(ptr)
 }
 
 #ifdef CFREE_STUB
+
+#ifdef __indr_reference
+__indr_reference(free, cfree);
+#else /* __indr_reference */
+
 void
-cfree(ptr)
-    void *ptr;
+cfree(p)
+	void *p;
 {
-    free(ptr);
+    free(p);
 }
-#endif
+#endif /* not __indr_reference */
+
+#endif /* CFREE_STUB */
