@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.59 2003/06/26 21:59:11 deraadt Exp $ */
+/* $OpenBSD: netcat.c,v 1.60 2003/07/07 14:12:18 avsm Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -219,7 +219,6 @@ main(int argc, char *argv[])
 		if (nflag)
 			hints.ai_flags |= AI_NUMERICHOST;
 	}
-
 
 	if (xflag) {
 		if (uflag)
