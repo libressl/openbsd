@@ -1,4 +1,4 @@
-/*	$OpenBSD: gaitest.c,v 1.2 2002/08/09 20:26:44 jsyn Exp $	*/
+/*	$OpenBSD: gaitest.c,v 1.3 2003/09/02 23:52:16 david Exp $	*/
 /*	$NetBSD: gaitest.c,v 1.3 2002/07/05 15:47:43 itojun Exp $	*/
 
 /*
@@ -95,8 +95,10 @@ print1(title, res, h, s)
 		printf("%shost %s%s", start, h, end);
 		printf("%sserv %s%s", start, s, end);
 	}
+#if 0
 	if (res->ai_canonname)
 		printf("%scname \"%s\"%s", start, res->ai_canonname, end);
+#endif
 	if (!vflag)
 		printf("\n");
 
