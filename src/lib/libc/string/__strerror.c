@@ -46,6 +46,7 @@ static char *rcsid = "$Id$";
 #define sys_errlist	_sys_errlist
 #define sys_nerr	_sys_nerr
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
