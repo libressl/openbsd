@@ -1,4 +1,4 @@
-/*	$OpenBSD: strdup.c,v 1.3 1997/08/20 04:18:52 millert Exp $	*/
+/*	$OpenBSD: strdup.c,v 1.4 2003/06/02 20:18:38 millert Exp $	*/
 
 /*
  * Copyright (c) 1988, 1993
@@ -33,7 +33,7 @@
 #if 0
 static char sccsid[] = "@(#)strdup.c	8.1 (Berkeley) 6/4/93";
 #else
-static char *rcsid = "$OpenBSD: strdup.c,v 1.3 1997/08/20 04:18:52 millert Exp $";
+static char *rcsid = "$OpenBSD: strdup.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
 #endif
 #endif /* LIBC_SCCS and not lint */
 
@@ -44,8 +44,7 @@ static char *rcsid = "$OpenBSD: strdup.c,v 1.3 1997/08/20 04:18:52 millert Exp $
 #include <string.h>
 
 char *
-strdup(str)
-	const char *str;
+strdup(const char *str)
 {
 	size_t siz;
 	char *copy;

@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlen.c,v 1.4 2001/07/29 21:15:23 millert Exp $	*/
+/*	$OpenBSD: strlen.c,v 1.5 2003/06/02 20:18:38 millert Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -30,7 +30,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strlen.c,v 1.4 2001/07/29 21:15:23 millert Exp $";
+static char *rcsid = "$OpenBSD: strlen.c,v 1.5 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #if !defined(_KERNEL) && !defined(_STANDALONE)
@@ -40,8 +40,7 @@ static char *rcsid = "$OpenBSD: strlen.c,v 1.4 2001/07/29 21:15:23 millert Exp $
 #endif
 
 size_t
-strlen(str)
-	const char *str;
+strlen(const char *str)
 {
 	const char *s;
 

@@ -28,17 +28,17 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strmode.c,v 1.3 1997/06/13 13:57:20 deraadt Exp $";
+static char *rcsid = "$OpenBSD: strmode.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
 
+/* XXX mode should be mode_t */
+
 void
-strmode(mode, p)
-	register mode_t mode;
-	register char *p;
+strmode(int mode, char *p)
 {
 	 /* print type */
 	switch (mode & S_IFMT) {
