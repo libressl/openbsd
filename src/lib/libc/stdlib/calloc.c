@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: calloc.c,v 1.5.8.1 2002/07/30 07:31:20 miod Exp $";
+static char *rcsid = "$OpenBSD: calloc.c,v 1.5.8.2 2002/07/31 09:25:20 miod Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdlib.h>
@@ -47,7 +47,7 @@ calloc(num, size)
 {
 	register void *p;
 
-	if (SIZE_T_MAX / num < size) {
+	if (num && size && SIZE_T_MAX / num < size) {
 		errno = ENOMEM;
 		return NULL;
 	}
