@@ -93,13 +93,14 @@ med3(a, b, c, cmp)
 }
 
 void
-qsort(a, n, es, cmp)
-	void *a;
+qsort(aa, n, es, cmp)
+	void *aa;
 	size_t n, es;
 	int (*cmp)();
 {
 	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
 	int d, r, swaptype, swap_cnt;
+	register char *a = aa;
 
 loop:	SWAPINIT(a, es);
 	swap_cnt = 0;
