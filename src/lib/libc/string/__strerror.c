@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: __strerror.c,v 1.2 1996/01/29 02:04:11 deraadt Exp $";
+static char *rcsid = "$OpenBSD: __strerror.c,v 1.3 1996/08/19 08:33:55 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #ifdef NLS
@@ -64,7 +64,7 @@ __strerror(num, buf)
 	register unsigned int errnum;
 
 #ifdef NLS
-	nl_catd catd ;
+	nl_catd catd;
 	catd = catopen("libc", 0);
 #endif
 
