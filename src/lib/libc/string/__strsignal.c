@@ -28,7 +28,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: __strsignal.c,v 1.7 2003/03/13 15:47:33 deraadt Exp $";
+static char *rcsid = "$OpenBSD: __strsignal.c,v 1.8 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #ifdef NLS
@@ -45,8 +45,7 @@ static char *rcsid = "$OpenBSD: __strsignal.c,v 1.7 2003/03/13 15:47:33 deraadt 
 #include <signal.h>
 #include <string.h>
 
-static char *itoa(num)
-	int num;
+static char *itoa(int num)
 {
 	static char buffer[11];
 	char *p;
@@ -61,12 +60,10 @@ static char *itoa(num)
 }
 
 char *
-__strsignal(num, buf)
-	int num;
-	char *buf;
+__strsignal(int num, char *buf)
 {
 #define	UPREFIX	"Unknown signal: "
-	register unsigned int signum;
+	unsigned int signum;
 
 #ifdef NLS
 	nl_catd catd ;
