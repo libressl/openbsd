@@ -1,4 +1,4 @@
-/* $OpenBSD: thread_private.h,v 1.9 2001/08/30 17:47:57 todd Exp $ */
+/* $OpenBSD: thread_private.h,v 1.10 2001/09/04 22:17:45 fgsch Exp $ */
 
 #ifndef _THREAD_PRIVATE_H_
 #define _THREAD_PRIVATE_H_
@@ -55,7 +55,7 @@ extern int __isthreaded;
 
 struct _thread_private_key_struct {
 	pthread_once_t		once;
-	void			(*cleanfn)__P((void *));
+	void			(*cleanfn)(void *);
 	pthread_key_t		key;
 };
 

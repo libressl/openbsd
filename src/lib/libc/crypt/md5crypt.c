@@ -1,4 +1,4 @@
-/*	$OpenBSD: md5crypt.c,v 1.8 1997/06/29 05:48:02 deraadt Exp $	*/
+/*	$OpenBSD: md5crypt.c,v 1.9 1997/07/23 20:58:27 kstailey Exp $	*/
 
 /*
  * ----------------------------------------------------------------------------
@@ -13,7 +13,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.8 1997/06/29 05:48:02 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.9 1997/07/23 20:58:27 kstailey Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <unistd.h>
@@ -25,7 +25,7 @@ static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.8 1997/06/29 05:48:02 deraadt Ex
 static unsigned char itoa64[] =		/* 0 ... 63 => ascii - 64 */
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-static void to64 __P((char *, u_int32_t, int));
+static void to64(char *, u_int32_t, int);
 
 static void
 to64(s, v, n)
