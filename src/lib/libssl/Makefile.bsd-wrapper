@@ -1,0 +1,95 @@
+# Build wrapper for SSLeay.
+
+# Our lndir is hacked; specify a full path to avoid potential conflicts
+# with the one installed with X11.
+LNDIR=          /usr/bin/lndir
+
+
+# Figure out what flag we use to SSLeay's configure. This
+# needs to be tested on all architectures.
+
+.if ${MACHINE_ARCH} == "i386"
+SSLCONF=	OpenBSD-x86
+.else
+.if ${MACHINE_ARCH} == "pmax"
+SSLCONF=	OpenBSD-pmax
+.else
+.if ${MACHINE_ARCH} == "arc"
+SSLCONF=	OpenBSD-arc
+.else
+.if ${MACHINE_ARCH} == "alpha"
+SSLCONF=	OpenBSD-alpha
+.else
+.if ${MACHINE_ARCH} == "sparc"
+SSLCONF=	OpenBSD-bigendian
+.else
+##UNTESTED!	
+SSLCONF=	OpenBSD-bigendian
+.endif
+.endif
+.endif
+.endif
+.endif
+
+
+MUNGEDFILES =  	${.OBJDIR}/${SSL_SRC}/crypto/bf/bf_locl.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/bn/bn.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/des/des.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/des/des_locl.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/idea/idea.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/md2/md2.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/rc2/rc2.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/rc4/rc4.h \
+		${.OBJDIR}/${SSL_SRC}/crypto/rc4/rc4_locl.h
+
+
+.include <bsd.own.mk>
+
+.if exists(src-patent)
+SSL_SRC=src-patent
+.else
+SSL_SRC=src
+.endif 	  
+
+all: 	${.OBJDIR}/${SSL_SRC}/crypto/md2/md2.h 
+	(cd ${.OBJDIR}; ${MAKE})
+
+includes: ${.OBJDIR}/${SSL_SRC}/crypto/md2/md2.h
+	(cd ${.OBJDIR}; ${MAKE} includes)
+
+install:
+	(cd ${.OBJDIR}; ${MAKE} install)
+
+${.OBJDIR}/${SSL_SRC}/crypto/md2/md2.h : ${.OBJDIR}/${SSL_SRC}/Makefile.ssl
+	(cd ${.OBJDIR}/${SSL_SRC}; /usr/bin/perl Configure ${SSLCONF}) 
+
+.if !exists(${.OBJDIR}/${SSL_SRC}/Makefile.ssl)
+${.OBJDIR}/${SSL_SRC}/Makefile.ssl: ${.CURDIR}/${SSL_SRC}/Makefile.ssl
+	(${LNDIR} -s -e obj -e obj.${MACHINE_ARCH} -e Makefile.bsd-wrapper -e Makefile.ssl ${.CURDIR}; cp ${.CURDIR}/${SSL_SRC}/Makefile.ssl ${.OBJDIR}/${SSL_SRC})
+.endif
+
+clean:	${.OBJDIR}/${SSL_SRC}/Makefile.ssl
+	(cd ${.OBJDIR}; ${MAKE} clean)
+
+cleandir: ${.OBJDIR}/${SSL_SRC}/Makefile.ssl
+	(cd ${.OBJDIR}; rm -f ${MUNGEDFILES}; ${MAKE} cleandir)
+
+test:
+	# Nothing here so far...
+
+depend:
+	# Nothing here so far...
+
+lint:
+	# Nothing here so far...
+
+tags:
+	# Nothing here so far...
+
+.include <bsd.obj.mk>
+.include <bsd.subdir.mk>
+
+
+
+
+
