@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmd.c,v 1.24 1997/06/29 06:02:48 deraadt Exp $";
+static char *rcsid = "$OpenBSD: rcmd.c,v 1.25 1997/07/06 07:55:58 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -55,6 +55,7 @@ static char *rcsid = "$OpenBSD: rcmd.c,v 1.24 1997/06/29 06:02:48 deraadt Exp $"
 #include <string.h>
 #include <syslog.h>
 #include <stdlib.h>
+#include <netgroup.h>
 
 int	__ivaliduser __P((FILE *, in_addr_t, const char *, const char *));
 static int __icheckhost __P((u_int32_t, const char *));

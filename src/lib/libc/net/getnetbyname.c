@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: getnetbyname.c,v 1.3 1996/08/19 08:28:44 tholo Exp $";
+static char rcsid[] = "$OpenBSD: getnetbyname.c,v 1.4 1997/03/13 19:07:26 downsj Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <netdb.h>
@@ -48,7 +48,7 @@ _getnetbyname(name)
 	register char **cp;
 
 	setnetent(_net_stayopen);
-	while (p = getnetent()) {
+	while ((p = getnetent())) {
 		if (strcasecmp(p->n_name, name) == 0)
 			break;
 		for (cp = p->n_aliases; *cp != 0; cp++)

@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: inet_network.c,v 1.5 1997/04/05 21:13:14 millert Exp $";
+static char rcsid[] = "$OpenBSD: inet_network.c,v 1.6 1997/04/24 08:35:21 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -60,7 +60,7 @@ again:
 		base = 8, cp++;
 	if (*cp == 'x' || *cp == 'X')
 		base = 16, cp++;
-	while (c = *cp) {
+	while ((c = *cp)) {
 		if (isdigit(c)) {
 			val = (val * base) + (c - '0');
 			cp++;
