@@ -673,7 +673,7 @@ maninstall:
 	  --center='OpenSSL' --release="OpenBSD `uname -r`" \
 	  `basename ${.ALLSRC}` ) | nroff -Tps -man > ${.TARGET}
 
-SSL_SRC=openssl
+SSL_SRC=src
 
 all: 	prereq ${MANALL} ${PSALL}
 # egcs bombs optimising this file on vax
