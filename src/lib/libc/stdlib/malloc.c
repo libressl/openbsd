@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.64 2003/10/16 17:05:05 tedu Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.65 2003/11/19 02:27:18 tedu Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -1028,7 +1028,10 @@ free_pages(void *ptr, u_long index, struct pginfo *info)
 	madvise(ptr, l, MADV_FREE);
 #endif
 
-    l += malloc_guard;
+    if (malloc_guard) {
+	page_dir[index + i] = MALLOC_FREE;
+	l += malloc_guard;
+    }
     tail = (char *)ptr+l;
 
     if (malloc_freeprot)
