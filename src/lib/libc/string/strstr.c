@@ -31,7 +31,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strstr.c,v 1.2 1996/08/19 08:34:27 tholo Exp $";
+static char *rcsid = "$OpenBSD: strstr.c,v 1.3 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
@@ -40,11 +40,10 @@ static char *rcsid = "$OpenBSD: strstr.c,v 1.2 1996/08/19 08:34:27 tholo Exp $";
  * Find the first occurrence of find in s.
  */
 char *
-strstr(s, find)
-	register const char *s, *find;
+strstr(const char *s, const char *find)
 {
-	register char c, sc;
-	register size_t len;
+	char c, sc;
+	size_t len;
 
 	if ((c = *find++) != 0) {
 		len = strlen(find);

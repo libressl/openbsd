@@ -28,7 +28,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rindex.c,v 1.3 2002/07/24 04:16:01 millert Exp $";
+static char *rcsid = "$OpenBSD: rindex.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
@@ -40,7 +40,7 @@ strrchr(const char *p, int ch)
 rindex(const char *p, int ch)
 #endif
 {
-	register char *save;
+	char *save;
 
 	for (save = NULL;; ++p) {
 		if (*p == ch)

@@ -31,7 +31,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strxfrm.c,v 1.2 1996/08/19 08:34:29 tholo Exp $";
+static char *rcsid = "$OpenBSD: strxfrm.c,v 1.3 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
@@ -42,13 +42,10 @@ static char *rcsid = "$OpenBSD: strxfrm.c,v 1.2 1996/08/19 08:34:29 tholo Exp $"
  * on the original untransformed strings would return.
  */
 size_t
-strxfrm(dst, src, n)
-	register char *dst;
-	register const char *src;
-	register size_t n;
+strxfrm(char *dst, const char *src, size_t n)
 {
-	register size_t r = 0;
-	register int c;
+	size_t r = 0;
+	int c;
 
 	/*
 	 * Since locales are unimplemented, this is just a copy.
