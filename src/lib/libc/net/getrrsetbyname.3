@@ -1,4 +1,4 @@
-.\" $OpenBSD: getrrsetbyname.3,v 1.7 2002/06/09 05:03:59 deraadt Exp $
+.\" $OpenBSD: getrrsetbyname.3,v 1.8 2003/03/06 04:07:37 david Exp $
 .\"
 .\" Copyright (C) 2000, 2001  Internet Software Consortium.
 .\"
@@ -116,7 +116,7 @@ created by a call to
 .Fn getrrsetbyname .
 .Pp
 If the EDNS0 option is activated in
-.Xr resolv.conf 3 ,
+.Xr resolv.conf 5 ,
 .Fn getrrsetbyname
 will request DNSSEC authentication using the EDNS0 DNSSEC OK (DO) bit.
 .Sh "RETURN VALUES"
