@@ -1,4 +1,6 @@
 #!/bin/sh
+#	$OpenBSD$
+
 
 #Test DSA certificate generation of openssl
 

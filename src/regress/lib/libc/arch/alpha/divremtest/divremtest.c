@@ -1,3 +1,4 @@
+/*	$OpenBSD: divremtest.c,v 1.1 1995/04/24 05:53:35 cgd Exp $	*/
 /*	$NetBSD: divremtest.c,v 1.1 1995/04/24 05:53:35 cgd Exp $	*/
 
 /*

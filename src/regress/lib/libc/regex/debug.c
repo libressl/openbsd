@@ -1,3 +1,4 @@
+/*	$OpenBSD: debug.c,v 1.2 1995/04/20 22:39:42 cgd Exp $	*/
 /*	$NetBSD: debug.c,v 1.2 1995/04/20 22:39:42 cgd Exp $	*/
 
 #include <stdio.h>

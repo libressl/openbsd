@@ -1,4 +1,6 @@
 #!/bin/sh
+#	$OpenBSD$
+
 
 echo This starts a tls1 mode server using the DSA certificate in ./server.pem
 echo Run ./testclient.sh in another window and type at it, you should 
