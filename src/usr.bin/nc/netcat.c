@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.13 2000/09/26 05:03:31 ericj Exp $ */
+/* $OpenBSD: netcat.c,v 1.14 2000/09/26 05:16:00 ericj Exp $ */
 
 /* Netcat 1.10 RELEASE 960320
  *
@@ -612,7 +612,7 @@ dolisten(rad, rp, lad, lp)
 			strcat(bigbuf_net, inet_ntoa(lclend->sin_addr));
 		else
 			strcat(bigbuf_net, "any");
-		strcat(bigbuf_net, "] %d ...");
+		strcat(bigbuf_net, "] ...");
 		z = ntohs(lclend->sin_port);
 		nlog(0, "%s %d", bigbuf_net, z);
 	}			/* verbose -- whew!! */
