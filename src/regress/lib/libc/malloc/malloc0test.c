@@ -1,3 +1,4 @@
+/*	$OpenBSD$	*/
 /*
  * Public domain.  2001, Theo de Raadt
  */
