@@ -61,11 +61,13 @@
 #include <openssl/x509v3.h>
 
 
-static int tr_cmp(X509_TRUST **a, X509_TRUST **b);
+static int tr_cmp(const X509_TRUST * const *a,
+		const X509_TRUST * const *b);
 static void trtable_free(X509_TRUST *p);
 
 static int trust_1oidany(X509_TRUST *trust, X509 *x, int flags);
-static int trust_any(X509_TRUST *trust, X509 *x, int flags);
+static int trust_1oid(X509_TRUST *trust, X509 *x, int flags);
+static int trust_compat(X509_TRUST *trust, X509 *x, int flags);
 
 static int obj_trust(int id, X509 *x, int flags);
 static int (*default_trust)(int id, X509 *x, int flags) = obj_trust;
@@ -76,10 +78,12 @@ static int (*default_trust)(int id, X509 *x, int flags) = obj_trust;
  */
 
 static X509_TRUST trstandard[] = {
-{X509_TRUST_ANY, 0, trust_any, "Any", 0, NULL},
+{X509_TRUST_COMPAT, 0, trust_compat, "compatible", 0, NULL},
 {X509_TRUST_SSL_CLIENT, 0, trust_1oidany, "SSL Client", NID_client_auth, NULL},
-{X509_TRUST_SSL_SERVER, 0, trust_1oidany, "SSL Client", NID_server_auth, NULL},
+{X509_TRUST_SSL_SERVER, 0, trust_1oidany, "SSL Server", NID_server_auth, NULL},
 {X509_TRUST_EMAIL, 0, trust_1oidany, "S/MIME email", NID_email_protect, NULL},
+{X509_TRUST_OCSP_SIGN, 0, trust_1oid, "OCSP responder", NID_OCSP_sign, NULL},
+{X509_TRUST_OCSP_REQUEST, 0, trust_1oid, "OCSP request", NID_ad_OCSP, NULL}
 };
 
 #define X509_TRUST_COUNT	(sizeof(trstandard)/sizeof(X509_TRUST))
@@ -88,17 +92,18 @@ IMPLEMENT_STACK_OF(X509_TRUST)
 
 static STACK_OF(X509_TRUST) *trtable = NULL;
 
-static int tr_cmp(X509_TRUST **a, X509_TRUST **b)
+static int tr_cmp(const X509_TRUST * const *a,
+		const X509_TRUST * const *b)
 {
 	return (*a)->trust - (*b)->trust;
 }
 
 int (*X509_TRUST_set_default(int (*trust)(int , X509 *, int)))(int, X509 *, int)
 {
-int (*oldtrust)(int , X509 *, int);
-oldtrust = default_trust;
-default_trust = trust;
-return oldtrust;
+	int (*oldtrust)(int , X509 *, int);
+	oldtrust = default_trust;
+	default_trust = trust;
+	return oldtrust;
 }
 
 
@@ -107,8 +112,8 @@ int X509_check_trust(X509 *x, int id, int flags)
 	X509_TRUST *pt;
 	int idx;
 	if(id == -1) return 1;
-	if(!(idx = X509_TRUST_get_by_id(id)))
-			return default_trust(id, x, flags);
+	idx = X509_TRUST_get_by_id(id);
+	if(idx == -1) return default_trust(id, x, flags);
 	pt = X509_TRUST_get0(idx);
 	return pt->check_trust(pt, x, flags);
 }
@@ -139,6 +144,16 @@ int X509_TRUST_get_by_id(int id)
 	return idx + X509_TRUST_COUNT;
 }
 
+int X509_TRUST_set(int *t, int trust)
+{
+	if(X509_TRUST_get_by_id(trust) == -1) {
+		X509err(X509_F_X509_TRUST_SET, X509_R_INVALID_TRUST);
+		return 0;
+	}
+	*t = trust;
+	return 1;
+}
+
 int X509_TRUST_add(int id, int flags, int (*ck)(X509_TRUST *, X509 *, int),
 					char *name, int arg1, void *arg2)
 {
@@ -152,15 +167,15 @@ int X509_TRUST_add(int id, int flags, int (*ck)(X509_TRUST *, X509 *, int),
 	idx = X509_TRUST_get_by_id(id);
 	/* Need a new entry */
 	if(idx == -1) {
-		if(!(trtmp = Malloc(sizeof(X509_TRUST)))) {
+		if(!(trtmp = OPENSSL_malloc(sizeof(X509_TRUST)))) {
 			X509err(X509_F_X509_TRUST_ADD,ERR_R_MALLOC_FAILURE);
 			return 0;
 		}
 		trtmp->flags = X509_TRUST_DYNAMIC;
 	} else trtmp = X509_TRUST_get0(idx);
 
-	/* Free existing name if dynamic */
-	if(trtmp->flags & X509_TRUST_DYNAMIC_NAME) Free(trtmp->name);
+	/* OPENSSL_free existing name if dynamic */
+	if(trtmp->flags & X509_TRUST_DYNAMIC_NAME) OPENSSL_free(trtmp->name);
 	/* dup supplied name */
 	if(!(trtmp->name = BUF_strdup(name))) {
 		X509err(X509_F_X509_TRUST_ADD,ERR_R_MALLOC_FAILURE);
@@ -196,8 +211,8 @@ static void trtable_free(X509_TRUST *p)
 	if (p->flags & X509_TRUST_DYNAMIC) 
 		{
 		if (p->flags & X509_TRUST_DYNAMIC_NAME)
-			Free(p->name);
-		Free(p);
+			OPENSSL_free(p->name);
+		OPENSSL_free(p);
 		}
 	}
 
@@ -226,10 +241,22 @@ int X509_TRUST_get_trust(X509_TRUST *xp)
 
 static int trust_1oidany(X509_TRUST *trust, X509 *x, int flags)
 {
-	if(x->aux) return obj_trust(trust->arg1, x, flags);
+	if(x->aux && (x->aux->trust || x->aux->reject))
+		return obj_trust(trust->arg1, x, flags);
 	/* we don't have any trust settings: for compatibility
 	 * we return trusted if it is self signed
 	 */
+	return trust_compat(trust, x, flags);
+}
+
+static int trust_1oid(X509_TRUST *trust, X509 *x, int flags)
+{
+	if(x->aux) return obj_trust(trust->arg1, x, flags);
+	return X509_TRUST_UNTRUSTED;
+}
+
+static int trust_compat(X509_TRUST *trust, X509 *x, int flags)
+{
 	X509_check_purpose(x, -1, 0);
 	if(x->ex_flags & EXFLAG_SS) return X509_TRUST_TRUSTED;
 	else return X509_TRUST_UNTRUSTED;
@@ -257,7 +284,3 @@ static int obj_trust(int id, X509 *x, int flags)
 	return X509_TRUST_UNTRUSTED;
 }
 
-static int trust_any(X509_TRUST *trust, X509 *x, int flags)
-{
-	return X509_TRUST_TRUSTED;
-}

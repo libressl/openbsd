@@ -58,17 +58,16 @@
 
 #include <stdio.h>
 #include "cryptlib.h"
-#include "buffer.h"
-#include "asn1_mac.h"
+#include <openssl/buffer.h>
+#include <openssl/asn1_mac.h>
 
-#define HEADER_SIZE   8
+static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb);
 
-#ifndef NO_FP_API
-char *ASN1_d2i_fp(xnew,d2i,in,x)
-char *(*xnew)();
-char *(*d2i)();
-FILE *in;
-unsigned char **x;
+#ifndef NO_OLD_ASN1
+#ifndef OPENSSL_NO_FP_API
+
+char *ASN1_d2i_fp(char *(*xnew)(), char *(*d2i)(), FILE *in,
+	     unsigned char **x)
         {
         BIO *b;
         char *ret;
@@ -85,16 +84,68 @@ unsigned char **x;
         }
 #endif
 
-char *ASN1_d2i_bio(xnew,d2i,in,x)
-char *(*xnew)();
-char *(*d2i)();
-BIO *in;
-unsigned char **x;
+char *ASN1_d2i_bio(char *(*xnew)(), char *(*d2i)(), BIO *in,
+	     unsigned char **x)
+	{
+	BUF_MEM *b = NULL;
+	unsigned char *p;
+	char *ret=NULL;
+	int len;
+
+	len = asn1_d2i_read_bio(in, &b);
+	if(len < 0) goto err;
+
+	p=(unsigned char *)b->data;
+	ret=d2i(x,&p,len);
+err:
+	if (b != NULL) BUF_MEM_free(b);
+	return(ret);
+	}
+
+#endif
+
+void *ASN1_item_d2i_bio(const ASN1_ITEM *it, BIO *in, void *x)
+	{
+	BUF_MEM *b = NULL;
+	unsigned char *p;
+	void *ret=NULL;
+	int len;
+
+	len = asn1_d2i_read_bio(in, &b);
+	if(len < 0) goto err;
+
+	p=(unsigned char *)b->data;
+	ret=ASN1_item_d2i(x,&p,len, it);
+err:
+	if (b != NULL) BUF_MEM_free(b);
+	return(ret);
+	}
+
+#ifndef OPENSSL_NO_FP_API
+void *ASN1_item_d2i_fp(const ASN1_ITEM *it, FILE *in, void *x)
+        {
+        BIO *b;
+        char *ret;
+
+        if ((b=BIO_new(BIO_s_file())) == NULL)
+		{
+		ASN1err(ASN1_F_ASN1_D2I_FP,ERR_R_BUF_LIB);
+                return(NULL);
+		}
+        BIO_set_fp(b,in,BIO_NOCLOSE);
+        ret=ASN1_item_d2i_bio(it,b,x);
+        BIO_free(b);
+        return(ret);
+        }
+#endif
+
+#define HEADER_SIZE   8
+static int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
 	{
 	BUF_MEM *b;
 	unsigned char *p;
 	int i;
-	char *ret=NULL;
+	int ret=-1;
 	ASN1_CTX c;
 	int want=HEADER_SIZE;
 	int eos=0;
@@ -105,7 +156,7 @@ unsigned char **x;
 	if (b == NULL)
 		{
 		ASN1err(ASN1_F_ASN1_D2I_BIO,ERR_R_MALLOC_FAILURE);
-		return(NULL);
+		return -1;
 		}
 
 	ERR_clear_error();
@@ -193,8 +244,8 @@ unsigned char **x;
 			}
 		}
 
-	p=(unsigned char *)b->data;
-	ret=d2i(x,&p,off);
+	*pb = b;
+	return off;
 err:
 	if (b != NULL) BUF_MEM_free(b);
 	return(ret);

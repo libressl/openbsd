@@ -69,20 +69,12 @@ PKCS12 *PKCS12_init (int mode)
 		PKCS12err(PKCS12_F_PKCS12_INIT,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
-	if (!(pkcs12->version = ASN1_INTEGER_new ())) {
-		PKCS12err(PKCS12_F_PKCS12_INIT,ERR_R_MALLOC_FAILURE);
-		return NULL;
-	}
-	ASN1_INTEGER_set (pkcs12->version, 3);
-	if (!(pkcs12->authsafes = PKCS7_new())) {
-		PKCS12err(PKCS12_F_PKCS12_INIT,ERR_R_MALLOC_FAILURE);
-		return NULL;
-	}
+	ASN1_INTEGER_set(pkcs12->version, 3);
 	pkcs12->authsafes->type = OBJ_nid2obj(mode);
 	switch (mode) {
 		case NID_pkcs7_data:
 			if (!(pkcs12->authsafes->d.data =
-				 ASN1_OCTET_STRING_new())) {
+				 M_ASN1_OCTET_STRING_new())) {
 			PKCS12err(PKCS12_F_PKCS12_INIT,ERR_R_MALLOC_FAILURE);
 			return NULL;
 		}

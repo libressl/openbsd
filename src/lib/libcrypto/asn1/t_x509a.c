@@ -59,7 +59,7 @@
 #include <stdio.h>
 #include "cryptlib.h"
 #include <openssl/evp.h>
-#include <openssl/asn1_mac.h>
+#include <openssl/asn1.h>
 #include <openssl/x509.h>
 
 /* X509_CERT_AUX and string set routines
@@ -98,5 +98,13 @@ int X509_CERT_AUX_print(BIO *out, X509_CERT_AUX *aux, int indent)
 	} else BIO_printf(out, "%*sNo Rejected Uses.\n", indent, "");
 	if(aux->alias) BIO_printf(out, "%*sAlias: %s\n", indent, "",
 							aux->alias->data);
+	if(aux->keyid) {
+		BIO_printf(out, "%*sKey Id: ", indent, "");
+		for(i = 0; i < aux->keyid->length; i++) 
+			BIO_printf(out, "%s%02X", 
+				i ? ":" : "",
+				aux->keyid->data[i]);
+		BIO_write(out,"\n",1);
+	}
 	return 1;
 }
