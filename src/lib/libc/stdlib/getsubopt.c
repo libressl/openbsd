@@ -1,4 +1,4 @@
-/*	$OpenBSD: getsubopt.c,v 1.1 1997/08/20 04:02:17 millert Exp $	*/
+/*	$OpenBSD: getsubopt.c,v 1.2 2003/06/02 20:18:37 millert Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -33,7 +33,7 @@
 #if 0
 static char sccsid[] = "@(#)getsubopt.c	8.1 (Berkeley) 6/4/93";
 #else
-static char rcsid[] = "$OpenBSD: getsubopt.c,v 1.1 1997/08/20 04:02:17 millert Exp $";
+static char rcsid[] = "$OpenBSD: getsubopt.c,v 1.2 2003/06/02 20:18:37 millert Exp $";
 #endif
 #endif /* not lint */
 
@@ -50,12 +50,10 @@ static char rcsid[] = "$OpenBSD: getsubopt.c,v 1.1 1997/08/20 04:02:17 millert E
 char *suboptarg;
 
 int
-getsubopt(optionp, tokens, valuep)
-	register char **optionp, **valuep;
-	register char * const *tokens;
+getsubopt(char **optionp, char * const *tokens, char **valuep)
 {
-	register int cnt;
-	register char *p;
+	int cnt;
+	char *p;
 
 	suboptarg = *valuep = NULL;
 
