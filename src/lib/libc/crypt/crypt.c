@@ -1,4 +1,4 @@
-/*	$Id: crypt.c,v 1.3 1996-03-25 22:31:45 tholo Exp $ */
+/*	$OpenBSD$	*/
 
 /*
  * FreeSec: libcrypt
