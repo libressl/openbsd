@@ -95,6 +95,26 @@ strrchr.so: rindex.c
 	    -o ${.TARGET}
 .endif
 
+# build .ln files for memmove, memcpy, strchr and strrchr always from
+# bcopy, index, and rindex
+LOBJS+=	memmove.ln memcpy.ln strchr.ln strrchr.ln
+
+memmove.ln: bcopy.c
+	lint ${LINTFLAGS} -DMEMMOVE ${CFLAGS:M-[IDU]*} -i -o ${.TARGET} \
+		${.CURDIR}/string/bcopy.c
+
+memcpy.ln: bcopy.c
+	lint ${LINTFLAGS} -DMEMCOPY ${CFLAGS:M-[IDU]*} -i -o ${.TARGET} \
+		${.CURDIR}/string/bcopy.c
+
+strchr.ln: index.c
+	lint ${LINTFLAGS} -DSTRCHR ${CFLAGS:M-[IDU]*} -i -o ${.TARGET} \
+		${.CURDIR}/string/index.c
+
+strrchr.ln: rindex.c
+	lint ${LINTFLAGS} -DSTRRCHR ${CFLAGS:M-[IDU]*} -i -o ${.TARGET} \
+		${.CURDIR}/string/rindex.c
+
 MAN+=	bm.3 bcmp.3 bcopy.3 bstring.3 bzero.3 ffs.3 index.3 memccpy.3 memchr.3 \
 	memcmp.3 memcpy.3 memmove.3 memset.3 rindex.3 strcasecmp.3 strcat.3 \
 	strchr.3 strcmp.3 strcoll.3 strcpy.3 strcspn.3 strerror.3 strftime.3 \
