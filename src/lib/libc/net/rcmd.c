@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmd.c,v 1.43 2002/05/24 21:22:37 deraadt Exp $";
+static char *rcsid = "$OpenBSD: rcmd.c,v 1.44 2002/09/06 18:35:12 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -435,7 +435,7 @@ again:
 		else if (sbuf.st_uid && sbuf.st_uid != pwd->pw_uid)
 			cp = "bad .rhosts owner";
 		else if (sbuf.st_mode & (S_IWGRP|S_IWOTH))
-			cp = ".rhosts writeable by other than owner";
+			cp = ".rhosts writable by other than owner";
 		/* If there were any problems, quit. */
 		if (cp) {
 			__rcmd_errstr = cp;
