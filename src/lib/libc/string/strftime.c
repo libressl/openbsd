@@ -220,7 +220,11 @@ _fmt(format, t)
 				 
 				int week = MON_WEEK(t);
 
-				if (((t->tm_yday + 7 - (t->tm_wday + 1)) % 7) >= 4) {
+				int days = (((t)->tm_yday + 7 - \
+                                ((t)->tm_wday ? (t)->tm_wday - 1 : 6)) % 7);
+
+
+				if (days >= 4) {
 					week++;
 				} else if (week == 0) {
 					week = 53;
