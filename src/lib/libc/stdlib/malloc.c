@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.21 1997/02/09 22:55:38 tholo Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.22 1997/02/11 17:46:36 niklas Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -756,7 +756,9 @@ imalloc(size)
     if (suicide)
 	abort();
 
-    if (size <= malloc_maxsize)
+    if ((size + malloc_pagesize) < size)       /* Check for overflow */
+	result = 0;
+    else if (size <= malloc_maxsize)
 	result =  malloc_bytes(size);
     else
 	result =  malloc_pages(size);
