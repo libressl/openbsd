@@ -1,4 +1,4 @@
-/*	$OpenBSD: getaddrinfo.c,v 1.16 2000/03/13 12:26:56 itojun Exp $	*/
+/*	$OpenBSD: getaddrinfo.c,v 1.17 2000/03/16 14:08:55 itojun Exp $	*/
 
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
@@ -1767,7 +1767,7 @@ res_querydomainN(name, domain, target)
 			h_errno = NO_RECOVERY;
 			return (-1);
 		}
-		if (n-- != 0 && name[n] == '.') {
+		if (n > 0 && name[--n] == '.') {
 			strncpy(nbuf, name, n);
 			nbuf[n] = '\0';
 		} else
