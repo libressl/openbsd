@@ -13,12 +13,16 @@ SRCS+=	a64l.c abort.c atexit.c atoi.c atof.c atol.c bsearch.c calloc.c \
 
 .if   (${MACHINE_ARCH} == "m68k")
 SRCS+=	abs.S div.c labs.c ldiv.c
+LSRCS+=	abs.c
 .elif (${MACHINE_ARCH} == "i386")
 SRCS+=	abs.S div.S labs.S ldiv.S
+LSRCS+=	abs.c div.c labs.c ldiv.c
 .elif (${MACHINE_ARCH} == "ns32k")
 SRCS+=	abs.S div.c labs.c ldiv.c
+LSRCS+=	abs.c
 .elif (${MACHINE_ARCH} == "tahoe")
 SRCS+=	abs.S div.c labs.c ldiv.c
+LSRCS+=	abs.c
 .elif (${MACHINE_ARCH} == "vax")
 SRCS+=	abs.c div.c labs.c ldiv.c
 .elif (${MACHINE_ARCH} == "alpha")
