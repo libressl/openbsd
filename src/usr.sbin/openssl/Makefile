@@ -1,10 +1,6 @@
+#	$OpenBSD$
 
 PROG=	openssl
-
-BINOWN= root
-BINGRP= bin
-BINMODE= 555
-BINDIR= /usr/sbin
 LDADD=	-lssl -lcrypto
 MAN1=	openssl.1
 
@@ -42,4 +38,4 @@ SRCS=	verify.c asn1pars.c req.c dgst.c dh.c enc.c passwd.c gendh.c errstr.c\
 
 .PATH:	${SSLEAY_SRC}
 
-.include<bsd.prog.mk>
+.include <bsd.prog.mk>
