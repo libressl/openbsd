@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: md5crypt.c,v 1.1 1996/05/30 02:36:33 deraadt Exp $ */
 
 /*
  * ----------------------------------------------------------------------------
@@ -11,12 +11,12 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD$";
+static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.1 1996/05/30 02:36:33 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <unistd.h>
 #include <stdio.h>
-#include "md5.h"
+#include <md5.h>
 
 static unsigned char itoa64[] =		/* 0 ... 63 => ascii - 64 */
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
