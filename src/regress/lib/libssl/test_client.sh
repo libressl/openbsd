@@ -1,4 +1,6 @@
 #!/bin/sh
+#	$OpenBSD$
+
 
 echo
 echo This starts a tls1 mode client to talk to the server run by 
