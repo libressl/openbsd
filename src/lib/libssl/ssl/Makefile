@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.17 2003/06/02 08:45:58 markus Exp $
+# $OpenBSD: Makefile,v 1.18 2004/04/27 09:40:19 avsm Exp $
 
 LIB=	ssl
 
@@ -9,9 +9,6 @@ LSSL_SRC= ${.CURDIR}/../${SSLEAYDIST}/ssl
 .if ${MACHINE_ARCH} == "i386"
 CFLAGS+= -DL_ENDIAN -DBN_ASM
 .else
-.if ${MACHINE_ARCH} == "mips"
-CFLAGS+= -DL_ENDIAN
-.else
 .if ${MACHINE_ARCH} == "vax"
 CFLAGS+= -DL_ENDIAN
 .else
@@ -19,7 +16,6 @@ CFLAGS+= -DL_ENDIAN
 # no ENDIAN stuff defined for alpha
 .else
 CFLAGS+= -DB_ENDIAN
-.endif
 .endif
 .endif 
 .endif
