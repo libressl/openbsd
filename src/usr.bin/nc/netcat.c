@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.56 2002/12/30 17:57:58 stevesk Exp $ */
+/* $OpenBSD: netcat.c,v 1.57 2002/12/30 18:00:18 stevesk Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -707,7 +707,7 @@ udptest(int s)
 }
 
 void
-help()
+help(void)
 {
 	usage(0);
 	fprintf(stderr, "\tCommand Summary:\n\
