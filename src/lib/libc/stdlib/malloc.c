@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.65 2003/11/19 02:27:18 tedu Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.66 2004/02/19 23:20:53 tdeval Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -228,6 +228,9 @@ void utrace(struct ut *, int);
 #define UTRACE(a,b,c)
 #endif
 
+/* Status of malloc. */
+static int malloc_active;
+
 /* my last break. */
 static void *malloc_brk;
 
@@ -335,6 +338,7 @@ wrterror(char *p)
     if (malloc_stats)
 	malloc_dump(stderr);
 #endif /* MALLOC_STATS */
+    malloc_active--;
     abort();
 }
 
@@ -1242,8 +1246,6 @@ ifree(void *ptr)
 	free_bytes(ptr, index, info);
     return;
 }
-
-static int malloc_active;
 
 /*
  * Common function for handling recursion.  Only
