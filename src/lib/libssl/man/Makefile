@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.1 2002/09/03 18:59:56 markus Exp $
+# $OpenBSD: Makefile,v 1.3 2002/10/09 08:22:49 fgsch Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -173,7 +173,6 @@ MANALL=	\
 	dsa.cat3 \
 	lh_stats.cat3 \
 	lhash.cat3 \
-	openssl.cat1 \
 	rsa.cat3 \
 	ssl.cat3
 
