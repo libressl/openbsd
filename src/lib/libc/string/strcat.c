@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /*
  * Copyright (c) 1988 Regents of the University of California.
  * All rights reserved.
@@ -46,6 +48,6 @@ strcat(s, append)
 	char *save = s;
 
 	for (; *s; ++s);
-	while (*s++ = *append++);
+	while ((*s++ = *append++) != '\0');
 	return(save);
 }
