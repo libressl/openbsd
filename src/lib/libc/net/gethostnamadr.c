@@ -171,7 +171,6 @@ getanswer(answer, anslen, iquery)
 			}
 			cp += n + QFIXEDSZ;
 			host.h_name = bp;
-			host.h_length = INADDRSZ;
 			n = strlen(bp);
 			if (n >= MAXHOSTNAMELEN)
 				host.h_name[MAXHOSTNAMELEN-1] = '\0';
@@ -241,17 +240,21 @@ getanswer(answer, anslen, iquery)
 			continue;
 		}
 
-		if (n != host.h_length) {
-			cp += n;
-			continue;
-		}
-		if (class != getclass) {
-			cp += n;
-			continue;
-		}
-		if (!haveanswer) {
+		if (haveanswer) {
+			if (n != host.h_length) {
+				cp += n;
+				continue;
+			}
+			if (class != getclass) {
+				cp += n;
+				continue;
+			}
+		} else {
+			host.h_length = n;
 			getclass = class;
 			host.h_addrtype = (class == C_IN) ? AF_INET : AF_UNSPEC;
+			if (host.h_addrtype == AF_INET)
+				host.h_length = INADDRSZ;
 			if (!iquery) {
 				host.h_name = bp;
 				bp += strlen(bp) + 1;
