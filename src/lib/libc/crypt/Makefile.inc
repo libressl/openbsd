@@ -1,8 +1,8 @@
-#	$OpenBSD: Makefile.inc,v 1.8 1997/04/15 13:06:54 provos Exp $
+#	$OpenBSD: Makefile.inc,v 1.9 1997/04/16 12:11:27 deraadt Exp $
 
 .PATH: ${.CURDIR}/arch/${MACHINE_ARCH}/crypt ${.CURDIR}/crypt
 
-SRCS+=	crypt.c morecrypt.c md5crypt.c arc4random.c blowfish.c
+SRCS+=	cast.c crypt.c morecrypt.c md5crypt.c arc4random.c blowfish.c
 SRCS+=  bcrypt.c
 
 MAN+=	crypt.3 blowfish.3 arc4random.3
