@@ -1,5 +1,7 @@
-#	$OpenBSD: Makefile,v 1.2 2002/01/01 23:00:51 art Exp $
+#	$OpenBSD$
 
-PROG=	malloc0test
+SUBDIR+= malloc0test malloc_errno
 
-.include <bsd.regress.mk>
+install:
+
+.include <bsd.subdir.mk>
