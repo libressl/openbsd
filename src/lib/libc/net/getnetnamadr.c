@@ -192,11 +192,7 @@ getnetanswer(answer, anslen, net_i)
 		GETSHORT(n, cp);
 		if (class == C_IN && type == T_PTR) {
 			n = dn_expand(answer->buf, eom, cp, bp, buflen);
-#ifdef USE_RESOLV_NAME_OK
 			if ((n < 0) || !res_hnok(bp)) {
-#else
-			if ((n < 0) || !_hokchar(bp)) {
-#endif
 				cp += n;
 				return (NULL);
 			}
