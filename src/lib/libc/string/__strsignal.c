@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: __strsignal.c,v 1.5 1996/09/25 13:19:01 deraadt Exp $";
+static char *rcsid = "$OpenBSD: __strsignal.c,v 1.6 2001/06/27 00:58:56 lebel Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #ifdef NLS
@@ -89,9 +89,9 @@ __strsignal(num, buf)
 #ifdef NLS
 		strlcpy(buf, catgets(catd, 1, 0xffff, UPREFIX), NL_TEXTMAX);
 #else
-		strcpy(buf, UPREFIX);
+		strlcpy(buf, UPREFIX, NL_TEXTMAX);
 #endif
-		strncat(buf, itoa(signum), NL_TEXTMAX-strlen(buf)-1);
+		strlcat(buf, itoa(signum), NL_TEXTMAX);
 	}
 
 #ifdef NLS
