@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: random.c,v 1.3 1996/08/19 08:33:46 tholo Exp $";
+static char *rcsid = "$OpenBSD: random.c,v 1.4 1996/09/15 09:31:51 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdio.h>
@@ -242,7 +242,7 @@ char *
 initstate(seed, arg_state, n)
 	u_int seed;			/* seed for R.N.G. */
 	char *arg_state;		/* pointer to state array */
-	int n;				/* # bytes of state info */
+	size_t n;			/* # bytes of state info */
 {
 	register char *ostate = (char *)(&state[-1]);
 
