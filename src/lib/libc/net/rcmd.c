@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmd.c,v 1.41 2002/02/17 19:42:23 millert Exp $";
+static char *rcsid = "$OpenBSD: rcmd.c,v 1.42 2002/05/22 04:31:14 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -407,8 +407,7 @@ again:
 		first = 0;
 		if ((pwd = getpwnam(luser)) == NULL)
 			return (-1);
-		(void)strcpy(pbuf, pwd->pw_dir);
-		(void)strcat(pbuf, "/.rhosts");
+		snprintf(pbuf, sizeof pbuf, "%s/.rhosts", pwd->pw_dir);
 
 		/*
 		 * Change effective uid while opening .rhosts.  If root and
