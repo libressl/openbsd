@@ -52,7 +52,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.13 1997/01/30 05:56:06 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.14 1997/03/13 19:07:24 downsj Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -554,7 +554,7 @@ gethostbyname2(name, af)
 		switch (lookups[i]) {
 #ifdef YP
 		case 'y':
-			/* YP only suports AF_INET. */
+			/* YP only supports AF_INET. */
 			if (af == AF_INET)
 				hp = _yp_gethtbyname(name);
 			break;
