@@ -5,4 +5,5 @@
 SRCS+=	crypt.c morecrypt.c
 
 MAN+=	crypt.3
-MLINKS+=crypt.3 encrypt.3 crypt.3 setkey.3
+MLINKS+=crypt.3 encrypt.3 crypt.3 setkey.3 crypt.3 des_cipher.3
+MLINKS+=crypt.3 des_setkey.3
