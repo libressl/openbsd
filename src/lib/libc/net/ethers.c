@@ -1,4 +1,4 @@
-/*	$OpenBSD: ethers.c,v 1.8 1998/03/18 00:15:25 deraadt Exp $	*/
+/*	$OpenBSD: ethers.c,v 1.9 1998/06/21 22:13:44 millert Exp $	*/
 
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: ethers.c,v 1.8 1998/03/18 00:15:25 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: ethers.c,v 1.9 1998/06/21 22:13:44 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -92,7 +92,7 @@ _ether_aton(s, e)
 	/* expect 6 hex octets separated by ':' or space/NUL if last octet */
 	for (i = 0; i < 6; i++) {
 		l = strtol(s, &pp, 16);
-		if (pp == s || l > 0xFF)
+		if (pp == s || l > 0xFF || l < 0)
 			return (NULL);
 		if (!(*pp == ':' || (i == 5 && (isspace(*pp) || *pp == '\0'))))
 			return (NULL);
