@@ -1,4 +1,4 @@
-/*	$OpenBSD: atexit_test.c,v 1.3 2002/10/21 20:40:50 mickey Exp $ */
+/*	$OpenBSD: sprintf_test.c,v 1.1 2003/05/15 04:23:49 deraadt Exp $ */
 
 /*
  * Copyright (c) 2003 Theo de Raadt
@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <signal.h>
 
 char correct[] =
