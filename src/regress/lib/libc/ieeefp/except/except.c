@@ -1,6 +1,7 @@
-/*	$OpenBSD: except.c,v 1.3 2001/01/29 02:05:42 niklas Exp $	*/
+/*	$OpenBSD: except.c,v 1.4 2003/07/31 21:48:03 deraadt Exp $	*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <assert.h>
 #include <ieeefp.h>
