@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: strlcpy.c,v 1.1 1998/07/01 01:29:45 millert Exp $	*/
 
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -28,7 +28,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD$";
+static char *rcsid = "$OpenBSD: strlcpy.c,v 1.1 1998/07/01 01:29:45 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -41,7 +41,7 @@ static char *rcsid = "$OpenBSD$";
  */
 size_t strlcpy(dst, src, siz)
 	char *dst;
-	char *src;
+	const char *src;
 	size_t siz;
 {
 	register char *d = dst;
