@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # obligatory duplicate of dr delete's Livingston portmaster crash, aka
 # telnet break.  Fire into its telnet listener.  An *old* bug by now, but
 # consider the small window one might obtain from a slightly out-of-rev PM

@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 all:	data rservice xor
 
 data:	data.c

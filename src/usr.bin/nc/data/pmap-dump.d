@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # portmap dump request: like "rpcinfo -p" but via UDP instead
 # send to UDP 111 and hope it's not a logging portmapper!
 # split into longwords, since rpc apparently only deals with them
