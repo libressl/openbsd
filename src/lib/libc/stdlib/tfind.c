@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /*
  * Tree search generalized from Knuth (6.2.2) Algorithm T just like
  * the AT&T man page says.
