@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: multibyte.c,v 1.1.1.1 1995/10/18 08:42:18 deraadt Exp $";
+static char *rcsid = "$OpenBSD: multibyte.c,v 1.2 1996/08/19 08:33:39 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdlib.h>
@@ -73,13 +73,7 @@ mbtowc(pwc, s, n)
 
 /*ARGSUSED*/
 int
-#ifdef __STDC__
 wctomb(char *s, wchar_t wchar)
-#else
-wctomb(s, wchar)
-	char *s;
-	wchar_t wchar;
-#endif
 {
 	if (s == NULL)
 		return 0;
