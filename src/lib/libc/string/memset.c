@@ -31,20 +31,17 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: memset.c,v 1.2 1996/08/19 08:34:07 tholo Exp $";
+static char *rcsid = "$OpenBSD: memset.c,v 1.3 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
 
 void *
-memset(dst, c, n)
-	void *dst;
-	register int c;
-	register size_t n;
+memset(void *dst, int c, size_t n)
 {
 
 	if (n != 0) {
-		register char *d = dst;
+		char *d = dst;
 
 		do
 			*d++ = c;
