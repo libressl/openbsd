@@ -52,7 +52,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.26 1997/07/09 01:08:26 millert Exp $";
+static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.27 1997/11/08 20:46:56 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -1017,6 +1017,12 @@ map_v4v6_hostent(hp, bpp, lenp)
 		*bpp += IN6ADDRSZ;
 		*lenp -= IN6ADDRSZ;
 	}
+}
+
+struct hostent *
+gethostent()
+{
+	return (_gethtent());
 }
 
 #ifdef RESOLVSORT
