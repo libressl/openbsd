@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strerror.c,v 1.1.1.1 1995/10/18 08:42:22 deraadt Exp $";
+static char *rcsid = "$OpenBSD: strerror.c,v 1.2 1996/08/19 08:34:17 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
@@ -44,7 +44,7 @@ static char *rcsid = "$OpenBSD: strerror.c,v 1.1.1.1 1995/10/18 08:42:22 deraadt
  * internal function __strerror().
  */
 
-extern char *__strerror __P((int, char *));
+extern char *__strerror(int, char *);
 
 char *
 strerror(num)
