@@ -61,11 +61,12 @@
 #include <openssl/pkcs12.h>
 
 PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
-	     STACK *ca, int nid_key, int nid_cert, int iter, int mac_iter,
+	     STACK_OF(X509) *ca, int nid_key, int nid_cert, int iter, int mac_iter,
 	     int keytype)
 {
 	PKCS12 *p12;
-	STACK *bags, *safes;
+	STACK_OF(PKCS12_SAFEBAG) *bags;
+	STACK_OF(PKCS7) *safes;
 	PKCS12_SAFEBAG *bag;
 	PKCS8_PRIV_KEY_INFO *p8;
 	PKCS7 *authsafe;
@@ -85,28 +86,30 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 		return NULL;
 	}
 
-	if(!(bags = sk_new (NULL))) {
+	if(!X509_check_private_key(cert, pkey)) return NULL;
+
+	if(!(bags = sk_PKCS12_SAFEBAG_new_null ())) {
 		PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 
 	/* Add user certificate */
-	if(!(bag = M_PKCS12_x5092certbag(cert))) return NULL;
+	if(!(bag = PKCS12_x5092certbag(cert))) return NULL;
 	if(name && !PKCS12_add_friendlyname(bag, name, -1)) return NULL;
 	X509_digest(cert, EVP_sha1(), keyid, &keyidlen);
 	if(!PKCS12_add_localkeyid(bag, keyid, keyidlen)) return NULL;
 
-	if(!sk_push(bags, (char *)bag)) {
+	if(!sk_PKCS12_SAFEBAG_push(bags, bag)) {
 		PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	
 	/* Add all other certificates */
 	if(ca) {
-		for(i = 0; i < sk_num(ca); i++) {
-			tcert = (X509 *)sk_value(ca, i);
-			if(!(bag = M_PKCS12_x5092certbag(tcert))) return NULL;
-			if(!sk_push(bags, (char *)bag)) {
+		for(i = 0; i < sk_X509_num(ca); i++) {
+			tcert = sk_X509_value(ca, i);
+			if(!(bag = PKCS12_x5092certbag(tcert))) return NULL;
+			if(!sk_PKCS12_SAFEBAG_push(bags, bag)) {
 				PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 				return NULL;
 			}
@@ -116,11 +119,12 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 	/* Turn certbags into encrypted authsafe */
 	authsafe = PKCS12_pack_p7encdata (nid_cert, pass, -1, NULL, 0,
 					  iter, bags);
-	sk_pop_free(bags, PKCS12_SAFEBAG_free);
+	sk_PKCS12_SAFEBAG_pop_free(bags, PKCS12_SAFEBAG_free);
 
 	if (!authsafe) return NULL;
 
-	if(!(safes = sk_new (NULL)) || !sk_push(safes, (char *)authsafe)) {
+	if(!(safes = sk_PKCS7_new_null ())
+	   || !sk_PKCS7_push(safes, authsafe)) {
 		PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -133,23 +137,24 @@ PKCS12 *PKCS12_create(char *pass, char *name, EVP_PKEY *pkey, X509 *cert,
 	PKCS8_PRIV_KEY_INFO_free(p8);
         if (name && !PKCS12_add_friendlyname (bag, name, -1)) return NULL;
 	if(!PKCS12_add_localkeyid (bag, keyid, keyidlen)) return NULL;
-	if(!(bags = sk_new(NULL)) || !sk_push (bags, (char *)bag)) {
+	if(!(bags = sk_PKCS12_SAFEBAG_new_null())
+	   || !sk_PKCS12_SAFEBAG_push (bags, bag)) {
 		PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	/* Turn it into unencrypted safe bag */
 	if(!(authsafe = PKCS12_pack_p7data (bags))) return NULL;
-	sk_pop_free(bags, PKCS12_SAFEBAG_free);
-	if(!sk_push(safes, (char *)authsafe)) {
+	sk_PKCS12_SAFEBAG_pop_free(bags, PKCS12_SAFEBAG_free);
+	if(!sk_PKCS7_push(safes, authsafe)) {
 		PKCS12err(PKCS12_F_PKCS12_CREATE,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 
 	if(!(p12 = PKCS12_init (NID_pkcs7_data))) return NULL;
 
-	if(!M_PKCS12_pack_authsafes (p12, safes)) return NULL;
+	if(!PKCS12_pack_authsafes (p12, safes)) return NULL;
 
-	sk_pop_free(safes, PKCS7_free);
+	sk_PKCS7_pop_free(safes, PKCS7_free);
 
 	if(!PKCS12_set_mac (p12, pass, -1, NULL, 0, mac_iter, NULL))
 	    return NULL;

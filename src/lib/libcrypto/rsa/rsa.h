@@ -59,36 +59,73 @@
 #ifndef HEADER_RSA_H
 #define HEADER_RSA_H
 
+#include <openssl/asn1.h>
+
+#ifndef OPENSSL_NO_BIO
+#include <openssl/bio.h>
+#endif
+#include <openssl/bn.h>
+#include <openssl/crypto.h>
+#include <openssl/ossl_typ.h>
+
+#ifdef OPENSSL_NO_RSA
+#error RSA is disabled.
+#endif
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
-#include "bn.h"
-#include "crypto.h"
+typedef struct rsa_st RSA;
 
 typedef struct rsa_meth_st
 	{
-	char *name;
-	int (*rsa_pub_enc)();
-	int (*rsa_pub_dec)();
-	int (*rsa_priv_enc)();
-	int (*rsa_priv_dec)();
-	int (*rsa_mod_exp)();		/* Can be null */
-	int (*bn_mod_exp)();		/* Can be null */
-	int (*init)(/* RSA * */);	/* called at new */
-	int (*finish)(/* RSA * */);	/* called at free */
-
+	const char *name;
+	int (*rsa_pub_enc)(int flen,const unsigned char *from,
+			   unsigned char *to,
+			   RSA *rsa,int padding);
+	int (*rsa_pub_dec)(int flen,const unsigned char *from,
+			   unsigned char *to,
+			   RSA *rsa,int padding);
+	int (*rsa_priv_enc)(int flen,const unsigned char *from,
+			    unsigned char *to,
+			    RSA *rsa,int padding);
+	int (*rsa_priv_dec)(int flen,const unsigned char *from,
+			    unsigned char *to,
+			    RSA *rsa,int padding);
+	int (*rsa_mod_exp)(BIGNUM *r0,const BIGNUM *I,RSA *rsa); /* Can be null */
+	int (*bn_mod_exp)(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+			  const BIGNUM *m, BN_CTX *ctx,
+			  BN_MONT_CTX *m_ctx); /* Can be null */
+	int (*init)(RSA *rsa);		/* called at new */
+	int (*finish)(RSA *rsa);	/* called at free */
 	int flags;			/* RSA_METHOD_FLAG_* things */
 	char *app_data;			/* may be needed! */
+/* New sign and verify functions: some libraries don't allow arbitrary data
+ * to be signed/verified: this allows them to be used. Note: for this to work
+ * the RSA_public_decrypt() and RSA_private_encrypt() should *NOT* be used
+ * RSA_sign(), RSA_verify() should be used instead. Note: for backwards
+ * compatibility this functionality is only enabled if the RSA_FLAG_SIGN_VER
+ * option is set in 'flags'.
+ */
+	int (*rsa_sign)(int type,
+		const unsigned char *m, unsigned int m_length,
+		unsigned char *sigret, unsigned int *siglen, const RSA *rsa);
+	int (*rsa_verify)(int dtype,
+		const unsigned char *m, unsigned int m_length,
+		unsigned char *sigbuf, unsigned int siglen, const RSA *rsa);
+
 	} RSA_METHOD;
 
-typedef struct rsa_st
+struct rsa_st
 	{
 	/* The first parameter is used to pickup errors where
 	 * this is passed instead of aEVP_PKEY, it is set to 0 */
 	int pad;
-	int version;
-	RSA_METHOD *meth;
+	long version;
+	const RSA_METHOD *meth;
+	/* functional reference if 'meth' is ENGINE-provided */
+	ENGINE *engine;
 	BIGNUM *n;
 	BIGNUM *e;
 	BIGNUM *d;
@@ -97,203 +134,182 @@ typedef struct rsa_st
 	BIGNUM *dmp1;
 	BIGNUM *dmq1;
 	BIGNUM *iqmp;
-	/* be carefull using this if the RSA structure is shared */
+	/* be careful using this if the RSA structure is shared */
 	CRYPTO_EX_DATA ex_data;
 	int references;
 	int flags;
 
-	/* Normally used to cached montgomery values */
-	char *method_mod_n;
-	char *method_mod_p;
-	char *method_mod_q;
+	/* Used to cache montgomery values */
+	BN_MONT_CTX *_method_mod_n;
+	BN_MONT_CTX *_method_mod_p;
+	BN_MONT_CTX *_method_mod_q;
 
+	/* all BIGNUM values are actually in the following data, if it is not
+	 * NULL */
+	char *bignum_data;
 	BN_BLINDING *blinding;
-	} RSA;
+	};
 
 #define RSA_3	0x3L
 #define RSA_F4	0x10001L
 
 #define RSA_METHOD_FLAG_NO_CHECK	0x01 /* don't check pub/private match */
+
 #define RSA_FLAG_CACHE_PUBLIC		0x02
 #define RSA_FLAG_CACHE_PRIVATE		0x04
 #define RSA_FLAG_BLINDING		0x08
 #define RSA_FLAG_THREAD_SAFE		0x10
+/* This flag means the private key operations will be handled by rsa_mod_exp
+ * and that they do not depend on the private key components being present:
+ * for example a key stored in external hardware. Without this flag bn_mod_exp
+ * gets called when private key components are absent.
+ */
+#define RSA_FLAG_EXT_PKEY		0x20
+
+/* This flag in the RSA_METHOD enables the new rsa_sign, rsa_verify functions.
+ */
+#define RSA_FLAG_SIGN_VER		0x40
 
 #define RSA_PKCS1_PADDING	1
 #define RSA_SSLV23_PADDING	2
 #define RSA_NO_PADDING		3
+#define RSA_PKCS1_OAEP_PADDING	4
 
-#define RSA_set_app_data(s,arg)         RSA_set_ex_data(s,0,(char *)arg)
+#define RSA_set_app_data(s,arg)         RSA_set_ex_data(s,0,arg)
 #define RSA_get_app_data(s)             RSA_get_ex_data(s,0)
 
-#ifndef NOPROTO
 RSA *	RSA_new(void);
-RSA *	RSA_new_method(RSA_METHOD *method);
-int	RSA_size(RSA *);
+RSA *	RSA_new_method(ENGINE *engine);
+int	RSA_size(const RSA *);
 RSA *	RSA_generate_key(int bits, unsigned long e,void
-		(*callback)(int,int,char *),char *cb_arg);
+		(*callback)(int,int,void *),void *cb_arg);
+int	RSA_check_key(const RSA *);
 	/* next 4 return -1 on error */
-int	RSA_public_encrypt(int flen, unsigned char *from,
+int	RSA_public_encrypt(int flen, const unsigned char *from,
 		unsigned char *to, RSA *rsa,int padding);
-int	RSA_private_encrypt(int flen, unsigned char *from,
+int	RSA_private_encrypt(int flen, const unsigned char *from,
 		unsigned char *to, RSA *rsa,int padding);
-int	RSA_public_decrypt(int flen, unsigned char *from, 
+int	RSA_public_decrypt(int flen, const unsigned char *from, 
 		unsigned char *to, RSA *rsa,int padding);
-int	RSA_private_decrypt(int flen, unsigned char *from, 
+int	RSA_private_decrypt(int flen, const unsigned char *from, 
 		unsigned char *to, RSA *rsa,int padding);
 void	RSA_free (RSA *r);
+/* "up" the RSA object's reference count */
+int	RSA_up_ref(RSA *r);
 
-int	RSA_flags(RSA *r);
+int	RSA_flags(const RSA *r);
 
-void RSA_set_default_method(RSA_METHOD *meth);
+void RSA_set_default_method(const RSA_METHOD *meth);
+const RSA_METHOD *RSA_get_default_method(void);
+const RSA_METHOD *RSA_get_method(const RSA *rsa);
+int RSA_set_method(RSA *rsa, const RSA_METHOD *meth);
 
-/* If you have RSAref compiled in. */
-RSA_METHOD *RSA_PKCS1_RSAref(void);
+/* This function needs the memory locking malloc callbacks to be installed */
+int RSA_memory_lock(RSA *r);
 
 /* these are the actual SSLeay RSA functions */
-RSA_METHOD *RSA_PKCS1_SSLeay(void);
+const RSA_METHOD *RSA_PKCS1_SSLeay(void);
 
-void	ERR_load_RSA_strings(void );
+const RSA_METHOD *RSA_null_method(void);
 
-RSA *	d2i_RSAPublicKey(RSA **a, unsigned char **pp, long length);
-int	i2d_RSAPublicKey(RSA *a, unsigned char **pp);
-RSA *	d2i_RSAPrivateKey(RSA **a, unsigned char **pp, long length);
-int 	i2d_RSAPrivateKey(RSA *a, unsigned char **pp);
-#ifndef NO_FP_API
-int	RSA_print_fp(FILE *fp, RSA *r,int offset);
+DECLARE_ASN1_ENCODE_FUNCTIONS_const(RSA, RSAPublicKey)
+DECLARE_ASN1_ENCODE_FUNCTIONS_const(RSA, RSAPrivateKey)
+
+#ifndef OPENSSL_NO_FP_API
+int	RSA_print_fp(FILE *fp, const RSA *r,int offset);
 #endif
 
-#ifdef HEADER_BIO_H
-int	RSA_print(BIO *bp, RSA *r,int offset);
+#ifndef OPENSSL_NO_BIO
+int	RSA_print(BIO *bp, const RSA *r,int offset);
 #endif
 
-int i2d_Netscape_RSA(RSA *a, unsigned char **pp, int (*cb)());
-RSA *d2i_Netscape_RSA(RSA **a, unsigned char **pp, long length, int (*cb)());
-/* Naughty internal function required elsewhere, to handle a MS structure
- * that is the same as the netscape one :-) */
-RSA *d2i_Netscape_RSA_2(RSA **a, unsigned char **pp, long length, int (*cb)());
+int i2d_RSA_NET(const RSA *a, unsigned char **pp, int (*cb)(), int sgckey);
+RSA *d2i_RSA_NET(RSA **a, const unsigned char **pp, long length, int (*cb)(), int sgckey);
+
+int i2d_Netscape_RSA(const RSA *a, unsigned char **pp, int (*cb)());
+RSA *d2i_Netscape_RSA(RSA **a, const unsigned char **pp, long length, int (*cb)());
 
 /* The following 2 functions sign and verify a X509_SIG ASN1 object
  * inside PKCS#1 padded RSA encryption */
-int RSA_sign(int type, unsigned char *m, unsigned int m_len,
+int RSA_sign(int type, const unsigned char *m, unsigned int m_length,
 	unsigned char *sigret, unsigned int *siglen, RSA *rsa);
-int RSA_verify(int type, unsigned char *m, unsigned int m_len,
+int RSA_verify(int type, const unsigned char *m, unsigned int m_length,
 	unsigned char *sigbuf, unsigned int siglen, RSA *rsa);
 
 /* The following 2 function sign and verify a ASN1_OCTET_STRING
  * object inside PKCS#1 padded RSA encryption */
-int RSA_sign_ASN1_OCTET_STRING(int type, unsigned char *m, unsigned int m_len,
+int RSA_sign_ASN1_OCTET_STRING(int type,
+	const unsigned char *m, unsigned int m_length,
 	unsigned char *sigret, unsigned int *siglen, RSA *rsa);
-int RSA_verify_ASN1_OCTET_STRING(int type, unsigned char *m, unsigned int m_len,
+int RSA_verify_ASN1_OCTET_STRING(int type,
+	const unsigned char *m, unsigned int m_length,
 	unsigned char *sigbuf, unsigned int siglen, RSA *rsa);
 
 int RSA_blinding_on(RSA *rsa, BN_CTX *ctx);
 void RSA_blinding_off(RSA *rsa);
 
 int RSA_padding_add_PKCS1_type_1(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl);
 int RSA_padding_check_PKCS1_type_1(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl,int rsa_len);
 int RSA_padding_add_PKCS1_type_2(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl);
 int RSA_padding_check_PKCS1_type_2(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl,int rsa_len);
+int RSA_padding_add_PKCS1_OAEP(unsigned char *to,int tlen,
+	const unsigned char *f,int fl,
+	const unsigned char *p,int pl);
+int RSA_padding_check_PKCS1_OAEP(unsigned char *to,int tlen,
+	const unsigned char *f,int fl,int rsa_len,
+	const unsigned char *p,int pl);
 int RSA_padding_add_SSLv23(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl);
 int RSA_padding_check_SSLv23(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl,int rsa_len);
 int RSA_padding_add_none(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl);
 int RSA_padding_check_none(unsigned char *to,int tlen,
-	unsigned char *f,int fl);
+	const unsigned char *f,int fl,int rsa_len);
 
-int RSA_get_ex_new_index(long argl, char *argp, int (*new_func)(),
-	int (*dup_func)(), void (*free_func)());
-int RSA_set_ex_data(RSA *r,int idx,char *arg);
-char *RSA_get_ex_data(RSA *r, int idx);
-
-#else
-
-RSA *	RSA_new();
-RSA *	RSA_new_method();
-int	RSA_size();
-RSA *	RSA_generate_key();
-int	RSA_public_encrypt();
-int	RSA_private_encrypt();
-int	RSA_public_decrypt();
-int	RSA_private_decrypt();
-void	RSA_free ();
-
-int	RSA_flags();
-
-void RSA_set_default_method();
-
-/* RSA_METHOD *RSA_PKCS1_RSAref(); */
-RSA_METHOD *RSA_PKCS1_SSLeay();
-
-void	ERR_load_RSA_strings();
-
-RSA *	d2i_RSAPublicKey();
-int	i2d_RSAPublicKey();
-RSA *	d2i_RSAPrivateKey();
-int 	i2d_RSAPrivateKey();
-#ifndef NO_FP_API
-int	RSA_print_fp();
-#endif
-
-int	RSA_print();
-
-int i2d_Netscape_RSA();
-RSA *d2i_Netscape_RSA();
-RSA *d2i_Netscape_RSA_2();
-
-int RSA_sign();
-int RSA_verify();
-
-int RSA_sign_ASN1_OCTET_STRING();
-int RSA_verify_ASN1_OCTET_STRING();
-int RSA_blinding_on();
-void RSA_blinding_off();
-
-int RSA_padding_add_PKCS1_type_1();
-int RSA_padding_check_PKCS1_type_1();
-int RSA_padding_add_PKCS1_type_2();
-int RSA_padding_check_PKCS1_type_2();
-int RSA_padding_add_SSLv23();
-int RSA_padding_check_SSLv23();
-int RSA_padding_add_none();
-int RSA_padding_check_none();
-
-int RSA_get_ex_new_index();
-int RSA_set_ex_data();
-char *RSA_get_ex_data();
-
-#endif
+int RSA_get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_func,
+	CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func);
+int RSA_set_ex_data(RSA *r,int idx,void *arg);
+void *RSA_get_ex_data(const RSA *r, int idx);
 
 /* BEGIN ERROR CODES */
+/* The following lines are auto generated by the script mkerr.pl. Any changes
+ * made after this point may be overwritten when the script is next run.
+ */
+void ERR_load_RSA_strings(void);
+
 /* Error codes for the RSA functions. */
 
 /* Function codes. */
-#define RSA_F_RSA_EAY_PRIVATE_DECRYPT			 100
-#define RSA_F_RSA_EAY_PRIVATE_ENCRYPT			 101
-#define RSA_F_RSA_EAY_PUBLIC_DECRYPT			 102
-#define RSA_F_RSA_EAY_PUBLIC_ENCRYPT			 103
-#define RSA_F_RSA_GENERATE_KEY				 104
-#define RSA_F_RSA_NEW_METHOD				 105
-#define RSA_F_RSA_PADDING_ADD_NONE			 106
-#define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_1		 107
-#define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_2		 108
-#define RSA_F_RSA_PADDING_ADD_SSLV23			 109
-#define RSA_F_RSA_PADDING_CHECK_NONE			 110
-#define RSA_F_RSA_PADDING_CHECK_PKCS1_TYPE_1		 111
-#define RSA_F_RSA_PADDING_CHECK_PKCS1_TYPE_2		 112
-#define RSA_F_RSA_PADDING_CHECK_SSLV23			 113
-#define RSA_F_RSA_PRINT					 114
-#define RSA_F_RSA_PRINT_FP				 115
-#define RSA_F_RSA_SIGN					 116
-#define RSA_F_RSA_SIGN_ASN1_OCTET_STRING		 117
-#define RSA_F_RSA_VERIFY				 118
-#define RSA_F_RSA_VERIFY_ASN1_OCTET_STRING		 119
+#define RSA_F_MEMORY_LOCK				 100
+#define RSA_F_RSA_CHECK_KEY				 123
+#define RSA_F_RSA_EAY_PRIVATE_DECRYPT			 101
+#define RSA_F_RSA_EAY_PRIVATE_ENCRYPT			 102
+#define RSA_F_RSA_EAY_PUBLIC_DECRYPT			 103
+#define RSA_F_RSA_EAY_PUBLIC_ENCRYPT			 104
+#define RSA_F_RSA_GENERATE_KEY				 105
+#define RSA_F_RSA_NEW_METHOD				 106
+#define RSA_F_RSA_NULL					 124
+#define RSA_F_RSA_PADDING_ADD_NONE			 107
+#define RSA_F_RSA_PADDING_ADD_PKCS1_OAEP		 121
+#define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_1		 108
+#define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_2		 109
+#define RSA_F_RSA_PADDING_ADD_SSLV23			 110
+#define RSA_F_RSA_PADDING_CHECK_NONE			 111
+#define RSA_F_RSA_PADDING_CHECK_PKCS1_OAEP		 122
+#define RSA_F_RSA_PADDING_CHECK_PKCS1_TYPE_1		 112
+#define RSA_F_RSA_PADDING_CHECK_PKCS1_TYPE_2		 113
+#define RSA_F_RSA_PADDING_CHECK_SSLV23			 114
+#define RSA_F_RSA_PRINT					 115
+#define RSA_F_RSA_PRINT_FP				 116
+#define RSA_F_RSA_SIGN					 117
+#define RSA_F_RSA_SIGN_ASN1_OCTET_STRING		 118
+#define RSA_F_RSA_VERIFY				 119
+#define RSA_F_RSA_VERIFY_ASN1_OCTET_STRING		 120
 
 /* Reason codes. */
 #define RSA_R_ALGORITHM_MISMATCH			 100
@@ -301,24 +317,35 @@ char *RSA_get_ex_data();
 #define RSA_R_BAD_FIXED_HEADER_DECRYPT			 102
 #define RSA_R_BAD_PAD_BYTE_COUNT			 103
 #define RSA_R_BAD_SIGNATURE				 104
-#define RSA_R_BAD_ZERO_BYTE				 105
 #define RSA_R_BLOCK_TYPE_IS_NOT_01			 106
 #define RSA_R_BLOCK_TYPE_IS_NOT_02			 107
 #define RSA_R_DATA_GREATER_THAN_MOD_LEN			 108
 #define RSA_R_DATA_TOO_LARGE				 109
 #define RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE		 110
+#define RSA_R_DATA_TOO_LARGE_FOR_MODULUS		 132
 #define RSA_R_DATA_TOO_SMALL				 111
+#define RSA_R_DATA_TOO_SMALL_FOR_KEY_SIZE		 122
 #define RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY		 112
+#define RSA_R_DMP1_NOT_CONGRUENT_TO_D			 124
+#define RSA_R_DMQ1_NOT_CONGRUENT_TO_D			 125
+#define RSA_R_D_E_NOT_CONGRUENT_TO_1			 123
+#define RSA_R_INVALID_MESSAGE_LENGTH			 131
+#define RSA_R_IQMP_NOT_INVERSE_OF_Q			 126
+#define RSA_R_KEY_SIZE_TOO_SMALL			 120
 #define RSA_R_NULL_BEFORE_BLOCK_MISSING			 113
+#define RSA_R_N_DOES_NOT_EQUAL_P_Q			 127
+#define RSA_R_OAEP_DECODING_ERROR			 121
 #define RSA_R_PADDING_CHECK_FAILED			 114
+#define RSA_R_P_NOT_PRIME				 128
+#define RSA_R_Q_NOT_PRIME				 129
+#define RSA_R_RSA_OPERATIONS_NOT_SUPPORTED		 130
 #define RSA_R_SSLV3_ROLLBACK_ATTACK			 115
 #define RSA_R_THE_ASN1_OBJECT_IDENTIFIER_IS_NOT_KNOWN_FOR_THIS_MD 116
 #define RSA_R_UNKNOWN_ALGORITHM_TYPE			 117
 #define RSA_R_UNKNOWN_PADDING_TYPE			 118
 #define RSA_R_WRONG_SIGNATURE_LENGTH			 119
- 
+
 #ifdef  __cplusplus
 }
 #endif
 #endif
-

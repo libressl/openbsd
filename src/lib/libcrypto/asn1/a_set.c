@@ -58,21 +58,42 @@
 
 #include <stdio.h>
 #include "cryptlib.h"
-#include "asn1_mac.h"
+#include <openssl/asn1_mac.h>
 
-/* ASN1err(ASN1_F_ASN1_TYPE_NEW,ERR_R_MALLOC_FAILURE);
+#ifndef NO_ASN1_OLD
+
+typedef struct
+    {
+    unsigned char *pbData;
+    int cbData;
+    } MYBLOB;
+
+/* SetBlobCmp
+ * This function compares two elements of SET_OF block
  */
+static int SetBlobCmp(const void *elem1, const void *elem2 )
+    {
+    const MYBLOB *b1 = (const MYBLOB *)elem1;
+    const MYBLOB *b2 = (const MYBLOB *)elem2;
+    int r;
 
-int i2d_ASN1_SET(a,pp,func,ex_tag,ex_class)
-STACK *a;
-unsigned char **pp;
-int (*func)();
-int ex_tag;
-int ex_class;
+    r = memcmp(b1->pbData, b2->pbData,
+	       b1->cbData < b2->cbData ? b1->cbData : b2->cbData);
+    if(r != 0)
+	return r;
+    return b1->cbData-b2->cbData;
+    }
+
+/* int is_set:  if TRUE, then sort the contents (i.e. it isn't a SEQUENCE)    */
+int i2d_ASN1_SET(STACK *a, unsigned char **pp, int (*func)(), int ex_tag,
+	     int ex_class, int is_set)
 	{
 	int ret=0,r;
 	int i;
 	unsigned char *p;
+        unsigned char *pStart, *pTempMem;
+        MYBLOB *rgSetBlob;
+        int totSize;
 
 	if (a == NULL) return(0);
 	for (i=sk_num(a)-1; i>=0; i--)
@@ -82,26 +103,64 @@ int ex_class;
 
 	p= *pp;
 	ASN1_put_object(&p,1,ret,ex_tag,ex_class);
-	for (i=0; i<sk_num(a); i++)
-		func(sk_value(a,i),&p);
 
-	*pp=p;
-	return(r);
-	}
+/* Modified by gp@nsj.co.jp */
+	/* And then again by Ben */
+	/* And again by Steve */
 
-STACK *d2i_ASN1_SET(a,pp,length,func,ex_tag,ex_class)
-STACK **a;
-unsigned char **pp;
-long length;
-char *(*func)();
-int ex_tag;
-int ex_class;
+	if(!is_set || (sk_num(a) < 2))
+		{
+		for (i=0; i<sk_num(a); i++)
+                	func(sk_value(a,i),&p);
+
+		*pp=p;
+		return(r);
+		}
+
+        pStart  = p; /* Catch the beg of Setblobs*/
+        if (!(rgSetBlob = (MYBLOB *)OPENSSL_malloc( sk_num(a) * sizeof(MYBLOB)))) return 0; /* In this array
+we will store the SET blobs */
+
+        for (i=0; i<sk_num(a); i++)
+	        {
+                rgSetBlob[i].pbData = p;  /* catch each set encode blob */
+                func(sk_value(a,i),&p);
+                rgSetBlob[i].cbData = p - rgSetBlob[i].pbData; /* Length of this
+SetBlob
+*/
+		}
+        *pp=p;
+        totSize = p - pStart; /* This is the total size of all set blobs */
+
+ /* Now we have to sort the blobs. I am using a simple algo.
+    *Sort ptrs *Copy to temp-mem *Copy from temp-mem to user-mem*/
+        qsort( rgSetBlob, sk_num(a), sizeof(MYBLOB), SetBlobCmp);
+        if (!(pTempMem = OPENSSL_malloc(totSize))) return 0;
+
+/* Copy to temp mem */
+        p = pTempMem;
+        for(i=0; i<sk_num(a); ++i)
+		{
+                memcpy(p, rgSetBlob[i].pbData, rgSetBlob[i].cbData);
+                p += rgSetBlob[i].cbData;
+		}
+
+/* Copy back to user mem*/
+        memcpy(pStart, pTempMem, totSize);
+        OPENSSL_free(pTempMem);
+        OPENSSL_free(rgSetBlob);
+
+        return(r);
+        }
+
+STACK *d2i_ASN1_SET(STACK **a, unsigned char **pp, long length,
+	     char *(*func)(), void (*free_func)(void *), int ex_tag, int ex_class)
 	{
 	ASN1_CTX c;
 	STACK *ret=NULL;
 
 	if ((a == NULL) || ((*a) == NULL))
-		{ if ((ret=sk_new(NULL)) == NULL) goto err; }
+		{ if ((ret=sk_new_null()) == NULL) goto err; }
 	else
 		ret=(*a);
 
@@ -136,14 +195,26 @@ int ex_class;
 		char *s;
 
 		if (M_ASN1_D2I_end_sequence()) break;
-		if ((s=func(NULL,&c.p,c.slen,c.max-c.p)) == NULL) goto err;
+		if ((s=func(NULL,&c.p,c.slen,c.max-c.p)) == NULL)
+			{
+			ASN1err(ASN1_F_D2I_ASN1_SET,ASN1_R_ERROR_PARSING_SET_ELEMENT);
+			asn1_add_error(*pp,(int)(c.q- *pp));
+			goto err;
+			}
 		if (!sk_push(ret,s)) goto err;
 		}
 	if (a != NULL) (*a)=ret;
 	*pp=c.p;
 	return(ret);
 err:
-	if ((ret != NULL) && ((a == NULL) || (*a != ret))) sk_free(ret);
+	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
+		{
+		if (free_func != NULL)
+			sk_pop_free(ret,free_func);
+		else
+			sk_free(ret);
+		}
 	return(NULL);
 	}
 
+#endif
