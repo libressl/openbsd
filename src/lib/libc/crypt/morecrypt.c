@@ -1,5 +1,3 @@
-/*	$OpenBSD$	*/
-
 /*
  * FreeSec: libcrypt
  *
@@ -51,6 +49,11 @@
  * exportable from the USA. Hence, to also have the other crypto interfaces
  * available we have to copy pieces...
  */
+
+#if defined(LIBC_SCCS) && !defined(lint)
+static char rcsid[] = "$OpenBSD$";
+#endif /* LIBC_SCCS and not lint */
+
 #include <sys/types.h>
 #include <sys/param.h>
 #include <pwd.h>
