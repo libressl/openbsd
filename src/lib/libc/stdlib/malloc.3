@@ -30,7 +30,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: malloc.3,v 1.32 2003/10/16 17:05:04 tedu Exp $
+.\"	$OpenBSD: malloc.3,v 1.33 2003/11/25 12:32:54 jmc Exp $
 .\"
 .Dd August 27, 1996
 .Dt MALLOC 3
@@ -192,7 +192,14 @@ at exit.
 This option requires the library to have been compiled with -DMALLOC_STATS in
 order to have any effect.
 .Pp
+.It Cm F
+.Dq Freeguard .
+Enable use after free protection.
+Unused pages on the freelist are read and write protected to
+cause a segmentation fault upon access.
+.Pp
 .It Cm G
+.Dq Guard .
 Enable guard pages and chunk randomization.
 Each page size or larger allocation is followed by a guard page that will
 cause a segmentation fault upon any access.
