@@ -1,5 +1,3 @@
-/*	$OpenBSD: md5crypt.c,v 1.2 1996/06/03 22:20:37 niklas Exp $ */
-
 /*
  * ----------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
@@ -11,7 +9,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.2 1996/06/03 22:20:37 niklas Exp $";
+static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.3 1996/07/02 23:05:38 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <unistd.h>

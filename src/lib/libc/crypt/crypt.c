@@ -1,5 +1,3 @@
-/*	$OpenBSD: crypt.c,v 1.4 1996/06/03 22:20:35 niklas Exp $	*/
-
 /*
  * FreeSec: libcrypt
  *
@@ -50,6 +48,11 @@
  * only the crypt() interface. This is required to make binaries linked
  * against crypt.o exportable or re-exportable from the USA.
  */
+
+#if defined(LIBC_SCCS) && !defined(lint)
+static char rcsid[] = "$OpenBSD$";
+#endif /* LIBC_SCCS and not lint */
+
 #include <sys/types.h>
 #include <sys/param.h>
 #include <pwd.h>
