@@ -1,7 +1,6 @@
-#	$OpenBSD: Makefile,v 1.1 1996/09/05 08:55:31 deraadt Exp $
+#	$OpenBSD: Makefile,v 1.2 1997/09/21 11:50:13 deraadt Exp $
 
-CFLAGS+= -DTELNET
 PROG=	nc
-SRCS=	netcat.c
+SRCS=	netcat.c atomicio.c
 
 .include <bsd.prog.mk>
