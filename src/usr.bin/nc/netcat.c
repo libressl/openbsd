@@ -55,7 +55,8 @@
 	(sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
 #endif
 
-#define PORT_MAX 65535
+#define PORT_MAX	65535
+#define PORT_MAX_LEN	6
 
 /* Command Line Options */
 int	iflag;					/* Interval Flag */
@@ -655,8 +656,10 @@ build_ports(char *p)
 
 		/* Load ports sequentially */
 		for (cp = lo; cp <= hi; cp++) {
-			portlist[x] = calloc(1, PORT_MAX);
-			snprintf(portlist[x], PORT_MAX, "%d", cp);
+			portlist[x] = calloc(1, PORT_MAX_LEN);
+			if (portlist[x] == NULL)
+				err(1, NULL);
+			snprintf(portlist[x], PORT_MAX_LEN, "%d", cp);
 			x++;
 		}
 
@@ -676,7 +679,9 @@ build_ports(char *p)
 		hi = (int)strtoul(p, &endp, 10);
 		if (hi <= 0 || hi > PORT_MAX || *endp != '\0')
 			errx(1, "port range not valid");
-		portlist[0] = calloc(1, PORT_MAX);
+		portlist[0] = calloc(1, PORT_MAX_LEN);
+		if (portlist[0] == NULL)
+			err(1, NULL);
 		portlist[0] = p;
 	}
 }
