@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.5 2002/02/16 01:58:33 art Exp $
+#	$OpenBSD: Makefile,v 1.6 2002/02/18 11:28:27 art Exp $
 
 SUBDIR+= _setjmp db regex setjmp sigsetjmp malloc sigreturn popen
 SUBDIR+= longjmp
@@ -9,8 +9,6 @@ SUBDIR+= ieeefp
 .if exists(arch/${MACHINE_ARCH})
 SUBDIR+= arch/${MACHINE_ARCH}
 .endif
-
-regress: _SUBDIRUSE
 
 install:
 
