@@ -28,7 +28,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: abort.c,v 1.11 2002/11/05 22:19:55 marc Exp $";
+static char *rcsid = "$OpenBSD: abort.c,v 1.12 2003/06/02 20:18:37 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <signal.h>
@@ -38,7 +38,7 @@ static char *rcsid = "$OpenBSD: abort.c,v 1.11 2002/11/05 22:19:55 marc Exp $";
 #include "atexit.h"
 
 void
-abort()
+abort(void)
 {
 	struct atexit *p = __atexit;
 	static int cleanup_called = 0;
@@ -74,5 +74,5 @@ abort()
 	(void)signal(SIGABRT, SIG_DFL);
 	(void)_thread_sys_sigprocmask(SIG_SETMASK, &mask, (sigset_t *)NULL);
 	(void)kill(getpid(), SIGABRT);
-	exit(1);
+	_exit(1);
 }
