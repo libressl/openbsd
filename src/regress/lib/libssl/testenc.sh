@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$OpenBSD$
+#	$OpenBSD: testenc.sh,v 1.5 2001/01/29 02:05:48 niklas Exp $
 
 
 testsrc=$2/openssl.cnf
@@ -30,6 +30,11 @@ then
 else
 	/bin/rm $test.cipher $test.clear
 fi
+
+/bin/rm -f $test
+exit 0
+
+# These tests are now done by the makefile.
 
 for i in rc4 \
 	des-cfb des-ede-cfb des-ede3-cfb \
