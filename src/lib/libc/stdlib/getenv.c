@@ -40,6 +40,35 @@ static char *rcsid = "$Id$";
 #include <string.h>
 
 /*
+ * __findenv --
+ *	Returns pointer to value associated with name, if any, else NULL.
+ *	Sets offset to be the offset of the name/value combination in the
+ *	environmental array, for use by setenv(3) and unsetenv(3).
+ *	Explicitly removes '=' in argument name.
+ *
+ *	This routine *should* be a static; don't use it.
+ */
+char *
+__findenv(name, offset)
+	register const char *name;
+	int *offset;
+{
+	extern char **environ;
+	register int len;
+	register char **P, *C;
+	register const char *cp;
+
+	for (cp = name, len = 0; *cp != '\0' && *cp != '='; ++cp, ++len);
+	for (P = environ; *P; ++P)
+		if (!strncmp(*P, name, len))
+			if (*(C = *P + len) == '=') {
+				*offset = P - environ;
+				return(++C);
+			}
+	return(NULL);
+}
+
+/*
  * getenv --
  *	Returns ptr to value associated with name, if any, else NULL.
  */
@@ -51,32 +80,4 @@ getenv(name)
 	char *__findenv();
 
 	return(__findenv(name, &offset));
-}
-
-/*
- * __findenv --
- *	Returns pointer to value associated with name, if any, else NULL.
- *	Sets offset to be the offset of the name/value combination in the
- *	environmental array, for use by setenv(3) and unsetenv(3).
- *	Explicitly removes '=' in argument name.
- *
- *	This routine *should* be a static; don't use it.
- */
-char *
-__findenv(name, offset)
-	register char *name;
-	int *offset;
-{
-	extern char **environ;
-	register int len;
-	register char **P, *C;
-
-	for (C = name, len = 0; *C && *C != '='; ++C, ++len);
-	for (P = environ; *P; ++P)
-		if (!strncmp(*P, name, len))
-			if (*(C = *P + len) == '=') {
-				*offset = P - environ;
-				return(++C);
-			}
-	return(NULL);
 }
