@@ -1,5 +1,5 @@
 /*	$OpenBSD$	*/
-/*	$NetBSD: strtod.c,v 1.21 1996/02/16 21:19:29 mark Exp $	*/
+/*	$NetBSD: strtod.c,v 1.21.4.1 1996/07/20 01:14:54 jtc Exp $	*/
 
 /****************************************************************
  *
@@ -1238,7 +1238,7 @@ strtod
 	rv = 0.;
 
 
-	for(s = s00; isspace(*s); s++)
+	for(s = s00; isspace((unsigned char) *s); s++)
 		;
 
 	if (*s == '-') {
