@@ -1,4 +1,4 @@
-/*	$OpenBSD: getaddrinfo.c,v 1.11 2000/02/15 18:53:08 itojun Exp $	*/
+/*	$OpenBSD: getaddrinfo.c,v 1.12 2000/02/16 12:53:35 itojun Exp $	*/
 
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
@@ -752,7 +752,7 @@ explore_numeric_scope(pai, hostname, servname, res)
 	if (cp == NULL)
 		return explore_numeric(pai, hostname, servname, res);
 
-#if 1
+#if 0
 	/*
 	 * Handle special case of <scope id><delimiter><scoped_address>
 	 */
