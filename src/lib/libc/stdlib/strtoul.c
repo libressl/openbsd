@@ -63,7 +63,7 @@ strtoul(nptr, endptr, base)
 	 */
 	s = nptr;
 	do {
-		c = *s++;
+		c = (unsigned char) *s++;
 	} while (isspace(c));
 	if (c == '-') {
 		neg = 1;
@@ -84,7 +84,7 @@ strtoul(nptr, endptr, base)
 
 	cutoff = ULONG_MAX / (unsigned long)base;
 	cutlim = ULONG_MAX % (unsigned long)base;
-	for (acc = 0, any = 0;; c = *s++) {
+	for (acc = 0, any = 0;; c = (unsigned char) *s++) {
 		if (isdigit(c))
 			c -= '0';
 		else if (isalpha(c))
