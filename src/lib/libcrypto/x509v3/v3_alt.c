@@ -61,34 +61,28 @@
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
 
-static STACK_OF(GENERAL_NAME) *v2i_subject_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
-static STACK_OF(GENERAL_NAME) *v2i_issuer_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
-static int copy_email(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens);
-static int copy_issuer(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens);
+static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
+static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval);
+static int copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p);
+static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens);
 X509V3_EXT_METHOD v3_alt[] = {
-{ NID_subject_alt_name, 0,
-(X509V3_EXT_NEW)GENERAL_NAMES_new,
-(X509V3_EXT_FREE)GENERAL_NAMES_free,
-(X509V3_EXT_D2I)d2i_GENERAL_NAMES,
-(X509V3_EXT_I2D)i2d_GENERAL_NAMES,
-NULL, NULL,
+{ NID_subject_alt_name, 0, ASN1_ITEM_ref(GENERAL_NAMES),
+0,0,0,0,
+0,0,
 (X509V3_EXT_I2V)i2v_GENERAL_NAMES,
 (X509V3_EXT_V2I)v2i_subject_alt,
 NULL, NULL, NULL},
-{ NID_issuer_alt_name, 0,
-(X509V3_EXT_NEW)GENERAL_NAMES_new,
-(X509V3_EXT_FREE)GENERAL_NAMES_free,
-(X509V3_EXT_D2I)d2i_GENERAL_NAMES,
-(X509V3_EXT_I2D)i2d_GENERAL_NAMES,
-NULL, NULL,
+
+{ NID_issuer_alt_name, 0, ASN1_ITEM_ref(GENERAL_NAMES),
+0,0,0,0,
+0,0,
 (X509V3_EXT_I2V)i2v_GENERAL_NAMES,
 (X509V3_EXT_V2I)v2i_issuer_alt,
 NULL, NULL, NULL},
-EXT_END
 };
 
 STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
-		STACK_OF(GENERAL_NAME) *gens, STACK_OF(CONF_VALUE) *ret)
+		GENERAL_NAMES *gens, STACK_OF(CONF_VALUE) *ret)
 {
 	int i;
 	GENERAL_NAME *gen;
@@ -103,8 +97,8 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
 STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
 				GENERAL_NAME *gen, STACK_OF(CONF_VALUE) *ret)
 {
-	char oline[256];
 	unsigned char *p;
+	char oline[256];
 	switch (gen->type)
 	{
 		case GEN_OTHERNAME:
@@ -155,13 +149,66 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
 	return ret;
 }
 
-static STACK_OF(GENERAL_NAME) *v2i_issuer_alt(X509V3_EXT_METHOD *method,
+int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen)
+{
+	unsigned char *p;
+	switch (gen->type)
+	{
+		case GEN_OTHERNAME:
+		BIO_printf(out, "othername:<unsupported>");
+		break;
+
+		case GEN_X400:
+		BIO_printf(out, "X400Name:<unsupported>");
+		break;
+
+		case GEN_EDIPARTY:
+		/* Maybe fix this: it is supported now */
+		BIO_printf(out, "EdiPartyName:<unsupported>");
+		break;
+
+		case GEN_EMAIL:
+		BIO_printf(out, "email:%s",gen->d.ia5->data);
+		break;
+
+		case GEN_DNS:
+		BIO_printf(out, "DNS:%s",gen->d.ia5->data);
+		break;
+
+		case GEN_URI:
+		BIO_printf(out, "URI:%s",gen->d.ia5->data);
+		break;
+
+		case GEN_DIRNAME:
+		BIO_printf(out, "DirName: ");
+		X509_NAME_print_ex(out, gen->d.dirn, 0, XN_FLAG_ONELINE);
+		break;
+
+		case GEN_IPADD:
+		p = gen->d.ip->data;
+		/* BUG: doesn't support IPV6 */
+		if(gen->d.ip->length != 4) {
+			BIO_printf(out,"IP Address:<invalid>");
+			break;
+		}
+		BIO_printf(out, "IP Address:%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
+		break;
+
+		case GEN_RID:
+		BIO_printf(out, "Registered ID");
+		i2a_ASN1_OBJECT(out, gen->d.rid);
+		break;
+	}
+	return 1;
+}
+
+static GENERAL_NAMES *v2i_issuer_alt(X509V3_EXT_METHOD *method,
 				 X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
-	STACK_OF(GENERAL_NAME) *gens = NULL;
+	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new(NULL))) {
+	if(!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_GENERAL_NAMES,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -185,9 +232,9 @@ static STACK_OF(GENERAL_NAME) *v2i_issuer_alt(X509V3_EXT_METHOD *method,
 
 /* Append subject altname of issuer to issuer alt name of subject */
 
-static int copy_issuer(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens)
+static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens)
 {
-	STACK_OF(GENERAL_NAME) *ialt;
+	GENERAL_NAMES *ialt;
 	GENERAL_NAME *gen;
 	X509_EXTENSION *ext;
 	int i;
@@ -220,13 +267,13 @@ static int copy_issuer(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens)
 	
 }
 
-static STACK_OF(GENERAL_NAME) *v2i_subject_alt(X509V3_EXT_METHOD *method,
+static GENERAL_NAMES *v2i_subject_alt(X509V3_EXT_METHOD *method,
 				 X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
-	STACK_OF(GENERAL_NAME) *gens = NULL;
+	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new(NULL))) {
+	if(!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_GENERAL_NAMES,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -234,7 +281,10 @@ static STACK_OF(GENERAL_NAME) *v2i_subject_alt(X509V3_EXT_METHOD *method,
 		cnf = sk_CONF_VALUE_value(nval, i);
 		if(!name_cmp(cnf->name, "email") && cnf->value &&
 						!strcmp(cnf->value, "copy")) {
-			if(!copy_email(ctx, gens)) goto err;
+			if(!copy_email(ctx, gens, 0)) goto err;
+		} else if(!name_cmp(cnf->name, "email") && cnf->value &&
+						!strcmp(cnf->value, "move")) {
+			if(!copy_email(ctx, gens, 1)) goto err;
 		} else {
 			GENERAL_NAME *gen;
 			if(!(gen = v2i_GENERAL_NAME(method, ctx, cnf)))
@@ -252,7 +302,7 @@ static STACK_OF(GENERAL_NAME) *v2i_subject_alt(X509V3_EXT_METHOD *method,
  * GENERAL_NAMES
  */
 
-static int copy_email(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens)
+static int copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p)
 {
 	X509_NAME *nm;
 	ASN1_IA5STRING *email = NULL;
@@ -271,9 +321,14 @@ static int copy_email(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens)
 	/* Now add any email address(es) to STACK */
 	i = -1;
 	while((i = X509_NAME_get_index_by_NID(nm,
-					 NID_pkcs9_emailAddress, i)) > 0) {
+					 NID_pkcs9_emailAddress, i)) >= 0) {
 		ne = X509_NAME_get_entry(nm, i);
-		email = ASN1_IA5STRING_dup(X509_NAME_ENTRY_get_data(ne));
+		email = M_ASN1_IA5STRING_dup(X509_NAME_ENTRY_get_data(ne));
+                if (move_p)
+                        {
+                        X509_NAME_delete_entry(nm, i);
+                        i--;
+                        }
 		if(!email || !(gen = GENERAL_NAME_new())) {
 			X509V3err(X509V3_F_COPY_EMAIL,ERR_R_MALLOC_FAILURE);
 			goto err;
@@ -293,19 +348,19 @@ static int copy_email(X509V3_CTX *ctx, STACK_OF(GENERAL_NAME) *gens)
 		
 	err:
 	GENERAL_NAME_free(gen);
-	ASN1_IA5STRING_free(email);
+	M_ASN1_IA5STRING_free(email);
 	return 0;
 	
 }
 
-STACK_OF(GENERAL_NAME) *v2i_GENERAL_NAMES(X509V3_EXT_METHOD *method,
+GENERAL_NAMES *v2i_GENERAL_NAMES(X509V3_EXT_METHOD *method,
 				X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *nval)
 {
 	GENERAL_NAME *gen;
-	STACK_OF(GENERAL_NAME) *gens = NULL;
+	GENERAL_NAMES *gens = NULL;
 	CONF_VALUE *cnf;
 	int i;
-	if(!(gens = sk_GENERAL_NAME_new(NULL))) {
+	if(!(gens = sk_GENERAL_NAME_new_null())) {
 		X509V3err(X509V3_F_V2I_GENERAL_NAMES,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -371,7 +426,7 @@ if(!name_cmp(name, "email")) {
 		goto err;
 	}
 	ip[0] = i1; ip[1] = i2 ; ip[2] = i3 ; ip[3] = i4;
-	if(!(gen->d.ip = ASN1_OCTET_STRING_new()) ||
+	if(!(gen->d.ip = M_ASN1_OCTET_STRING_new()) ||
 		!ASN1_STRING_set(gen->d.ip, ip, 4)) {
 			X509V3err(X509V3_F_V2I_GENERAL_NAME,ERR_R_MALLOC_FAILURE);
 			goto err;
@@ -384,7 +439,7 @@ if(!name_cmp(name, "email")) {
 }
 
 if(is_string) {
-	if(!(gen->d.ia5 = ASN1_IA5STRING_new()) ||
+	if(!(gen->d.ia5 = M_ASN1_IA5STRING_new()) ||
 		      !ASN1_STRING_set(gen->d.ia5, (unsigned char*)value,
 				       strlen(value))) {
 		X509V3err(X509V3_F_V2I_GENERAL_NAME,ERR_R_MALLOC_FAILURE);

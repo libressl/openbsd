@@ -55,15 +55,183 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  */
+/* ====================================================================
+ * Copyright (c) 1998-2000 The OpenSSL Project.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer. 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software must display the following acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+ *
+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+ *    endorse or promote products derived from this software without
+ *    prior written permission. For written permission, please contact
+ *    openssl-core@openssl.org.
+ *
+ * 5. Products derived from this software may not be called "OpenSSL"
+ *    nor may "OpenSSL" appear in their names without prior written
+ *    permission of the OpenSSL Project.
+ *
+ * 6. Redistributions of any form whatsoever must retain the following
+ *    acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com).  This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com).
+ *
+ */
 
 #ifndef HEADER_BN_LCL_H
 #define HEADER_BN_LCL_H
 
-#include "bn.h"
+#include <openssl/bn.h>
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+
+/* Used for temp variables */
+#define BN_CTX_NUM	32
+#define BN_CTX_NUM_POS	12
+struct bignum_ctx
+	{
+	int tos;
+	BIGNUM bn[BN_CTX_NUM];
+	int flags;
+	int depth;
+	int pos[BN_CTX_NUM_POS];
+	int too_many;
+	} /* BN_CTX */;
+
+
+/*
+ * BN_window_bits_for_exponent_size -- macro for sliding window mod_exp functions
+ *
+ *
+ * For window size 'w' (w >= 2) and a random 'b' bits exponent,
+ * the number of multiplications is a constant plus on average
+ *
+ *    2^(w-1) + (b-w)/(w+1);
+ *
+ * here  2^(w-1)  is for precomputing the table (we actually need
+ * entries only for windows that have the lowest bit set), and
+ * (b-w)/(w+1)  is an approximation for the expected number of
+ * w-bit windows, not counting the first one.
+ *
+ * Thus we should use
+ *
+ *    w >= 6  if        b > 671
+ *     w = 5  if  671 > b > 239
+ *     w = 4  if  239 > b >  79
+ *     w = 3  if   79 > b >  23
+ *    w <= 2  if   23 > b
+ *
+ * (with draws in between).  Very small exponents are often selected
+ * with low Hamming weight, so we use  w = 1  for b <= 23.
+ */
+#if 1
+#define BN_window_bits_for_exponent_size(b) \
+		((b) > 671 ? 6 : \
+		 (b) > 239 ? 5 : \
+		 (b) >  79 ? 4 : \
+		 (b) >  23 ? 3 : 1)
+#else
+/* Old SSLeay/OpenSSL table.
+ * Maximum window size was 5, so this table differs for b==1024;
+ * but it coincides for other interesting values (b==160, b==512).
+ */
+#define BN_window_bits_for_exponent_size(b) \
+		((b) > 255 ? 5 : \
+		 (b) > 127 ? 4 : \
+		 (b) >  17 ? 3 : 1)
+#endif	 
+
+
+
+/* Pentium pro 16,16,16,32,64 */
+/* Alpha       16,16,16,16.64 */
+#define BN_MULL_SIZE_NORMAL			(16) /* 32 */
+#define BN_MUL_RECURSIVE_SIZE_NORMAL		(16) /* 32 less than */
+#define BN_SQR_RECURSIVE_SIZE_NORMAL		(16) /* 32 */
+#define BN_MUL_LOW_RECURSIVE_SIZE_NORMAL	(32) /* 32 */
+#define BN_MONT_CTX_SET_SIZE_WORD		(64) /* 32 */
+
+#if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM) && !defined(PEDANTIC)
+/*
+ * BN_UMULT_HIGH section.
+ *
+ * No, I'm not trying to overwhelm you when stating that the
+ * product of N-bit numbers is 2*N bits wide:-) No, I don't expect
+ * you to be impressed when I say that if the compiler doesn't
+ * support 2*N integer type, then you have to replace every N*N
+ * multiplication with 4 (N/2)*(N/2) accompanied by some shifts
+ * and additions which unavoidably results in severe performance
+ * penalties. Of course provided that the hardware is capable of
+ * producing 2*N result... That's when you normally start
+ * considering assembler implementation. However! It should be
+ * pointed out that some CPUs (most notably Alpha, PowerPC and
+ * upcoming IA-64 family:-) provide *separate* instruction
+ * calculating the upper half of the product placing the result
+ * into a general purpose register. Now *if* the compiler supports
+ * inline assembler, then it's not impossible to implement the
+ * "bignum" routines (and have the compiler optimize 'em)
+ * exhibiting "native" performance in C. That's what BN_UMULT_HIGH
+ * macro is about:-)
+ *
+ *					<appro@fy.chalmers.se>
+ */
+# if defined(__alpha) && (defined(SIXTY_FOUR_BIT_LONG) || defined(SIXTY_FOUR_BIT))
+#  if defined(__DECC)
+#   include <c_asm.h>
+#   define BN_UMULT_HIGH(a,b)	(BN_ULONG)asm("umulh %a0,%a1,%v0",(a),(b))
+#  elif defined(__GNUC__)
+#   define BN_UMULT_HIGH(a,b)	({	\
+	register BN_ULONG ret;		\
+	asm ("umulh	%1,%2,%0"	\
+	     : "=r"(ret)		\
+	     : "r"(a), "r"(b));		\
+	ret;			})
+#  endif	/* compiler */
+# elif defined(_ARCH_PPC) && defined(__64BIT__) && defined(SIXTY_FOUR_BIT_LONG)
+#  if defined(__GNUC__)
+#   define BN_UMULT_HIGH(a,b)	({	\
+	register BN_ULONG ret;		\
+	asm ("mulhdu	%0,%1,%2"	\
+	     : "=r"(ret)		\
+	     : "r"(a), "r"(b));		\
+	ret;			})
+#  endif	/* compiler */
+# endif		/* cpu */
+#endif		/* OPENSSL_NO_ASM */
 
 /*************************************************************
  * Using the long long type
@@ -71,14 +239,44 @@ extern "C" {
 #define Lw(t)    (((BN_ULONG)(t))&BN_MASK2)
 #define Hw(t)    (((BN_ULONG)((t)>>BN_BITS2))&BN_MASK2)
 
-#define bn_fix_top(a) \
-        { \
-        BN_ULONG *fix_top_l; \
-        for (fix_top_l= &((a)->d[(a)->top-1]); (a)->top > 0; (a)->top--) \
-		if (*(fix_top_l--)) break; \
+/* This is used for internal error checking and is not normally used */
+#ifdef BN_DEBUG
+# include <assert.h>
+# define bn_check_top(a) assert ((a)->top >= 0 && (a)->top <= (a)->dmax);
+#else
+# define bn_check_top(a)
+#endif
+
+/* This macro is to add extra stuff for development checking */
+#ifdef BN_DEBUG
+#define	bn_set_max(r) ((r)->max=(r)->top,BN_set_flags((r),BN_FLG_STATIC_DATA))
+#else
+#define	bn_set_max(r)
+#endif
+
+/* These macros are used to 'take' a section of a bignum for read only use */
+#define bn_set_low(r,a,n) \
+	{ \
+	(r)->top=((a)->top > (n))?(n):(a)->top; \
+	(r)->d=(a)->d; \
+	(r)->neg=(a)->neg; \
+	(r)->flags|=BN_FLG_STATIC_DATA; \
+	bn_set_max(r); \
 	}
 
-/* #define bn_expand(n,b) ((((b)/BN_BITS2) <= (n)->max)?(n):bn_expand2((n),(b))) */
+#define bn_set_high(r,a,n) \
+	{ \
+	if ((a)->top > (n)) \
+		{ \
+		(r)->top=(a)->top-n; \
+		(r)->d= &((a)->d[n]); \
+		} \
+	else \
+		(r)->top=0; \
+	(r)->neg=(a)->neg; \
+	(r)->flags|=BN_FLG_STATIC_DATA; \
+	bn_set_max(r); \
+	}
 
 #ifdef BN_LLONG
 #define mul_add(r,a,w,c) { \
@@ -93,6 +291,43 @@ extern "C" {
 	t=(BN_ULLONG)w * (a) + (c); \
 	(r)= Lw(t); \
 	(c)= Hw(t); \
+	}
+
+#define sqr(r0,r1,a) { \
+	BN_ULLONG t; \
+	t=(BN_ULLONG)(a)*(a); \
+	(r0)=Lw(t); \
+	(r1)=Hw(t); \
+	}
+
+#elif defined(BN_UMULT_HIGH)
+#define mul_add(r,a,w,c) {		\
+	BN_ULONG high,low,ret,tmp=(a);	\
+	ret =  (r);			\
+	high=  BN_UMULT_HIGH(w,tmp);	\
+	ret += (c);			\
+	low =  (w) * tmp;		\
+	(c) =  (ret<(c))?1:0;		\
+	(c) += high;			\
+	ret += low;			\
+	(c) += (ret<low)?1:0;		\
+	(r) =  ret;			\
+	}
+
+#define mul(r,a,w,c)	{		\
+	BN_ULONG high,low,ret,ta=(a);	\
+	low =  (w) * ta;		\
+	high=  BN_UMULT_HIGH(w,ta);	\
+	ret =  low + (c);		\
+	(c) =  high;			\
+	(c) += (ret<low)?1:0;		\
+	(r) =  ret;			\
+	}
+
+#define sqr(r0,r1,a)	{		\
+	BN_ULONG tmp=(a);		\
+	(r0) = tmp * tmp;		\
+	(r1) = BN_UMULT_HIGH(tmp,tmp);	\
 	}
 
 #else
@@ -172,25 +407,31 @@ extern "C" {
 	(c)=h&BN_MASK2; \
 	(r)=l&BN_MASK2; \
 	}
+#endif /* !BN_LLONG */
 
-#endif
-
-#ifndef NOPROTO
-
-BIGNUM *bn_expand2(BIGNUM *b, int bits);
-
-#ifdef X86_ASM
-void bn_add_words(BN_ULONG *r,BN_ULONG *a,int num);
-#endif
-
-#else
-
-BIGNUM *bn_expand2();
-#ifdef X86_ASM
-BN_ULONG bn_add_words();
-#endif
-
-#endif
+void bn_mul_normal(BN_ULONG *r,BN_ULONG *a,int na,BN_ULONG *b,int nb);
+void bn_mul_comba8(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b);
+void bn_mul_comba4(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b);
+void bn_sqr_normal(BN_ULONG *r, const BN_ULONG *a, int n, BN_ULONG *tmp);
+void bn_sqr_comba8(BN_ULONG *r,const BN_ULONG *a);
+void bn_sqr_comba4(BN_ULONG *r,const BN_ULONG *a);
+int bn_cmp_words(const BN_ULONG *a,const BN_ULONG *b,int n);
+int bn_cmp_part_words(const BN_ULONG *a, const BN_ULONG *b,
+	int cl, int dl);
+void bn_mul_recursive(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b,int n2,
+	int dna,int dnb,BN_ULONG *t);
+void bn_mul_part_recursive(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b,
+	int n,int tna,int tnb,BN_ULONG *t);
+void bn_sqr_recursive(BN_ULONG *r,const BN_ULONG *a, int n2, BN_ULONG *t);
+void bn_mul_low_normal(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b, int n);
+void bn_mul_low_recursive(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b,int n2,
+	BN_ULONG *t);
+void bn_mul_high(BN_ULONG *r,BN_ULONG *a,BN_ULONG *b,BN_ULONG *l,int n2,
+	BN_ULONG *t);
+BN_ULONG bn_add_part_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+	int cl, int dl);
+BN_ULONG bn_sub_part_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+	int cl, int dl);
 
 #ifdef  __cplusplus
 }

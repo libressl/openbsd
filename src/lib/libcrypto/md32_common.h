@@ -94,6 +94,8 @@
  *	in original (data) byte order, implemented externally (it
  *	actually is optional if data and host are of the same
  *	"endianess").
+ * HASH_MAKE_STRING
+ *	macro convering context variables to an ASCII hash string.
  *
  * Optional macros:
  *
@@ -177,9 +179,18 @@
  */
 #undef ROTATE
 #ifndef PEDANTIC
-# if defined(_MSC_VER)
-#  define ROTATE(a,n)     _lrotl(a,n)
-# elif defined(__GNUC__) && __GNUC__>=2 && !defined(NO_ASM)
+# if 0 /* defined(_MSC_VER) */
+#  define ROTATE(a,n)	_lrotl(a,n)
+# elif defined(__MWERKS__)
+#  if defined(__POWERPC__)
+#   define ROTATE(a,n)	__rlwinm(a,n,0,31)
+#  elif defined(__MC68K__)
+    /* Motorola specific tweak. <appro@fy.chalmers.se> */
+#   define ROTATE(a,n)	( n<24 ? __rol(a,n) : __ror(a,32-n) )
+#  else
+#   define ROTATE(a,n)	__rol(a,n)
+#  endif
+# elif defined(__GNUC__) && __GNUC__>=2 && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
   /*
    * Some GNU C inline assembler templates. Note that these are
    * rotates by *constant* number of bits! But that's exactly
@@ -187,18 +198,18 @@
    *
    * 					<appro@fy.chalmers.se>
    */
-#  if defined(__i386)
+#  if defined(__i386) || defined(__i386__)
 #   define ROTATE(a,n)	({ register unsigned int ret;	\
-				asm volatile (		\
+				asm (			\
 				"roll %1,%0"		\
 				: "=r"(ret)		\
 				: "I"(n), "0"(a)	\
 				: "cc");		\
 			   ret;				\
 			})
-#  elif defined(__powerpc)
+#  elif defined(__powerpc) || defined(__ppc)
 #   define ROTATE(a,n)	({ register unsigned int ret;	\
-				asm volatile (		\
+				asm (			\
 				"rlwinm %0,%1,%2,0,31"	\
 				: "=r"(ret)		\
 				: "r"(a), "I"(n));	\
@@ -211,27 +222,27 @@
  * Engage compiler specific "fetch in reverse byte order"
  * intrinsic function if available.
  */
-# if defined(__GNUC__) && __GNUC__>=2 && !defined(NO_ASM)
+# if defined(__GNUC__) && __GNUC__>=2 && !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_NO_INLINE_ASM)
   /* some GNU C inline assembler templates by <appro@fy.chalmers.se> */
-#  if defined(__i386) && !defined(I386_ONLY)
+#  if (defined(__i386) || defined(__i386__)) && !defined(I386_ONLY)
 #   define BE_FETCH32(a)	({ register unsigned int l=(a);\
-				asm volatile (		\
+				asm (			\
 				"bswapl %0"		\
 				: "=r"(l) : "0"(l));	\
 			  l;				\
 			})
 #  elif defined(__powerpc)
 #   define LE_FETCH32(a)	({ register unsigned int l;	\
-				asm volatile (		\
+				asm (			\
 				"lwbrx %0,0,%1"		\
 				: "=r"(l)		\
 				: "r"(a));		\
 			   l;				\
 			})
 
-#  elif defined(__sparc) && defined(ULTRASPARC)
+#  elif defined(__sparc) && defined(OPENSSL_SYS_ULTRASPARC)
 #  define LE_FETCH32(a)	({ register unsigned int l;		\
-				asm volatile (			\
+				asm (				\
 				"lda [%1]#ASI_PRIMARY_LITTLE,%0"\
 				: "=r"(l)			\
 				: "r"(a));			\
@@ -399,13 +410,14 @@
  * Time for some action:-)
  */
 
-void HASH_UPDATE (HASH_CTX *c, const unsigned char *data, unsigned long len)
+int HASH_UPDATE (HASH_CTX *c, const void *data_, unsigned long len)
 	{
+	const unsigned char *data=data_;
 	register HASH_LONG * p;
 	register unsigned long l;
 	int sw,sc,ew,ec;
 
-	if (len==0) return;
+	if (len==0) return 1;
 
 	l=(c->Nl+(len<<3))&0xffffffffL;
 	/* 95-05-24 eay Fixed a bug with the overflow handling, thanks to
@@ -454,7 +466,7 @@ void HASH_UPDATE (HASH_CTX *c, const unsigned char *data, unsigned long len)
 					HOST_c2l_p(data,l,ec); p[sw]=l;
 					}
 				}
-			return;
+			return 1;
 			}
 		}
 
@@ -508,6 +520,7 @@ void HASH_UPDATE (HASH_CTX *c, const unsigned char *data, unsigned long len)
 		HOST_c2l_p(data,l,ec);
 		*p=l;
 		}
+	return 1;
 	}
 
 
@@ -531,7 +544,7 @@ void HASH_TRANSFORM (HASH_CTX *c, const unsigned char *data)
 	}
 
 
-void HASH_FINAL (unsigned char *md, HASH_CTX *c)
+int HASH_FINAL (unsigned char *md, HASH_CTX *c)
 	{
 	register HASH_LONG *p;
 	register unsigned long l;
@@ -581,14 +594,16 @@ void HASH_FINAL (unsigned char *md, HASH_CTX *c)
 #endif
 	HASH_BLOCK_HOST_ORDER (c,p,1);
 
-	l=c->A; HOST_l2c(l,md);
-	l=c->B; HOST_l2c(l,md);
-	l=c->C; HOST_l2c(l,md);
-	l=c->D; HOST_l2c(l,md);
+#ifndef HASH_MAKE_STRING
+#error "HASH_MAKE_STRING must be defined!"
+#else
+	HASH_MAKE_STRING(c,md);
+#endif
 
 	c->num=0;
 	/* clear stuff, HASH_BLOCK may be leaving some stuff on the stack
 	 * but I'm not worried :-)
 	memset((void *)c,0,sizeof(HASH_CTX));
 	 */
+	return 1;
 	}
