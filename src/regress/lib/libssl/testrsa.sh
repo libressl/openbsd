@@ -1,4 +1,6 @@
 #!/bin/sh
+#	$OpenBSD$
+
 
 #Test RSA certificate generation of openssl
 

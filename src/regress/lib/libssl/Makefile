@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 
 CLEANFILES+= testdsa.key testdsa.pem rsakey.pem rsacert.pem dsa512.pem
 

@@ -1,3 +1,4 @@
+#	$OpenBSD: Makefile,v 1.6 1995/04/24 05:52:15 cgd Exp $
 #	$NetBSD: Makefile,v 1.6 1995/04/24 05:52:15 cgd Exp $
 
 SUBDIR+= _setjmp db regex setjmp sigsetjmp

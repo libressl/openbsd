@@ -1,3 +1,4 @@
+/*	$OpenBSD: mktestcases.c,v 1.1 1995/04/24 05:53:37 cgd Exp $	*/
 /*	$NetBSD: mktestcases.c,v 1.1 1995/04/24 05:53:37 cgd Exp $	*/
 
 /*

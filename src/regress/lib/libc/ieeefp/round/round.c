@@ -1,3 +1,4 @@
+/*	$OpenBSD: round.c,v 1.1 1995/04/26 00:27:28 jtc Exp $	*/
 /*	$NetBSD: round.c,v 1.1 1995/04/26 00:27:28 jtc Exp $	*/
 
 /*
