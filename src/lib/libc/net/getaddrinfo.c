@@ -1,4 +1,4 @@
-/*	$OpenBSD: getaddrinfo.c,v 1.40 2002/07/24 01:38:34 itojun Exp $	*/
+/*	$OpenBSD: getaddrinfo.c,v 1.41 2002/07/25 21:13:45 deraadt Exp $	*/
 /*	$KAME: getaddrinfo.c,v 1.31 2000/08/31 17:36:43 itojun Exp $	*/
 
 /*
@@ -1172,6 +1172,14 @@ getanswer(answer, anslen, qname, qtype, pai)
 			if (type == T_AAAA && n != IN6ADDRSZ) {
 				cp += n;
 				continue;
+			}
+			if (type == T_AAAA) {
+				struct in6_addr in6;
+				memcpy(&in6, cp, IN6ADDRSZ);
+				if (IN6_IS_ADDR_V4MAPPED(&in6)) {
+					cp += n;
+					continue;
+				}
 			}
 			if (!haveanswer) {
 				int nn;
