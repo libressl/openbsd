@@ -1,4 +1,4 @@
-/*	$OpenBSD: rcmdsh.c,v 1.4 1997/07/23 16:59:37 millert Exp $	*/ 
+/*	$OpenBSD: rcmdsh.c,v 1.5 1998/04/25 16:23:58 millert Exp $	*/ 
 
 /*
  * This is an rcmd() replacement originally by 
@@ -6,7 +6,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmdsh.c,v 1.4 1997/07/23 16:59:37 millert Exp $";
+static char *rcsid = "$OpenBSD: rcmdsh.c,v 1.5 1998/04/25 16:23:58 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include      <sys/types.h>
@@ -35,7 +35,8 @@ rcmdsh(ahost, rport, locuser, remuser, cmd, rshprog)
 	char *rshprog;
 {
 	struct hostent *hp;
-	int cpid, sp[2];
+	int sp[2];
+	pid_t cpid;
 	char *p;
 	struct passwd *pw;
 
