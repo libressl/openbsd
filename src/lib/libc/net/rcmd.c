@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmd.c,v 1.28 1998/02/11 05:28:52 deraadt Exp $";
+static char *rcsid = "$OpenBSD: rcmd.c,v 1.29 1998/02/12 00:48:09 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -448,7 +448,7 @@ __ivaliduser(hostf, raddrl, luser, ruser)
 		auser = *user ? user : luser;
 		ahost = buf;
 
-		if (strlen(ahost) > MAXHOSTNAMELEN)
+		if (strlen(ahost) >= MAXHOSTNAMELEN)
 			continue;
 
 		/*
