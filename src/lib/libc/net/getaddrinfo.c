@@ -1,4 +1,4 @@
-/*	$OpenBSD: getaddrinfo.c,v 1.14 2000/02/21 04:14:09 itojun Exp $	*/
+/*	$OpenBSD: getaddrinfo.c,v 1.15 2000/02/25 04:41:41 itojun Exp $	*/
 
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
@@ -1407,7 +1407,8 @@ nextline:
 			if (pai->ai_flags & AI_CANONNAME)
 				(void)get_canonname(pai, res, canonname);
 		}
-	}
+	} else
+		res0 = NULL;
 	if (res0) {
 		cur->ai_next = res0;
 		while (cur && cur->ai_next)
