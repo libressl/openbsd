@@ -1,5 +1,7 @@
-/*	$OpenBSD: except.c,v 1.7 2004/07/22 19:29:42 kettenis Exp $	*/
+/*	$OpenBSD: except.c,v 1.8 2004/10/10 03:06:42 mickey Exp $	*/
 
+#include <sys/types.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
