@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.45 2002/02/19 22:42:04 ericj Exp $ */
+/* $OpenBSD: netcat.c,v 1.46 2002/02/28 18:05:36 markus Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -512,7 +512,7 @@ local_listen(char *host, char *port, struct addrinfo hints)
 		s = -1;
 	} while ((res0 = res0->ai_next) != NULL);
 
-	if (!uflag) {
+	if (!uflag && s != -1) {
 		if (listen(s, 1) < 0)
 			errx(1, "%s", strerror(errno));
 	}
