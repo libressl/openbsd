@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rcmd.c,v 1.36 2000/02/25 04:39:08 itojun Exp $";
+static char *rcsid = "$OpenBSD: rcmd.c,v 1.37 2001/02/10 21:55:07 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -125,8 +125,7 @@ rcmd_af(ahost, rport, locuser, remuser, cmd, fd2p, af)
 		return (-1);
 	}
 	if (res->ai_canonname) {
-		strncpy(hbuf, res->ai_canonname, sizeof(hbuf) - 1);
-		hbuf[sizeof(hbuf) - 1] = '\0';
+		strlcpy(hbuf, res->ai_canonname, sizeof(hbuf));
 		*ahost = hbuf;
 	} else
 		; /*XXX*/
