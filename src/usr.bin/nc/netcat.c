@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.52 2002/07/04 04:42:25 vincent Exp $ */
+/* $OpenBSD: netcat.c,v 1.53 2002/11/13 22:26:15 markus Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -546,7 +546,7 @@ readwrite(int nfd)
 	pfd[1].fd = wfd;
 	pfd[1].events = POLLIN;
 
-	while (pfd[0].fd != -1 || pfd[1].fd != -1) {
+	while (pfd[0].fd != -1) {
 		if (iflag)
 			sleep(iflag);
 
