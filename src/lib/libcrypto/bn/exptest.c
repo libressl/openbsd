@@ -59,30 +59,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bio.h"
-#include "bn.h"
-#include "rand.h"
-#include "err.h"
-#ifdef WINDOWS
+#include <openssl/bio.h>
+#include <openssl/bn.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
+#ifdef OPENSSL_SYS_WINDOWS
 #include "../bio/bss_file.c"
 #endif
 
 #define NUM_BITS	(BN_BITS*2)
 
-int main(argc,argv)
-int argc;
-char *argv[];
+static const char rnd_seed[] = "string to make the random number generator think it has entropy";
+
+int main(int argc, char *argv[])
 	{
 	BN_CTX *ctx;
 	BIO *out=NULL;
 	int i,ret;
 	unsigned char c;
-	BIGNUM *r_mont,*r_recp,*a,*b,*m;
+	BIGNUM *r_mont,*r_recp,*r_simple,*a,*b,*m;
+
+	RAND_seed(rnd_seed, sizeof rnd_seed); /* or BN_rand may fail, and we don't
+	                                       * even check its return value
+	                                       * (which we should) */
+
+	ERR_load_BN_strings();
 
 	ctx=BN_CTX_new();
 	if (ctx == NULL) exit(1);
 	r_mont=BN_new();
 	r_recp=BN_new();
+	r_simple=BN_new();
 	a=BN_new();
 	b=BN_new();
 	m=BN_new();
@@ -114,29 +121,61 @@ char *argv[];
 
 		ret=BN_mod_exp_mont(r_mont,a,b,m,ctx,NULL);
 		if (ret <= 0)
-			{ printf("BN_mod_exp_mont() problems\n"); exit(1); }
+			{
+			printf("BN_mod_exp_mont() problems\n");
+			ERR_print_errors(out);
+			exit(1);
+			}
 
 		ret=BN_mod_exp_recp(r_recp,a,b,m,ctx);
 		if (ret <= 0)
-			{ printf("BN_mod_exp_recp() problems\n"); exit(1); }
-		
-		if (BN_cmp(r_mont,r_recp) != 0)
 			{
-			printf("\nmont and recp results differ\n");
+			printf("BN_mod_exp_recp() problems\n");
+			ERR_print_errors(out);
+			exit(1);
+			}
+
+		ret=BN_mod_exp_simple(r_simple,a,b,m,ctx);
+		if (ret <= 0)
+			{
+			printf("BN_mod_exp_simple() problems\n");
+			ERR_print_errors(out);
+			exit(1);
+			}
+
+		if (BN_cmp(r_simple, r_mont) == 0
+		    && BN_cmp(r_simple,r_recp) == 0)
+			{
+			printf(".");
+			fflush(stdout);
+			}
+		else
+		  	{
+			if (BN_cmp(r_simple,r_mont) != 0)
+				printf("\nsimple and mont results differ\n");
+			if (BN_cmp(r_simple,r_recp) != 0)
+				printf("\nsimple and recp results differ\n");
+
 			printf("a (%3d) = ",BN_num_bits(a));   BN_print(out,a);
 			printf("\nb (%3d) = ",BN_num_bits(b)); BN_print(out,b);
 			printf("\nm (%3d) = ",BN_num_bits(m)); BN_print(out,m);
+			printf("\nsimple   =");	BN_print(out,r_simple);
 			printf("\nrecp     =");	BN_print(out,r_recp);
 			printf("\nmont     ="); BN_print(out,r_mont);
 			printf("\n");
 			exit(1);
 			}
-		else
-			{
-			printf(".");
-			fflush(stdout);
-			}
 		}
+	BN_free(r_mont);
+	BN_free(r_recp);
+	BN_free(r_simple);
+	BN_free(a);
+	BN_free(b);
+	BN_free(m);
+	BN_CTX_free(ctx);
+	ERR_remove_state(0);
+	CRYPTO_mem_leaks(out);
+	BIO_free(out);
 	printf(" done\n");
 	exit(0);
 err:

@@ -62,33 +62,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "e_os.h"
+
+#include <openssl/crypto.h>
+#include <openssl/buffer.h> 
+#include <openssl/bio.h> 
+#include <openssl/err.h>
+#include <openssl/opensslconf.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
-/* #ifdef FLAT_INC */
-
-#include "e_os.h"
-#include "crypto.h"
-#include "buffer.h" 
-#include "bio.h" 
-#include "err.h"
-
-/*
+#ifndef OPENSSL_SYS_VMS
+#define X509_CERT_AREA		OPENSSLDIR
+#define X509_CERT_DIR		OPENSSLDIR "/certs"
+#define X509_CERT_FILE		OPENSSLDIR "/cert.pem"
+#define X509_PRIVATE_DIR	OPENSSLDIR "/private"
 #else
-
-#include "../e_os.h"
-#include "crypto.h"
-#include "buffer/buffer.h"
-#include "bio/bio.h"
-#include "err/err.h"
+#define X509_CERT_AREA		"SSLROOT:[000000]"
+#define X509_CERT_DIR		"SSLCERTS:"
+#define X509_CERT_FILE		"SSLCERTS:cert.pem"
+#define X509_PRIVATE_DIR        "SSLPRIVATE:"
 #endif
-*/
-
-#define X509_CERT_AREA		"/etc/ssl"
-#define X509_CERT_DIR		"/etc/ssl/certs"
-#define X509_CERT_FILE		"/etc/ssl/cert.pem"
-#define X509_PRIVATE_DIR	"/etc/ssl/private"
 
 #define X509_CERT_DIR_EVP        "SSL_CERT_DIR"
 #define X509_CERT_FILE_EVP       "SSL_CERT_FILE"

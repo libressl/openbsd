@@ -1,11 +1,11 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 #
 # CA - wrapper around ca to make it easier to use ... basically ca requires
 #      some setup stuff to be done before you can use it and this makes
 #      things easier between now and when Eric is convinced to fix it :-)
 #
 # CA -newca ... will setup the right stuff
-# CA -newreq ... will generate a certificate request 
+# CA -newreq[-nodes] ... will generate a certificate request 
 # CA -sign ... will sign the generated request and output 
 #
 # At the end of that grab newreq.pem and newcert.pem (one has the key 
@@ -36,11 +36,13 @@
 # default openssl.cnf file has setup as per the following
 # demoCA ... where everything is stored
 
+$SSLEAY_CONFIG=$ENV{"SSLEAY_CONFIG"};
 $DAYS="-days 365";
 $REQ="openssl req $SSLEAY_CONFIG";
 $CA="openssl ca $SSLEAY_CONFIG";
 $VERIFY="openssl verify";
 $X509="openssl x509";
+$PKCS12="openssl pkcs12";
 
 $CATOP="./demoCA";
 $CAKEY="cakey.pem";
@@ -52,7 +54,7 @@ $RET = 0;
 
 foreach (@ARGV) {
 	if ( /^(-\?|-h|-help)$/ ) {
-	    print STDERR "usage: CA -newcert|-newreq|-newca|-sign|-verify\n";
+	    print STDERR "usage: CA -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify\n";
 	    exit 0;
 	} elsif (/^-newcert$/) {
 	    # create a certificate
@@ -64,8 +66,13 @@ foreach (@ARGV) {
 	    system ("$REQ -new -keyout newreq.pem -out newreq.pem $DAYS");
 	    $RET=$?;
 	    print "Request (and private key) is in newreq.pem\n";
+	} elsif (/^-newreq-nodes$/) {
+	    # create a certificate request
+	    system ("$REQ -new -nodes -keyout newreq.pem -out newreq.pem $DAYS");
+	    $RET=$?;
+	    print "Request (and private key) is in newreq.pem\n";
 	} elsif (/^-newca$/) {
-		# if explictly asked for or it doesn't exist then setup the
+		# if explicitly asked for or it doesn't exist then setup the
 		# directory structure that Eric likes to manage things 
 	    $NEW="1";
 	    if ( "$NEW" || ! -f "${CATOP}/serial" ) {
@@ -99,6 +106,14 @@ foreach (@ARGV) {
 		    $RET=$?;
 		}
 	    }
+	} elsif (/^-pkcs12$/) {
+	    my $cname = $ARGV[1];
+	    $cname = "My Certificate" unless defined $cname;
+	    system ("$PKCS12 -in newcert.pem -inkey newreq.pem " .
+			"-certfile ${CATOP}/$CACERT -out newcert.p12 " .
+			"-export -name \"$cname\"");
+	    $RET=$?;
+	    exit $RET;
 	} elsif (/^-xsign$/) {
 	    system ("$CA -policy policy_anything -infiles newreq.pem");
 	    $RET=$?;
@@ -107,6 +122,11 @@ foreach (@ARGV) {
 							"-infiles newreq.pem");
 	    $RET=$?;
 	    print "Signed certificate is in newcert.pem\n";
+	} elsif (/^(-signCA)$/) {
+	    system ("$CA -policy policy_anything -out newcert.pem " .
+					"-extensions v3_ca -infiles newreq.pem");
+	    $RET=$?;
+	    print "Signed CA certificate is in newcert.pem\n";
 	} elsif (/^-signcert$/) {
 	    system ("$X509 -x509toreq -in newreq.pem -signkey newreq.pem " .
 								"-out tmp.pem");
@@ -128,7 +148,7 @@ foreach (@ARGV) {
 	    }
 	} else {
 	    print STDERR "Unknown arg $_\n";
-	    print STDERR "usage: CA -newcert|-newreq|-newca|-sign|-verify\n";
+	    print STDERR "usage: CA -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify\n";
 	    exit 1;
 	}
 }

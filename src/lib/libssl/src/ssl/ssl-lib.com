@@ -49,6 +49,7 @@ $!  P5, if defined, sets a TCP/IP library to use, through one of the following
 $!  keywords:
 $!
 $!	UCX		for UCX
+$!	TCPIP		for TCPIP (post UCX)
 $!	SOCKETSHR	for SOCKETSHR+NETLIB
 $!
 $!  P6, if defined, sets a compiler thread NOT needed on OpenVMS 7.1 (and up)
@@ -192,7 +193,7 @@ $ LIB_SSL = "s2_meth,s2_srvr,s2_clnt,s2_lib,s2_enc,s2_pkt,"+ -
 	    "ssl_lib,ssl_err2,ssl_cert,ssl_sess,"+ -
 	    "ssl_ciph,ssl_stat,ssl_rsa,"+ -
 	    "ssl_asn1,ssl_txt,ssl_algs,"+ -
-	    "bio_ssl,ssl_err"
+	    "bio_ssl,ssl_err,kssl"
 $!
 $! Tell The User That We Are Compiling The Library.
 $!
@@ -313,6 +314,7 @@ $ WRITE SYS$OUTPUT "Creating SSL_TASK OSU HTTP SSL Engine."
 $!
 $! Compile The File.
 $!
+$ ON ERROR GOTO SSL_TASK_END
 $ CC5/OBJECT='OBJ_DIR'SSL_TASK.OBJ SYS$DISK:[]SSL_TASK.C
 $!
 $! Link The Program, Check To See If We Need To Link With RSAREF Or Not.
@@ -387,6 +389,7 @@ $ ENDIF
 $!
 $! Time To Return.
 $!
+$SSL_TASK_END:
 $ RETURN
 $!
 $! Check For The Link Option FIle.
@@ -647,6 +650,7 @@ $ ENDIF
 $!
 $! Check To See If P2 Is Blank.
 $!
+$ p2 = "NORSAREF"
 $ IF (P2.EQS."NORSAREF")
 $ THEN
 $!
@@ -896,13 +900,13 @@ $ ENDIF
 $!
 $! Set Up Initial CC Definitions, Possibly With User Ones
 $!
-$ CCDEFS = "VMS=1,TCPIP_TYPE_''P5'"
+$ CCDEFS = "TCPIP_TYPE_''P5'"
 $ IF F$TYPE(USER_CCDEFS) .NES. "" THEN CCDEFS = CCDEFS + "," + USER_CCDEFS
 $ CCEXTRAFLAGS = ""
 $ IF F$TYPE(USER_CCFLAGS) .NES. "" THEN CCEXTRAFLAGS = USER_CCFLAGS
-$ CCDISABLEWARNINGS = ""
+$ CCDISABLEWARNINGS = "LONGLONGTYPE,LONGLONGSUFX"
 $ IF F$TYPE(USER_CCDISABLEWARNINGS) .NES. "" THEN -
-	CCDISABLEWARNINGS = USER_CCDISABLEWARNINGS
+	CCDISABLEWARNINGS = CCDISABLEWARNINGS + "," + USER_CCDISABLEWARNINGS
 $!
 $!  Check To See If The User Entered A Valid Paramter.
 $!
@@ -929,7 +933,7 @@ $     IF ARCH.EQS."VAX" .AND. F$TRNLNM("DECC$CC_DEFAULT").NES."/DECC" -
 	 THEN CC = "CC/DECC"
 $     CC = CC + "/''CC_OPTIMIZE'/''DEBUGGER'/STANDARD=ANSI89" + -
            "/NOLIST/PREFIX=ALL" + -
-	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[.SOURCE])" + CCEXTRAFLAGS
+	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[-])" + CCEXTRAFLAGS
 $!
 $!    Define The Linker Options File Name.
 $!
@@ -962,7 +966,7 @@ $	EXIT
 $     ENDIF
 $     IF F$TRNLNM("DECC$CC_DEFAULT").EQS."/DECC" THEN CC = "CC/VAXC"
 $     CC = CC + "/''CC_OPTIMIZE'/''DEBUGGER'/NOLIST" + -
-	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[.SOURCE])" + CCEXTRAFLAGS
+	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[-])" + CCEXTRAFLAGS
 $     CCDEFS = CCDEFS + ",""VAXC"""
 $!
 $!    Define <sys> As SYS$COMMON:[SYSLIB]
@@ -994,7 +998,7 @@ $!    Use GNU C...
 $!
 $     IF F$TYPE(GCC) .EQS. "" THEN GCC := GCC
 $     CC = GCC+"/NOCASE_HACK/''GCC_OPTIMIZE'/''DEBUGGER'/NOLIST" + -
-	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[.SOURCE])" + CCEXTRAFLAGS
+	   "/INCLUDE=(SYS$DISK:[-.CRYPTO],SYS$DISK:[-])" + CCEXTRAFLAGS
 $!
 $!    Define The Linker Options File Name.
 $!
@@ -1086,7 +1090,8 @@ $ ENDIF
 $!
 $! Time to check the contents, and to make sure we get the correct library.
 $!
-$ IF P5.EQS."SOCKETSHR" .OR. P5.EQS."MULTINET" .OR. P5.EQS."UCX"
+$ IF P5.EQS."SOCKETSHR" .OR. P5.EQS."MULTINET" .OR. P5.EQS."UCX" -
+     .OR. P5.EQS."TCPIP" .OR. P5.EQS."NONE"
 $ THEN
 $!
 $!  Check to see if SOCKETSHR was chosen
@@ -1096,7 +1101,7 @@ $   THEN
 $!
 $!    Set the library to use SOCKETSHR
 $!
-$     TCPIP_LIB = "[-.VMS]SOCKETSHR_SHR.OPT/OPT"
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]SOCKETSHR_SHR.OPT/OPT"
 $!
 $!    Done with SOCKETSHR
 $!
@@ -1122,16 +1127,42 @@ $   THEN
 $!
 $!    Set the library to use UCX.
 $!
-$     TCPIP_LIB = "[-.VMS]UCX_SHR_DECC.OPT/OPT"
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_DECC.OPT/OPT"
 $     IF F$TRNLNM("UCX$IPC_SHR") .NES. ""
 $     THEN
-$       TCPIP_LIB = "[-.VMS]UCX_SHR_DECC_LOG.OPT/OPT"
+$       TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_DECC_LOG.OPT/OPT"
 $     ELSE
 $       IF COMPILER .NES. "DECC" .AND. ARCH .EQS. "VAX" THEN -
-	  TCPIP_LIB = "[-.VMS]UCX_SHR_VAXC.OPT/OPT"
+	  TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_VAXC.OPT/OPT"
 $     ENDIF
 $!
 $!    Done with UCX
+$!
+$   ENDIF
+$!
+$!  Check to see if TCPIP was chosen
+$!
+$   IF P5.EQS."TCPIP"
+$   THEN
+$!
+$!    Set the library to use TCPIP (post UCX).
+$!
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]TCPIP_SHR_DECC.OPT/OPT"
+$!
+$!    Done with TCPIP
+$!
+$   ENDIF
+$!
+$!  Check to see if NONE was chosen
+$!
+$   IF P5.EQS."NONE"
+$   THEN
+$!
+$!    Do not use a TCPIP library.
+$!
+$     TCPIP_LIB = ""
+$!
+$!    Done with NONE
 $!
 $   ENDIF
 $!
@@ -1150,6 +1181,7 @@ $   WRITE SYS$OUTPUT "The Option ",P5," Is Invalid.  The Valid Options Are:"
 $   WRITE SYS$OUTPUT ""
 $   WRITE SYS$OUTPUT "    SOCKETSHR  :  To link with SOCKETSHR TCP/IP library."
 $   WRITE SYS$OUTPUT "    UCX        :  To link with UCX TCP/IP library."
+$   WRITE SYS$OUTPUT "    TCPIP      :  To link with TCPIP (post UCX) TCP/IP library."
 $   WRITE SYS$OUTPUT ""
 $!
 $!  Time To EXIT.
@@ -1173,6 +1205,7 @@ $!
 $! Save directory information
 $!
 $ __HERE = F$PARSE(F$PARSE("A.;",F$ENVIRONMENT("PROCEDURE"))-"A.;","[]A.;") - "A.;"
+$ __HERE = F$EDIT(__HERE,"UPCASE")
 $ __TOP = __HERE - "SSL]"
 $ __INCLUDE = __TOP + "INCLUDE.OPENSSL]"
 $!

@@ -56,7 +56,7 @@
  * [including the GNU Public Licence.]
  */
 /* ====================================================================
- * Copyright (c) 1998-1999 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 1998-2000 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -109,7 +109,9 @@
  *
  */
 
+#define NON_MAIN
 #include "apps.h"
+#undef NON_MAIN
 #include <openssl/bio.h>
 #include <openssl/rand.h>
 
@@ -122,7 +124,7 @@ int app_RAND_load_file(const char *file, BIO *bio_e, int dont_warn)
 	int consider_randfile = (file == NULL);
 	char buffer[200];
 	
-#ifdef WINDOWS
+#ifdef OPENSSL_SYS_WINDOWS
 	BIO_printf(bio_e,"Loading 'screen' into random state -");
 	BIO_flush(bio_e);
 	RAND_screen();
@@ -140,18 +142,21 @@ int app_RAND_load_file(const char *file, BIO *bio_e, int dont_warn)
 		}
 	if (file == NULL || !RAND_load_file(file, -1))
 		{
-		if (RAND_status() == 0 && !dont_warn)
+		if (RAND_status() == 0)
 			{
-			BIO_printf(bio_e,"unable to load 'random state'\n");
-			BIO_printf(bio_e,"This means that the random number generator has not been seeded\n");
-			BIO_printf(bio_e,"with much random data.\n");
-			if (consider_randfile) /* explanation does not apply when a file is explicitly named */
+			if (!dont_warn)
 				{
-				BIO_printf(bio_e,"Consider setting the RANDFILE environment variable to point at a file that\n");
-				BIO_printf(bio_e,"'random' data can be kept in (the file will be overwritten).\n");
+				BIO_printf(bio_e,"unable to load 'random state'\n");
+				BIO_printf(bio_e,"This means that the random number generator has not been seeded\n");
+				BIO_printf(bio_e,"with much random data.\n");
+				if (consider_randfile) /* explanation does not apply when a file is explicitly named */
+					{
+					BIO_printf(bio_e,"Consider setting the RANDFILE environment variable to point at a file that\n");
+					BIO_printf(bio_e,"'random' data can be kept in (the file will be overwritten).\n");
+					}
 				}
+			return 0;
 			}
-		return 0;
 		}
 	seeded = 1;
 	return 1;
@@ -162,7 +167,7 @@ long app_RAND_load_files(char *name)
 	char *p,*n;
 	int last;
 	long tot=0;
-    int egd;
+	int egd;
 	
 	for (;;)
 		{
@@ -174,9 +179,11 @@ long app_RAND_load_files(char *name)
 		name=p+1;
 		if (*n == '\0') break;
 
-        egd=RAND_egd(n);
-		if (egd > 0) tot+=egd;
-		tot+=RAND_load_file(n,1024L*1024L);
+		egd=RAND_egd(n);
+		if (egd > 0)
+			tot+=egd;
+		else
+			tot+=RAND_load_file(n,-1);
 		if (last) break;
 		}
 	if (tot > 512)

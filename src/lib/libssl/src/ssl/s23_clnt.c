@@ -57,28 +57,22 @@
  */
 
 #include <stdio.h>
-#include "buffer.h"
-#include "rand.h"
-#include "objects.h"
-#include "evp.h"
+#include <openssl/buffer.h>
+#include <openssl/rand.h>
+#include <openssl/objects.h>
+#include <openssl/evp.h>
 #include "ssl_locl.h"
 
-#define BREAK break
-
-#ifndef NOPROTO
+static SSL_METHOD *ssl23_get_client_method(int ver);
 static int ssl23_client_hello(SSL *s);
 static int ssl23_get_server_hello(SSL *s);
-#else
-static int ssl23_client_hello();
-static int ssl23_get_server_hello();
-#endif
-
-static SSL_METHOD *ssl23_get_client_method(ver)
-int ver;
+static SSL_METHOD *ssl23_get_client_method(int ver)
 	{
+#ifndef OPENSSL_NO_SSL2
 	if (ver == SSL2_VERSION)
 		return(SSLv2_client_method());
-	else if (ver == SSL3_VERSION)
+#endif
+	if (ver == SSL3_VERSION)
 		return(SSLv3_client_method());
 	else if (ver == TLS1_VERSION)
 		return(TLSv1_client_method());
@@ -86,32 +80,31 @@ int ver;
 		return(NULL);
 	}
 
-SSL_METHOD *SSLv23_client_method()
+SSL_METHOD *SSLv23_client_method(void)
 	{
 	static int init=1;
 	static SSL_METHOD SSLv23_client_data;
 
 	if (init)
 		{
-		init=0;
 		memcpy((char *)&SSLv23_client_data,
 			(char *)sslv23_base_method(),sizeof(SSL_METHOD));
 		SSLv23_client_data.ssl_connect=ssl23_connect;
 		SSLv23_client_data.get_ssl_method=ssl23_get_client_method;
+		init=0;
 		}
 	return(&SSLv23_client_data);
 	}
 
-int ssl23_connect(s)
-SSL *s;
+int ssl23_connect(SSL *s)
 	{
 	BUF_MEM *buf;
 	unsigned long Time=time(NULL);
-	void (*cb)()=NULL;
+	void (*cb)(const SSL *ssl,int type,int val)=NULL;
 	int ret= -1;
 	int new_state,state;
 
-	RAND_seed((unsigned char *)&Time,sizeof(Time));
+	RAND_add(&Time,sizeof(Time),0);
 	ERR_clear_error();
 	clear_sys_error();
 
@@ -120,8 +113,8 @@ SSL *s;
 	else if (s->ctx->info_callback != NULL)
 		cb=s->ctx->info_callback;
 	
-	if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s); 
 	s->in_handshake++;
+	if (!SSL_in_init(s) || SSL_in_before(s)) SSL_clear(s); 
 
 	for (;;)
 		{
@@ -134,6 +127,13 @@ SSL *s;
 		case SSL_ST_BEFORE|SSL_ST_CONNECT:
 		case SSL_ST_OK|SSL_ST_CONNECT:
 
+			if (s->session != NULL)
+				{
+				SSLerr(SSL_F_SSL23_CONNECT,SSL_R_SSL23_DOING_SESSION_ID_REUSE);
+				ret= -1;
+				goto end;
+				}
+			s->server=0;
 			if (cb != NULL) cb(s,SSL_CB_HANDSHAKE_START,1);
 
 			/* s->version=TLS1_VERSION; */
@@ -159,7 +159,7 @@ SSL *s;
 			ssl3_init_finished_mac(s);
 
 			s->state=SSL23_ST_CW_CLNT_HELLO_A;
-			s->ctx->sess_connect++;
+			s->ctx->stats.sess_connect++;
 			s->init_num=0;
 			break;
 
@@ -179,7 +179,7 @@ SSL *s;
 			ret=ssl23_get_server_hello(s);
 			if (ret >= 0) cb=NULL;
 			goto end;
-			break;
+			/* break; */
 
 		default:
 			SSLerr(SSL_F_SSL23_CONNECT,SSL_R_UNKNOWN_STATE);
@@ -188,7 +188,7 @@ SSL *s;
 			/* break; */
 			}
 
-		if (s->debug) BIO_flush(s->wbio);
+		if (s->debug) { (void)BIO_flush(s->wbio); }
 
 		if ((cb != NULL) && (s->state != state))
 			{
@@ -206,12 +206,12 @@ end:
 	}
 
 
-static int ssl23_client_hello(s)
-SSL *s;
+static int ssl23_client_hello(SSL *s)
 	{
 	unsigned char *buf;
 	unsigned char *p,*d;
 	int i,ch_len;
+	int ret;
 
 	buf=(unsigned char *)s->init_buf->data;
 	if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
@@ -225,7 +225,7 @@ SSL *s;
 #endif
 
 		p=s->s3->client_random;
-		RAND_bytes(p,SSL3_RANDOM_SIZE);
+		RAND_pseudo_bytes(p,SSL3_RANDOM_SIZE);
 
 		/* Do the message type and length last */
 		d= &(buf[2]);
@@ -236,16 +236,19 @@ SSL *s;
 			{
 			*(d++)=TLS1_VERSION_MAJOR;
 			*(d++)=TLS1_VERSION_MINOR;
+			s->client_version=TLS1_VERSION;
 			}
 		else if (!(s->options & SSL_OP_NO_SSLv3))
 			{
 			*(d++)=SSL3_VERSION_MAJOR;
 			*(d++)=SSL3_VERSION_MINOR;
+			s->client_version=SSL3_VERSION;
 			}
 		else if (!(s->options & SSL_OP_NO_SSLv2))
 			{
 			*(d++)=SSL2_VERSION_MAJOR;
 			*(d++)=SSL2_VERSION_MINOR;
+			s->client_version=SSL2_VERSION;
 			}
 		else
 			{
@@ -283,7 +286,7 @@ SSL *s;
 			i=ch_len;
 		s2n(i,d);
 		memset(&(s->s3->client_random[0]),0,SSL3_RANDOM_SIZE);
-		RAND_bytes(&(s->s3->client_random[SSL3_RANDOM_SIZE-i]),i);
+		RAND_pseudo_bytes(&(s->s3->client_random[SSL3_RANDOM_SIZE-i]),i);
 		memcpy(p,&(s->s3->client_random[SSL3_RANDOM_SIZE-i]),i);
 		p+=i;
 
@@ -300,15 +303,18 @@ SSL *s;
 		}
 
 	/* SSL3_ST_CW_CLNT_HELLO_B */
-	return(ssl23_write_bytes(s));
+	ret = ssl23_write_bytes(s);
+	if (ret >= 2)
+		if (s->msg_callback)
+			s->msg_callback(1, SSL2_VERSION, 0, s->init_buf->data+2, ret-2, s, s->msg_callback_arg); /* CLIENT-HELLO */
+	return ret;
 	}
 
-static int ssl23_get_server_hello(s)
-SSL *s;
+static int ssl23_get_server_hello(SSL *s)
 	{
 	char buf[8];
 	unsigned char *p;
-	int i,ch_len;
+	int i;
 	int n;
 
 	n=ssl23_read_bytes(s,7);
@@ -321,9 +327,14 @@ SSL *s;
 	if ((p[0] & 0x80) && (p[2] == SSL2_MT_SERVER_HELLO) &&
 		(p[5] == 0x00) && (p[6] == 0x02))
 		{
+#ifdef OPENSSL_NO_SSL2
+		SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,SSL_R_UNSUPPORTED_PROTOCOL);
+		goto err;
+#else
 		/* we are talking sslv2 */
 		/* we need to clean up the SSLv3 setup and put in the
 		 * sslv2 stuff. */
+		int ch_len;
 
 		if (s->options & SSL_OP_NO_SSLv2)
 			{
@@ -360,7 +371,9 @@ SSL *s;
 			}
 
 		s->state=SSL2_ST_GET_SERVER_HELLO_A;
-		s->s2->ssl2_rollback=1;
+		if (!(s->client_version == SSL2_VERSION))
+			/* use special padding (SSL 3.0 draft/RFC 2246, App. E.2) */
+			s->s2->ssl2_rollback=1;
 
 		/* setup the 5 bytes we have read so we get them from
 		 * the sslv2 buffer */
@@ -376,6 +389,7 @@ SSL *s;
 
 		s->method=SSLv2_client_method();
 		s->handshake_func=s->method->ssl_connect;
+#endif
 		}
 	else if ((p[0] == SSL3_RT_HANDSHAKE) &&
 		 (p[1] == SSL3_VERSION_MAJOR) &&
@@ -426,7 +440,7 @@ SSL *s;
 		 (p[3] == 0) &&
 		 (p[4] == 2))
 		{
-		void (*cb)()=NULL;
+		void (*cb)(const SSL *ssl,int type,int val)=NULL;
 		int j;
 
 		/* An alert */
@@ -443,7 +457,7 @@ SSL *s;
 			}
 
 		s->rwstate=SSL_NOTHING;
-		SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,1000+p[6]);
+		SSLerr(SSL_F_SSL23_GET_SERVER_HELLO,SSL_AD_REASON_OFFSET+p[6]);
 		goto err;
 		}
 	else

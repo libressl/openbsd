@@ -64,12 +64,12 @@
 #include <openssl/x509v3.h>
 
 PKCS7 *PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
-							BIO *data, int flags)
+		  BIO *data, int flags)
 {
 	PKCS7 *p7;
 	PKCS7_SIGNER_INFO *si;
 	BIO *p7bio;
-	STACK *smcap;
+	STACK_OF(X509_ALGOR) *smcap;
 	int i;
 
 	if(!X509_check_private_key(signcert, pkey)) {
@@ -109,25 +109,28 @@ PKCS7 *PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
 		PKCS7_add_signed_attribute(si, NID_pkcs9_contentType,
 				V_ASN1_OBJECT, OBJ_nid2obj(NID_pkcs7_data));
 		/* Add SMIMECapabilities */
-		if(!(smcap = sk_new(NULL))) {
+		if(!(flags & PKCS7_NOSMIMECAP))
+		{
+		if(!(smcap = sk_X509_ALGOR_new_null())) {
 			PKCS7err(PKCS7_F_PKCS7_SIGN,ERR_R_MALLOC_FAILURE);
 			return NULL;
 		}
-#ifndef NO_DES
+#ifndef OPENSSL_NO_DES
 		PKCS7_simple_smimecap (smcap, NID_des_ede3_cbc, -1);
 #endif
-#ifndef NO_RC2
+#ifndef OPENSSL_NO_RC2
 		PKCS7_simple_smimecap (smcap, NID_rc2_cbc, 128);
 		PKCS7_simple_smimecap (smcap, NID_rc2_cbc, 64);
 #endif
-#ifndef NO_DES
+#ifndef OPENSSL_NO_DES
 		PKCS7_simple_smimecap (smcap, NID_des_cbc, -1);
 #endif
-#ifndef NO_RC2
+#ifndef OPENSSL_NO_RC2
 		PKCS7_simple_smimecap (smcap, NID_rc2_cbc, 40);
 #endif
 		PKCS7_add_attrib_smimecap (si, smcap);
-		sk_pop_free(smcap, X509_ALGOR_free);
+		sk_X509_ALGOR_pop_free(smcap, X509_ALGOR_free);
+		}
 	}
 
 	if(flags & PKCS7_DETACHED)PKCS7_set_detached(p7, 1);
@@ -150,7 +153,7 @@ int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
 	PKCS7_SIGNER_INFO *si;
 	X509_STORE_CTX cert_ctx;
 	char buf[4096];
-	int i, j=0;
+	int i, j=0, k, ret = 0;
 	BIO *p7bio;
 	BIO *tmpout;
 
@@ -169,12 +172,17 @@ int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
 		PKCS7err(PKCS7_F_PKCS7_VERIFY,PKCS7_R_NO_CONTENT);
 		return 0;
 	}
+#if 0
+	/* NB: this test commented out because some versions of Netscape
+	 * illegally include zero length content when signing data.
+	 */
 
 	/* Check for data and content: two sets of data */
 	if(!PKCS7_get_detached(p7) && indata) {
 				PKCS7err(PKCS7_F_PKCS7_VERIFY,PKCS7_R_CONTENT_AND_DATA_PRESENT);
 		return 0;
 	}
+#endif
 
 	sinfos = PKCS7_get_signer_info(p7);
 
@@ -190,14 +198,23 @@ int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
 
 	/* Now verify the certificates */
 
-	if (!(flags & PKCS7_NOVERIFY)) for (i = 0; i < sk_X509_num(signers); i++) {
-		signer = sk_X509_value (signers, i);
+	if (!(flags & PKCS7_NOVERIFY)) for (k = 0; k < sk_X509_num(signers); k++) {
+		signer = sk_X509_value (signers, k);
 		if (!(flags & PKCS7_NOCHAIN)) {
-			X509_STORE_CTX_init(&cert_ctx, store, signer,
-							p7->d.sign->cert);
+			if(!X509_STORE_CTX_init(&cert_ctx, store, signer,
+							p7->d.sign->cert))
+				{
+				PKCS7err(PKCS7_F_PKCS7_VERIFY,ERR_R_X509_LIB);
+				sk_X509_free(signers);
+				return 0;
+				}
 			X509_STORE_CTX_set_purpose(&cert_ctx,
 						X509_PURPOSE_SMIME_SIGN);
-		} else X509_STORE_CTX_init (&cert_ctx, store, signer, NULL);
+		} else if(!X509_STORE_CTX_init (&cert_ctx, store, signer, NULL)) {
+			PKCS7err(PKCS7_F_PKCS7_VERIFY,ERR_R_X509_LIB);
+			sk_X509_free(signers);
+			return 0;
+		}
 		i = X509_verify_cert(&cert_ctx);
 		if (i <= 0) j = X509_STORE_CTX_get_error(&cert_ctx);
 		X509_STORE_CTX_cleanup(&cert_ctx);
@@ -250,18 +267,15 @@ int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
 		}
 	}
 
-	sk_X509_free(signers);
-	if(indata) BIO_pop(p7bio);
-	BIO_free_all(p7bio);
-
-	return 1;
+	ret = 1;
 
 	err:
 
+	if(indata) BIO_pop(p7bio);
+	BIO_free_all(p7bio);
 	sk_X509_free(signers);
-	BIO_free(p7bio);
 
-	return 0;
+	return ret;
 }
 
 STACK_OF(X509) *PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags)
@@ -282,7 +296,7 @@ STACK_OF(X509) *PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags)
 		PKCS7err(PKCS7_F_PKCS7_GET0_SIGNERS,PKCS7_R_WRONG_CONTENT_TYPE);
 		return NULL;
 	}
-	if(!(signers = sk_X509_new(NULL))) {
+	if(!(signers = sk_X509_new_null())) {
 		PKCS7err(PKCS7_F_PKCS7_GET0_SIGNERS,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -322,7 +336,7 @@ STACK_OF(X509) *PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags)
 
 /* Build a complete PKCS#7 enveloped data */
 
-PKCS7 *PKCS7_encrypt(STACK_OF(X509) *certs, BIO *in, EVP_CIPHER *cipher,
+PKCS7 *PKCS7_encrypt(STACK_OF(X509) *certs, BIO *in, const EVP_CIPHER *cipher,
 								int flags)
 {
 	PKCS7 *p7;
