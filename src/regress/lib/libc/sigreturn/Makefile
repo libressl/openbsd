@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.2 2002/01/01 23:00:51 art Exp $
+# $OpenBSD: Makefile,v 1.3 2002/01/03 19:17:24 marc Exp $
 
 PROG=	sigret
 
@@ -6,7 +6,7 @@ DEBUG+= -ggdb
 
 REGRESSTARGETS+= sigret-normal sigret-indirect sigret-altstack
 
-sigret-normal:
+sigret-normal: ${PROG}
 	./${PROG}
 
 sigret-indirect: ${PROG}
