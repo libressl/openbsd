@@ -26,6 +26,7 @@ CFLAGS+= -DB_ENDIAN
 
 CFLAGS+= -DNO_IDEA -DTERMIOS -DANSI_SOURCE -DNO_ERR -DNO_WINDOWS_BRAINDEATH
 CFLAGS+= -DNO_RC5
+CFLAGS+= -DNO_HW_CSWIFT -DNO_HW_NCIPHER -DNO_HW_ATALLA
 CFLAGS+= -I${.CURDIR}/../${SSLEAYDIST}
 CFLAGS+= -I${LCRYPTO_SRC}
 CFLAGS+= -I${LCRYPTO_INC}
@@ -159,7 +160,7 @@ SRCS+=	p12_decr.c p12_init.c p12_key.c p12_kiss.c p12_lib.c p12_mac.c
 SRCS+=	p12_mutl.c p12_sbag.c p12_utl.c pk12err.c p12_npas.c
 CFLAGS+= -I${LCRYPTO_SRC}/engine
 SRCS+= engine_err.c engine_lib.c engine_list.c engine_openssl.c
-SRCS+= hw_ncipher.c hw_atalla.c hw_cswift.c
+#SRCS+= hw_ncipher.c hw_atalla.c hw_cswift.c
 CFLAGS+= -I${LCRYPTO_SRC}/dso
 SRCS+= dso_dl.c dso_dlfcn.c dso_err.c dso_lib.c dso_null.c
 SRCS+= dso_openssl.c dso_win32.c dso_vms.c
