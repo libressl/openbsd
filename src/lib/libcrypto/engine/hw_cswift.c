@@ -280,8 +280,24 @@ t_swSimpleRequest *p_CSwift_SimpleRequest = NULL;
 t_swReleaseAccContext *p_CSwift_ReleaseAccContext = NULL;
 
 /* Used in the DSO operations. */
-static const char def_CSWIFT_LIBNAME[] = "swift";
-static const char *CSWIFT_LIBNAME = def_CSWIFT_LIBNAME;
+static const char *CSWIFT_LIBNAME = NULL;
+static const char *get_CSWIFT_LIBNAME(void)
+	{
+	if(CSWIFT_LIBNAME)
+		return CSWIFT_LIBNAME;
+	return "swift";
+	}
+static void free_CSWIFT_LIBNAME(void)
+	{
+	if(CSWIFT_LIBNAME)
+		OPENSSL_free((void*)CSWIFT_LIBNAME);
+	CSWIFT_LIBNAME = NULL;
+	}
+static long set_CSWIFT_LIBNAME(const char *name)
+	{
+	free_CSWIFT_LIBNAME();
+	return (((CSWIFT_LIBNAME = BUF_strdup(name)) != NULL) ? 1 : 0);
+	}
 static const char *CSWIFT_F1 = "swAcquireAccContext";
 static const char *CSWIFT_F2 = "swAttachKeyParam";
 static const char *CSWIFT_F3 = "swSimpleRequest";
@@ -313,6 +329,7 @@ static void release_context(SW_CONTEXT_HANDLE hac)
 /* Destructor (complements the "ENGINE_cswift()" constructor) */
 static int cswift_destroy(ENGINE *e)
 	{
+	free_CSWIFT_LIBNAME();
 	ERR_unload_CSWIFT_strings();
 	return 1;
 	}
@@ -332,7 +349,7 @@ static int cswift_init(ENGINE *e)
 		goto err;
 		}
 	/* Attempt to load libswift.so/swift.dll/whatever. */
-	cswift_dso = DSO_load(NULL, CSWIFT_LIBNAME, NULL, 0);
+	cswift_dso = DSO_load(NULL, get_CSWIFT_LIBNAME(), NULL, 0);
 	if(cswift_dso == NULL)
 		{
 		CSWIFTerr(CSWIFT_F_CSWIFT_INIT,CSWIFT_R_NOT_LOADED);
@@ -377,6 +394,7 @@ err:
 
 static int cswift_finish(ENGINE *e)
 	{
+	free_CSWIFT_LIBNAME();
 	if(cswift_dso == NULL)
 		{
 		CSWIFTerr(CSWIFT_F_CSWIFT_FINISH,CSWIFT_R_NOT_LOADED);
@@ -411,8 +429,7 @@ static int cswift_ctrl(ENGINE *e, int cmd, long i, void *p, void (*f)())
 			CSWIFTerr(CSWIFT_F_CSWIFT_CTRL,CSWIFT_R_ALREADY_LOADED);
 			return 0;
 			}
-		CSWIFT_LIBNAME = (const char *)p;
-		return 1;
+		return set_CSWIFT_LIBNAME((const char *)p);
 	default:
 		break;
 		}
@@ -484,7 +501,7 @@ static int cswift_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		goto err;
 	default:
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_MOD_EXP,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -501,7 +518,7 @@ static int cswift_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	if((sw_status = p_CSwift_SimpleRequest(hac, SW_CMD_MODEXP, &arg, 1,
 		&res, 1)) != SW_OK)
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_MOD_EXP,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -591,7 +608,7 @@ static int cswift_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 		goto err;
 	default:
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_MOD_EXP_CRT,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -608,7 +625,7 @@ static int cswift_mod_exp_crt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
 	if((sw_status = p_CSwift_SimpleRequest(hac, SW_CMD_MODEXP_CRT, &arg, 1,
 		&res, 1)) != SW_OK)
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_MOD_EXP_CRT,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -723,7 +740,7 @@ static DSA_SIG *cswift_dsa_sign(const unsigned char *dgst, int dlen, DSA *dsa)
 		goto err;
 	default:
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_DSA_SIGN,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -741,7 +758,7 @@ static DSA_SIG *cswift_dsa_sign(const unsigned char *dgst, int dlen, DSA *dsa)
 		&res, 1);
 	if(sw_status != SW_OK)
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_DSA_SIGN,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -835,7 +852,7 @@ static int cswift_dsa_verify(const unsigned char *dgst, int dgst_len,
 		goto err;
 	default:
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_DSA_VERIFY,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
@@ -857,7 +874,7 @@ static int cswift_dsa_verify(const unsigned char *dgst, int dgst_len,
 		&res, 1);
 	if(sw_status != SW_OK)
 		{
-		char tmpbuf[20];
+		char tmpbuf[DECIMAL_SIZE(sw_status)+1];
 		CSWIFTerr(CSWIFT_F_CSWIFT_DSA_VERIFY,CSWIFT_R_REQUEST_FAILED);
 		sprintf(tmpbuf, "%ld", sw_status);
 		ERR_add_error_data(2, "CryptoSwift error number is ",tmpbuf);
