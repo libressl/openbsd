@@ -1,4 +1,4 @@
-/*	$OpenBSD: atexit.h,v 1.3 2002/07/29 19:54:42 dhartmei Exp $ */
+/*	$OpenBSD: atexit.h,v 1.5 2002/08/30 07:58:07 dhartmei Exp $ */
 
 /*
  * Copyright (c) 2002 Daniel Hartmeier
@@ -34,7 +34,7 @@ struct atexit {
 	struct atexit *next;		/* next in list */
 	int ind;			/* next index in this table */
 	int max;			/* max entries >= ATEXIT_SIZE */
-	void (*fns[1])();		/* the table itself */
+	void (*fns[1])(void);		/* the table itself */
 };
 
 extern int __atexit_invalid;
