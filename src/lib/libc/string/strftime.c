@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /*
  * Copyright (c) 1989 The Regents of the University of California.
  * All rights reserved.
@@ -272,7 +274,7 @@ _fmt(format, t)
 	return(gsize);
 }
 
-static
+static int
 _secs(t)
 	struct tm *t;
 {
@@ -289,7 +291,7 @@ _secs(t)
 	return(_add(++p));
 }
 
-static
+static int
 _conv(n, digits, pad)
 	int n, digits;
 	char pad;
@@ -304,7 +306,7 @@ _conv(n, digits, pad)
 	return(_add(++p));
 }
 
-static
+static int
 _add(str)
 	register char *str;
 {
