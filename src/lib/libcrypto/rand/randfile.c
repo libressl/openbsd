@@ -124,7 +124,7 @@ int RAND_load_file(const char *file, long bytes)
 			}
 		}
 	fclose(in);
-	memset(buf,0,BUFSIZE);
+	OPENSSL_cleanse(buf,BUFSIZE);
 err:
 	return(ret);
 	}
@@ -189,7 +189,7 @@ int RAND_write_file(const char *file)
 #endif /* OPENSSL_SYS_VMS */
 
 	fclose(out);
-	memset(buf,0,BUFSIZE);
+	OPENSSL_cleanse(buf,BUFSIZE);
 err:
 	return (rand_err ? -1 : ret);
 	}
@@ -203,8 +203,9 @@ const char *RAND_file_name(char *buf, size_t size)
 		s=getenv("RANDFILE");
 	if (s != NULL)
 		{
-		strncpy(buf,s,size-1);
-		buf[size-1]='\0';
+		if(strlen(s) >= size)
+			return NULL;
+		strcpy(buf,s);
 		ret=buf;
 		}
 	else
