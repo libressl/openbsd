@@ -31,7 +31,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: heapsort.c,v 1.5 2003/09/07 18:57:05 jmc Exp $";
+static char *rcsid = "$OpenBSD: heapsort.c,v 1.6 2003/09/08 16:24:05 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -134,13 +134,11 @@ static char *rcsid = "$OpenBSD: heapsort.c,v 1.5 2003/09/07 18:57:05 jmc Exp $";
  * only advantage over quicksort is that it requires little additional memory.
  */
 int
-heapsort(vbase, nmemb, size, compar)
-	void *vbase;
-	size_t nmemb, size;
-	int (*compar)(const void *, const void *);
+heapsort(void *vbase, size_t nmemb, size_t size,
+    int (*compar)(const void *, const void *))
 {
-	register int cnt, i, j, l;
-	register char tmp, *tmp1, *tmp2;
+	int cnt, i, j, l;
+	char tmp, *tmp1, *tmp2;
 	char *base, *k, *p, *t;
 
 	if (nmemb <= 1)

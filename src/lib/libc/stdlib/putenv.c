@@ -28,15 +28,14 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: putenv.c,v 1.2 1996/08/10 05:03:00 tholo Exp $";
+static char *rcsid = "$OpenBSD: putenv.c,v 1.3 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdlib.h>
 #include <string.h>
 
 int
-putenv(str)
-	const char *str;
+putenv(const char *str)
 {
 	char *p, *equal;
 	int rval;
