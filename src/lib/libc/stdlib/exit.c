@@ -35,8 +35,6 @@
 static char *rcsid = "$OpenBSD: exit.c,v 1.4 2000/01/06 08:45:50 d Exp $";
 #endif /* LIBC_SCCS and not lint */
 
-#include <sys/types.h>
-#include <sys/mman.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "atexit.h"
@@ -60,19 +58,12 @@ void
 exit(status)
 	int status;
 {
-	register struct atexit *p, *q;
-	register int n, pgsize = getpagesize();
+	register struct atexit *p;
+	register int n;
 
-	if (!__atexit_invalid) {
-		p = __atexit;
-		while (p != NULL) {
-			for (n = p->ind; --n >= 0;)
-				(*p->fns[n])();
-			q = p;
-			p = p->next;
-			munmap(q, pgsize);
-		}
-	}
+	for (p = __atexit; p; p = p->next)
+		for (n = p->ind; --n >= 0;)
+			(*p->fns[n])();
 	if (__cleanup)
 		(*__cleanup)();
 	_exit(status);
