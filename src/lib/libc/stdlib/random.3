@@ -60,6 +60,12 @@ default table of size 31 long integers to return successive pseudo-random
 numbers in the range from 0 to
 .if t 2\u\s731\s10\d\(mi1.
 .if n (2**31)\(mi1.
+The maximum value returned by
+.Fn random
+is
+.Dv LONG_MAX
+(as defined by the header file
+.Aq Pa limits.h ) .
 The period of this random number generator is very large, approximately
 .if t 16\(mu(2\u\s731\s10\d\(mi1).
 .if n 16*((2**31)\(mi1).
