@@ -12,7 +12,8 @@ echo Generating x86 for GNU assember
 
 echo Bignum
 cd crypto\bn\asm
-perl x86.pl gaswin > bn-win32.s
+perl bn-586.pl gaswin > bn-win32.s
+perl co-586.pl gaswin > co-win32.s
 cd ..\..\..
 
 echo DES
@@ -75,6 +76,8 @@ if errorlevel 1 goto end
 rem Create files -- this can be skipped if using the GNU file utilities
 make -f ms/mingw32f.mak
 echo You can ignore the error messages above
+
+copy ms\tlhelp32.h outinc
 
 echo Building the libraries
 make -f ms/mingw32a.mak

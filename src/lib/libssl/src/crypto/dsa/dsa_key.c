@@ -56,19 +56,17 @@
  * [including the GNU Public Licence.]
  */
 
+#ifndef OPENSSL_NO_SHA
 #include <stdio.h>
 #include <time.h>
 #include "cryptlib.h"
-#include "sha.h"
-#include "bn.h"
-#include "dsa.h"
-#include "rand.h"
+#include <openssl/bn.h>
+#include <openssl/dsa.h>
+#include <openssl/rand.h>
 
-int DSA_generate_key(dsa)
-DSA *dsa;
+int DSA_generate_key(DSA *dsa)
 	{
 	int ok=0;
-	unsigned int i;
 	BN_CTX *ctx=NULL;
 	BIGNUM *pub_key=NULL,*priv_key=NULL;
 
@@ -81,14 +79,9 @@ DSA *dsa;
 	else
 		priv_key=dsa->priv_key;
 
-	i=BN_num_bits(dsa->q);
-	for (;;)
-		{
-		BN_rand(priv_key,i,1,0);
-		if (BN_cmp(priv_key,dsa->q) >= 0)
-			BN_sub(priv_key,priv_key,dsa->q);
-		if (!BN_is_zero(priv_key)) break;
-		}
+	do
+		if (!BN_rand_range(priv_key,dsa->q)) goto err;
+	while (BN_is_zero(priv_key));
 
 	if (dsa->pub_key == NULL)
 		{
@@ -109,4 +102,4 @@ err:
 	if (ctx != NULL) BN_CTX_free(ctx);
 	return(ok);
 	}
-
+#endif

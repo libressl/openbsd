@@ -61,7 +61,10 @@
 #include <stdio.h>
 #include <time.h>
 #include "cryptlib.h"
+#include "o_time.h"
 #include <openssl/asn1.h>
+
+#if 0
 
 int i2d_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME *a, unsigned char **pp)
 	{
@@ -106,9 +109,11 @@ ASN1_GENERALIZEDTIME *d2i_ASN1_GENERALIZEDTIME(ASN1_GENERALIZEDTIME **a,
 	return(ret);
 err:
 	if ((ret != NULL) && ((a == NULL) || (*a != ret)))
-		ASN1_GENERALIZEDTIME_free(ret);
+		M_ASN1_GENERALIZEDTIME_free(ret);
 	return(NULL);
 	}
+
+#endif
 
 int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
 	{
@@ -141,6 +146,19 @@ int ASN1_GENERALIZEDTIME_check(ASN1_GENERALIZEDTIME *d)
 
 		if ((n < min[i]) || (n > max[i])) goto err;
 		}
+	/* Optional fractional seconds: decimal point followed by one
+	 * or more digits.
+	 */
+	if (a[o] == '.')
+		{
+		if (++o > l) goto err;
+		i = o;
+		while ((a[o] >= '0') && (a[o] <= '9') && (o <= l))
+			o++;
+		/* Must have at least one digit after decimal point */
+		if (i == o) goto err;
+		}
+
 	if (a[o] == 'Z')
 		o++;
 	else if ((a[o] == '+') || (a[o] == '-'))
@@ -176,6 +194,7 @@ int ASN1_GENERALIZEDTIME_set_string(ASN1_GENERALIZEDTIME *s, char *str)
 			{
 			ASN1_STRING_set((ASN1_STRING *)s,
 				(unsigned char *)str,t.length);
+			s->type=V_ASN1_GENERALIZEDTIME;
 			}
 		return(1);
 		}
@@ -188,28 +207,24 @@ ASN1_GENERALIZEDTIME *ASN1_GENERALIZEDTIME_set(ASN1_GENERALIZEDTIME *s,
 	{
 	char *p;
 	struct tm *ts;
-#if defined(THREADS) && !defined(WIN32)
 	struct tm data;
-#endif
 
 	if (s == NULL)
-		s=ASN1_GENERALIZEDTIME_new();
+		s=M_ASN1_GENERALIZEDTIME_new();
 	if (s == NULL)
 		return(NULL);
 
-#if defined(THREADS) && !defined(WIN32)
-	gmtime_r(&t,&data); /* should return &data, but doesn't on some systems, so we don't even look at the return value */
-	ts=&data;
-#else
-	ts=gmtime(&t);
-#endif
+	ts=OPENSSL_gmtime(&t, &data);
+	if (ts == NULL)
+		return(NULL);
+
 	p=(char *)s->data;
 	if ((p == NULL) || (s->length < 16))
 		{
-		p=Malloc(20);
+		p=OPENSSL_malloc(20);
 		if (p == NULL) return(NULL);
 		if (s->data != NULL)
-			Free(s->data);
+			OPENSSL_free(s->data);
 		s->data=(unsigned char *)p;
 		}
 

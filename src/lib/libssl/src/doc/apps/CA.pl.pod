@@ -13,6 +13,7 @@ B<CA.pl>
 [B<-help>]
 [B<-newcert>]
 [B<-newreq>]
+[B<-newreq-nodes>]
 [B<-newca>]
 [B<-xsign>]
 [B<-sign>]
@@ -46,6 +47,10 @@ written to the file "newreq.pem".
 creates a new certificate request. The private key and request are
 written to the file "newreq.pem".
 
+=item B<-newreq-nowdes>
+
+is like B<-newreq> except that the private key will not be encrypted.
+
 =item B<-newca>
 
 creates a new CA hierarchy for use with the B<ca> program (or the B<-signcert>
@@ -69,8 +74,15 @@ list box), otherwise the name "My Certificate" is used.
 
 calls the B<ca> program to sign a certificate request. It expects the request
 to be in the file "newreq.pem". The new certificate is written to the file
-"newcert.pem" except in the case of the B<-xcert> option when it is written
+"newcert.pem" except in the case of the B<-xsign> option when it is written
 to standard output.
+
+
+=item B<-signCA>
+
+this option is the same as the B<-signreq> option except it uses the configuration
+file section B<v3_ca> and so makes the signed request a valid CA certificate. This
+is useful when creating intermediate CA from a root CA.
 
 =item B<-signcert>
 
@@ -101,6 +113,35 @@ the request and finally create a PKCS#12 file containing it.
  CA.pl -newreq
  CA.pl -signreq
  CA.pl -pkcs12 "My Test Certificate"
+
+=head1 DSA CERTIFICATES
+
+Although the B<CA.pl> creates RSA CAs and requests it is still possible to
+use it with DSA certificates and requests using the L<req(1)|req(1)> command
+directly. The following example shows the steps that would typically be taken.
+
+Create some DSA parameters:
+
+ openssl dsaparam -out dsap.pem 1024
+
+Create a DSA CA certificate and private key:
+
+ openssl req -x509 -newkey dsa:dsap.pem -keyout cacert.pem -out cacert.pem
+
+Create the CA directories and files:
+
+ CA.pl -newca
+
+enter cacert.pem when prompted for the CA file name.
+
+Create a DSA certificate request and private key (a different set of parameters
+can optionally be created first):
+
+ openssl req -out newreq.pem -newkey dsa:dsap.pem 
+
+Sign the request:
+
+ CA.pl -signreq
 
 =head1 NOTES
 

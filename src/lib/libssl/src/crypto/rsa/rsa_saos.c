@@ -58,18 +58,14 @@
 
 #include <stdio.h>
 #include "cryptlib.h"
-#include "bn.h"
-#include "rsa.h"
-#include "objects.h"
-#include "x509.h"
+#include <openssl/bn.h>
+#include <openssl/rsa.h>
+#include <openssl/objects.h>
+#include <openssl/x509.h>
 
-int RSA_sign_ASN1_OCTET_STRING(type,m,m_len,sigret,siglen,rsa)
-int type;
-unsigned char *m;
-unsigned int m_len;
-unsigned char *sigret;
-unsigned int *siglen;
-RSA *rsa;
+int RSA_sign_ASN1_OCTET_STRING(int type,
+	const unsigned char *m, unsigned int m_len,
+	unsigned char *sigret, unsigned int *siglen, RSA *rsa)
 	{
 	ASN1_OCTET_STRING sig;
 	int i,j,ret=1;
@@ -77,7 +73,7 @@ RSA *rsa;
 
 	sig.type=V_ASN1_OCTET_STRING;
 	sig.length=m_len;
-	sig.data=m;
+	sig.data=(unsigned char *)m;
 
 	i=i2d_ASN1_OCTET_STRING(&sig,NULL);
 	j=RSA_size(rsa);
@@ -86,7 +82,7 @@ RSA *rsa;
 		RSAerr(RSA_F_RSA_SIGN_ASN1_OCTET_STRING,RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY);
 		return(0);
 		}
-	s=(unsigned char *)Malloc((unsigned int)j+1);
+	s=(unsigned char *)OPENSSL_malloc((unsigned int)j+1);
 	if (s == NULL)
 		{
 		RSAerr(RSA_F_RSA_SIGN_ASN1_OCTET_STRING,ERR_R_MALLOC_FAILURE);
@@ -101,17 +97,14 @@ RSA *rsa;
 		*siglen=i;
 
 	memset(s,0,(unsigned int)j+1);
-	Free(s);
+	OPENSSL_free(s);
 	return(ret);
 	}
 
-int RSA_verify_ASN1_OCTET_STRING(dtype, m, m_len, sigbuf, siglen, rsa)
-int dtype;
-unsigned char *m;
-unsigned int m_len;
-unsigned char *sigbuf;
-unsigned int siglen;
-RSA *rsa;
+int RSA_verify_ASN1_OCTET_STRING(int dtype,
+	const unsigned char *m,
+	unsigned int m_len, unsigned char *sigbuf, unsigned int siglen,
+	RSA *rsa)
 	{
 	int i,ret=0;
 	unsigned char *p,*s;
@@ -123,7 +116,7 @@ RSA *rsa;
 		return(0);
 		}
 
-	s=(unsigned char *)Malloc((unsigned int)siglen);
+	s=(unsigned char *)OPENSSL_malloc((unsigned int)siglen);
 	if (s == NULL)
 		{
 		RSAerr(RSA_F_RSA_VERIFY_ASN1_OCTET_STRING,ERR_R_MALLOC_FAILURE);
@@ -145,9 +138,9 @@ RSA *rsa;
 	else
 		ret=1;
 err:
-	if (sig != NULL) ASN1_OCTET_STRING_free(sig);
+	if (sig != NULL) M_ASN1_OCTET_STRING_free(sig);
 	memset(s,0,(unsigned int)siglen);
-	Free(s);
+	OPENSSL_free(s);
 	return(ret);
 	}
 

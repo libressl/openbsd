@@ -1,5 +1,5 @@
 .rdata
-.asciiz "mips3.s, Version 1.0"
+.asciiz	"mips3.s, Version 1.1"
 .asciiz	"MIPS III/IV ISA artwork by Andy Polyakov <appro@fy.chalmers.se>"
 
 /*
@@ -395,32 +395,32 @@ LEAF(bn_add_words)
 
 .L_bn_add_words_loop:
 	ld	ta0,0(a2)
-	ld	t1,8(a1)
-	ld	ta1,8(a2)
-	ld	t2,16(a1)
-	ld	ta2,16(a2)
-	ld	t3,24(a1)
-	ld	ta3,24(a2)
-	daddu	ta0,t0
 	subu	a3,4
+	ld	t1,8(a1)
+	and	AT,a3,MINUS4
+	ld	t2,16(a1)
+	PTR_ADD	a2,32
+	ld	t3,24(a1)
+	PTR_ADD	a0,32
+	ld	ta1,-24(a2)
+	PTR_ADD	a1,32
+	ld	ta2,-16(a2)
+	ld	ta3,-8(a2)
+	daddu	ta0,t0
 	sltu	t8,ta0,t0
 	daddu	t0,ta0,v0
-	PTR_ADD	a0,32
 	sltu	v0,t0,ta0
 	sd	t0,-32(a0)
 	daddu	v0,t8
 
 	daddu	ta1,t1
-	PTR_ADD	a1,32
 	sltu	t9,ta1,t1
 	daddu	t1,ta1,v0
-	PTR_ADD	a2,32
 	sltu	v0,t1,ta1
 	sd	t1,-24(a0)
 	daddu	v0,t9
 
 	daddu	ta2,t2
-	and	AT,a3,MINUS4
 	sltu	t8,ta2,t2
 	daddu	t2,ta2,v0
 	sltu	v0,t2,ta2
@@ -495,25 +495,26 @@ LEAF(bn_sub_words)
 
 .L_bn_sub_words_loop:
 	ld	ta0,0(a2)
+	subu	a3,4
 	ld	t1,8(a1)
-	ld	ta1,8(a2)
+	and	AT,a3,MINUS4
 	ld	t2,16(a1)
-	ld	ta2,16(a2)
+	PTR_ADD	a2,32
 	ld	t3,24(a1)
-	ld	ta3,24(a2)
+	PTR_ADD	a0,32
+	ld	ta1,-24(a2)
+	PTR_ADD	a1,32
+	ld	ta2,-16(a2)
+	ld	ta3,-8(a2)
 	sltu	t8,t0,ta0
 	dsubu	t0,ta0
-	subu	a3,4
 	dsubu	ta0,t0,v0
-	and	AT,a3,MINUS4
-	sd	ta0,0(a0)
+	sd	ta0,-32(a0)
 	MOVNZ	(t0,v0,t8)
 
 	sltu	t9,t1,ta1
 	dsubu	t1,ta1
-	PTR_ADD	a0,32
 	dsubu	ta1,t1,v0
-	PTR_ADD	a1,32
 	sd	ta1,-24(a0)
 	MOVNZ	(t1,v0,t9)
 
@@ -521,7 +522,6 @@ LEAF(bn_sub_words)
 	sltu	t8,t2,ta2
 	dsubu	t2,ta2
 	dsubu	ta2,t2,v0
-	PTR_ADD	a2,32
 	sd	ta2,-16(a0)
 	MOVNZ	(t2,v0,t8)
 
@@ -573,6 +573,51 @@ LEAF(bn_sub_words)
 END(bn_sub_words)
 
 #undef	MINUS4
+
+.align 5
+LEAF(bn_div_3_words)
+	.set	reorder
+	move	a3,a0		/* we know that bn_div_words doesn't
+				 * touch a3, ta2, ta3 and preserves a2
+				 * so that we can save two arguments
+				 * and return address in registers
+				 * instead of stack:-)
+				 */
+	ld	a0,(a3)
+	move	ta2,a1
+	ld	a1,-8(a3)
+	bne	a0,a2,.L_bn_div_3_words_proceed
+	li	v0,-1
+	jr	ra
+.L_bn_div_3_words_proceed:
+	move	ta3,ra
+	bal	bn_div_words
+	move	ra,ta3
+	dmultu	ta2,v0
+	ld	t2,-16(a3)
+	move	ta0,zero
+	mfhi	t1
+	mflo	t0
+	sltu	t8,t1,v1
+.L_bn_div_3_words_inner_loop:
+	bnez	t8,.L_bn_div_3_words_inner_loop_done
+	sgeu	AT,t2,t0
+	seq	t9,t1,v1
+	and	AT,t9
+	sltu	t3,t0,ta2
+	daddu	v1,a2
+	dsubu	t1,t3
+	dsubu	t0,ta2
+	sltu	t8,t1,v1
+	sltu	ta0,v1,a2
+	or	t8,ta0
+	.set	noreorder
+	beqzl	AT,.L_bn_div_3_words_inner_loop
+	dsubu	v0,1
+	.set	reorder
+.L_bn_div_3_words_inner_loop_done:
+	jr	ra
+END(bn_div_3_words)
 
 .align	5
 LEAF(bn_div_words)
@@ -633,16 +678,16 @@ LEAF(bn_div_words)
 	seq	t8,HH,t1
 	sltu	AT,HH,t1
 	and	t2,t8
+	sltu	v0,t0,a2
 	or	AT,t2
 	.set	noreorder
 	beqz	AT,.L_bn_div_words_inner_loop1_done
-	sltu	t2,t0,a2
-	.set	reorder
-	dsubu	QT,1
+	dsubu	t1,v0
 	dsubu	t0,a2
-	dsubu	t1,t2
 	b	.L_bn_div_words_inner_loop1
-.L_bn_div_words_inner_loop1_done:	
+	dsubu	QT,1
+	.set	reorder
+.L_bn_div_words_inner_loop1_done:
 
 	dsll	a1,32
 	dsubu	a0,t3,t0
@@ -655,6 +700,7 @@ LEAF(bn_div_words)
 	ddivu	zero,a0,DH
 	mflo	QT
 .L_bn_div_words_skip_div2:
+#undef	DH
 	dmultu	a2,QT
 	dsll	t3,a0,32
 	dsrl	AT,a1,32
@@ -666,68 +712,25 @@ LEAF(bn_div_words)
 	seq	t8,HH,t1
 	sltu	AT,HH,t1
 	and	t2,t8
+	sltu	v1,t0,a2
 	or	AT,t2
 	.set	noreorder
 	beqz	AT,.L_bn_div_words_inner_loop2_done
-	sltu	t2,t0,a2
-	.set	reorder
-	dsubu	QT,1
+	dsubu	t1,v1
 	dsubu	t0,a2
-	dsubu	t1,t2
 	b	.L_bn_div_words_inner_loop2
+	dsubu	QT,1
+	.set	reorder
 .L_bn_div_words_inner_loop2_done:	
+#undef	HH
 
 	dsubu	a0,t3,t0
 	or	v0,QT
 	dsrl	v1,a0,t9	/* v1 contains remainder if anybody wants it */
 	dsrl	a2,t9		/* restore a2 */
 	jr	ra
-#undef	HH
-#undef	DH
 #undef	QT
 END(bn_div_words)
-
-.align 5
-LEAF(bn_div_3_words)
-	.set	reorder
-	move	a3,a0		/* we know that bn_div_words doesn't
-				 * touch a3, ta2, ta3 and preserves a2
-				 * so that we can save two arguments
-				 * and return address in registers
-				 * instead of stack:-)
-				 */
-	ld	a0,(a3)
-	move	ta2,a2
-	move	a2,a1
-	ld	a1,-8(a3)
-	move	ta3,ra
-	move	v1,zero
-	li	v0,-1
-	beq	a0,a2,.L_bn_div_3_words_skip_div
-	jal	bn_div_words
-	move	ra,ta3
-.L_bn_div_3_words_skip_div:
-	dmultu	ta2,v0
-	ld	t2,-16(a3)
-	mflo	t0
-	mfhi	t1
-.L_bn_div_3_words_inner_loop:
-	sgeu	AT,t2,t0
-	seq	t9,t1,v1
-	sltu	t8,t1,v1
-	and	AT,t9
-	or	AT,t8
-	bnez	AT,.L_bn_div_3_words_inner_loop_done
-	daddu	v1,a2
-	sltu	t3,t0,ta2
-	sltu	AT,v1,a2
-	dsubu	v0,1
-	dsubu	t0,ta2
-	dsubu	t1,t3
-	beqz	AT,.L_bn_div_3_words_inner_loop
-.L_bn_div_3_words_inner_loop_done:
-	jr	ra
-END(bn_div_3_words)
 
 #define	a_0	t0
 #define	a_1	t1
@@ -846,6 +849,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
+	sltu	c_3,c_2,t_2
 	dmultu	a_1,b_2		/* mul_add_c(a[1],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -853,7 +857,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_2,b_1		/* mul_add_c(a[2],b[1],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -881,6 +886,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
+	sltu	c_1,c_3,t_2
 	dmultu	a_3,b_1		/* mul_add_c(a[3],b[1],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -888,7 +894,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_2,b_2		/* mul_add_c(a[2],b[2],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -925,6 +932,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
+	sltu	c_2,c_1,t_2
 	dmultu	a_1,b_4		/* mul_add_c(a[1],b[4],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -932,7 +940,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_2,b_3		/* mul_add_c(a[2],b[3],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -978,6 +987,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
+	sltu	c_3,c_2,t_2
 	dmultu	a_5,b_1		/* mul_add_c(a[5],b[1],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -985,7 +995,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_4,b_2		/* mul_add_c(a[4],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1040,6 +1051,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
+	sltu	c_1,c_3,t_2
 	dmultu	a_1,b_6		/* mul_add_c(a[1],b[6],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1047,7 +1059,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_2,b_5		/* mul_add_c(a[2],b[5],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1111,6 +1124,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
+	sltu	c_2,c_1,t_2
 	dmultu	a_6,b_2		/* mul_add_c(a[6],b[2],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1118,7 +1132,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_5,b_3		/* mul_add_c(a[5],b[3],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1173,6 +1188,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
+	sltu	c_3,c_2,t_2
 	dmultu	a_3,b_6		/* mul_add_c(a[3],b[6],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1180,7 +1196,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_4,b_5		/* mul_add_c(a[4],b[5],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1226,6 +1243,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
+	sltu	c_1,c_3,t_2
 	dmultu	a_6,b_4		/* mul_add_c(a[6],b[4],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1233,7 +1251,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_5,b_5		/* mul_add_c(a[5],b[5],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1270,6 +1289,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
+	sltu	c_2,c_1,t_2
 	dmultu	a_5,b_6		/* mul_add_c(a[5],b[6],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1277,7 +1297,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_6,b_5		/* mul_add_c(a[6],b[5],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1305,6 +1326,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
+	sltu	c_3,c_2,t_2
 	dmultu	a_6,b_6		/* mul_add_c(a[6],b[6],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1312,7 +1334,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_5,b_7		/* mul_add_c(a[5],b[7],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1331,6 +1354,7 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
+	sltu	c_1,c_3,t_2
 	dmultu	a_7,b_6		/* mul_add_c(a[7],b[6],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1338,7 +1362,8 @@ LEAF(bn_mul_comba8)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	sd	c_2,104(a0)	/* r[13]=c2; */
 
 	dmultu	a_7,b_7		/* mul_add_c(a[7],b[7],c3,c1,c2); */
@@ -1427,6 +1452,7 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
+	sltu	c_3,c_2,t_2
 	dmultu	a_1,b_2		/* mul_add_c(a[1],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1434,7 +1460,8 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_2,b_1		/* mul_add_c(a[2],b[1],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1462,6 +1489,7 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
+	sltu	c_1,c_3,t_2
 	dmultu	a_2,b_2		/* mul_add_c(a[2],b[2],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1469,7 +1497,8 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_1,b_3		/* mul_add_c(a[1],b[3],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -1488,6 +1517,7 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
+	sltu	c_2,c_1,t_2
 	dmultu	a_3,b_2		/* mul_add_c(a[3],b[2],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1495,7 +1525,8 @@ LEAF(bn_mul_comba4)
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	sd	c_3,40(a0)
 
 	dmultu	a_3,b_3		/* mul_add_c(a[3],b[3],c1,c2,c3); */
@@ -1540,28 +1571,30 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_0,a_1		/* mul_add_c2(a[0],b[1],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	c_3,t_2,AT
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	t_2,AT
-	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
 	sd	c_2,8(a0)
 
 	dmultu	a_2,a_0		/* mul_add_c2(a[2],b[0],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_1,a_1		/* mul_add_c(a[1],b[1],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -1576,24 +1609,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_0,a_3		/* mul_add_c2(a[0],b[3],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
+	slt	c_3,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_1,a_2		/* mul_add_c2(a[1],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -1605,24 +1640,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_4,a_0		/* mul_add_c2(a[4],b[0],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_3,a_1		/* mul_add_c2(a[3],b[1],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
-	sltu	AT,c_3,a2
+	slt	AT,t_2,zero
 	daddu	c_1,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
@@ -1643,24 +1680,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_0,a_5		/* mul_add_c2(a[0],b[5],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_1,a_4		/* mul_add_c2(a[1],b[4],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
-	sltu	AT,c_1,a2
+	slt	AT,t_2,zero
 	daddu	c_2,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
@@ -1670,12 +1709,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_2,a_3		/* mul_add_c2(a[2],b[3],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
-	sltu	AT,c_1,a2
+	slt	AT,t_2,zero
 	daddu	c_2,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
@@ -1687,24 +1726,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_6,a_0		/* mul_add_c2(a[6],b[0],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
+	slt	c_3,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_5,a_1		/* mul_add_c2(a[5],b[1],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -1714,12 +1755,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_4,a_2		/* mul_add_c2(a[4],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -1740,24 +1781,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_0,a_7		/* mul_add_c2(a[0],b[7],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_1,a_6		/* mul_add_c2(a[1],b[6],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
-	sltu	AT,c_3,a2
+	slt	AT,t_2,zero
 	daddu	c_1,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
@@ -1767,12 +1810,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_2,a_5		/* mul_add_c2(a[2],b[5],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
-	sltu	AT,c_3,a2
+	slt	AT,t_2,zero
 	daddu	c_1,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
@@ -1782,12 +1825,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_3,a_4		/* mul_add_c2(a[3],b[4],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
-	sltu	AT,c_3,a2
+	slt	AT,t_2,zero
 	daddu	c_1,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
@@ -1799,24 +1842,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_7,a_1		/* mul_add_c2(a[7],b[1],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_6,a_2		/* mul_add_c2(a[6],b[2],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
-	sltu	AT,c_1,a2
+	slt	AT,t_2,zero
 	daddu	c_2,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
@@ -1826,12 +1871,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_5,a_3		/* mul_add_c2(a[5],b[3],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
-	sltu	AT,c_1,a2
+	slt	AT,t_2,zero
 	daddu	c_2,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
@@ -1852,24 +1897,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_2,a_7		/* mul_add_c2(a[2],b[7],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
+	slt	c_3,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_3,a_6		/* mul_add_c2(a[3],b[6],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -1879,12 +1926,12 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_4,a_5		/* mul_add_c2(a[4],b[5],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -1896,24 +1943,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_7,a_3		/* mul_add_c2(a[7],b[3],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_6,a_4		/* mul_add_c2(a[6],b[4],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
-	sltu	AT,c_3,a2
+	slt	AT,t_2,zero
 	daddu	c_1,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
@@ -1934,24 +1983,26 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_4,a_7		/* mul_add_c2(a[4],b[7],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_5,a_6		/* mul_add_c2(a[5],b[6],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
-	sltu	AT,c_1,a2
+	slt	AT,t_2,zero
 	daddu	c_2,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
@@ -1963,15 +2014,17 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_7,a_5		/* mul_add_c2(a[7],b[5],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
+	slt	c_3,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_6,a_6		/* mul_add_c(a[6],b[6],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
@@ -1986,15 +2039,17 @@ LEAF(bn_sqr_comba8)
 	dmultu	a_6,a_7		/* mul_add_c2(a[6],b[7],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	sd	c_2,104(a0)
 
 	dmultu	a_7,a_7		/* mul_add_c(a[7],b[7],c3,c1,c2); */
@@ -2025,28 +2080,30 @@ LEAF(bn_sqr_comba4)
 	dmultu	a_0,a_1		/* mul_add_c2(a[0],b[1],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	c_3,t_2,AT
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	t_2,AT
-	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
 	sd	c_2,8(a0)
 
 	dmultu	a_2,a_0		/* mul_add_c2(a[2],b[0],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	dmultu	a_1,a_1		/* mul_add_c(a[1],b[1],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
@@ -2061,24 +2118,26 @@ LEAF(bn_sqr_comba4)
 	dmultu	a_0,a_3		/* mul_add_c2(a[0],b[3],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
+	slt	c_3,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
 	daddu	c_2,t_2
-	sltu	c_3,c_2,t_2
+	sltu	AT,c_2,t_2
+	daddu	c_3,AT
 	dmultu	a_1,a_2		/* mul_add_c(a2[1],b[2],c1,c2,c3); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_1,t_1
-	sltu	AT,c_1,t_1
-	daddu	a2,t_2,AT
-	daddu	c_2,a2
-	sltu	AT,c_2,a2
+	slt	AT,t_2,zero
 	daddu	c_3,AT
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_1,t_1
 	sltu	AT,c_1,t_1
 	daddu	t_2,AT
@@ -2090,15 +2149,17 @@ LEAF(bn_sqr_comba4)
 	dmultu	a_3,a_1		/* mul_add_c2(a[3],b[1],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_2,t_1
-	sltu	AT,c_2,t_1
-	daddu	a2,t_2,AT
-	daddu	c_3,a2
+	slt	c_1,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_2,t_1
 	sltu	AT,c_2,t_1
 	daddu	t_2,AT
 	daddu	c_3,t_2
-	sltu	c_1,c_3,t_2
+	sltu	AT,c_3,t_2
+	daddu	c_1,AT
 	dmultu	a_2,a_2		/* mul_add_c(a[2],b[2],c2,c3,c1); */
 	mflo	t_1
 	mfhi	t_2
@@ -2113,15 +2174,17 @@ LEAF(bn_sqr_comba4)
 	dmultu	a_2,a_3		/* mul_add_c2(a[2],b[3],c3,c1,c2); */
 	mflo	t_1
 	mfhi	t_2
-	daddu	c_3,t_1
-	sltu	AT,c_3,t_1
-	daddu	a2,t_2,AT
-	daddu	c_1,a2
+	slt	c_2,t_2,zero
+	dsll	t_2,1
+	slt	a2,t_1,zero
+	daddu	t_2,a2
+	dsll	t_1,1
 	daddu	c_3,t_1
 	sltu	AT,c_3,t_1
 	daddu	t_2,AT
 	daddu	c_1,t_2
-	sltu	c_2,c_1,t_2
+	sltu	AT,c_1,t_2
+	daddu	c_2,AT
 	sd	c_3,40(a0)
 
 	dmultu	a_3,a_3		/* mul_add_c(a[3],b[3],c1,c2,c3); */
