@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: getservent.c,v 1.4 1995/02/25 06:20:38 cgd Exp $";
+static char rcsid[] = "$OpenBSD: getservent.c,v 1.2 1996/08/19 08:29:00 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -99,7 +99,7 @@ again:
 	if (cp == NULL)
 		goto again;
 	*cp++ = '\0';
-	serv.s_port = htons((u_short)atoi(p));
+	serv.s_port = htons((in_port_t)atoi(p));
 	serv.s_proto = cp;
 	q = serv.s_aliases = serv_aliases;
 	cp = strpbrk(cp, " \t");
