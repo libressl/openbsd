@@ -90,11 +90,12 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strtod.c,v 1.3 1996/07/27 10:45:23 deraadt Exp $";
+static char *rcsid = "$OpenBSD: strtod.c,v 1.4 1996/08/19 08:33:50 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #if defined(__m68k__) || defined(__sparc__) || defined(__i386__) || \
     defined(__mips__) || defined(__ns32k__) || defined(__alpha__)
+#include <machine/types.h>
 #include <machine/endian.h>
 #if BYTE_ORDER == BIG_ENDIAN
 #define IEEE_BIG_ENDIAN
