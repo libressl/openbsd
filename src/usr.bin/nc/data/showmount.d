@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # UDP mountd call.  Use as input to find mount daemons and avoid portmap.
 # Useful proc numbers are 2, 5, and 6.
 # UDP-scan around between 600-800 to find most mount daemons.

@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # portmap request for mountd [or whatever; see where prog=MOUNT]
 # send to UDP 111 and hope it's not a logging portmapper!
 # split into longwords, since rpc apparently only deals with them

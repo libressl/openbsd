@@ -1,4 +1,6 @@
 #! /bin/sh
+#	$OpenBSD$
+
 ## This is a quick example listen-exec server, which was used for a while to
 ## distribute netcat prereleases.  It illustrates use of netcat both as a
 ## "fake inetd" and a syslogger, and how easy it then is to crock up a fairly

@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # struct netinfo {
 #	struct	sockaddr rip_dst;	/* destination net/host */
 #	int	rip_metric;		/* cost of route */

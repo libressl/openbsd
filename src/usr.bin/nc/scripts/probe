@@ -1,4 +1,6 @@
 #! /bin/sh
+#	$OpenBSD$
+
 ## launch a whole buncha shit at yon victim in no particular order; capture
 ## stderr+stdout in one place.  Run as root for rservice and low -p to work.
 ## Fairly thorough example of using netcat to collect a lot of host info.
