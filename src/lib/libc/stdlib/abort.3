@@ -33,7 +33,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: abort.3,v 1.1.1.1 1995/10/18 08:42:16 deraadt Exp $
+.\"	$OpenBSD: abort.3,v 1.2 1996/08/19 08:33:20 tholo Exp $
 .\"
 .Dd June 29, 1991
 .Dt ABORT 3
@@ -53,7 +53,7 @@ signal
 .Dv SIGABRT
 is being caught and the signal handler does not return.
 .Pp
-No open streams are closed or flushed.
+Any open streams are flushed and closed.
 .Sh RETURN VALUES
 The
 .Nm abort
@@ -67,4 +67,4 @@ The
 .Fn abort
 function
 conforms to
-.St -ansiC .
+.St -p1003.1-90 .
