@@ -1,4 +1,4 @@
-/*	$OpenBSD: base64.c,v 1.1 1997/03/13 19:07:22 downsj Exp $	*/
+/*	$OpenBSD: base64.c,v 1.2 1997/07/09 01:08:24 millert Exp $	*/
 
 /*
  * Copyright (c) 1996 by Internet Software Consortium.
@@ -259,8 +259,6 @@ b64_pton(src, target, targsize)
 			tarindex++;
 			state = 0;
 			break;
-		default:
-			abort();
 		}
 	}
 
