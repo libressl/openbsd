@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcrypt.c,v 1.9 1997/07/25 20:29:59 mickey Exp $	*/
+/*	$OpenBSD: bcrypt.c,v 1.10 1997/09/10 23:15:42 deraadt Exp $	*/
 
 /*
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
@@ -140,7 +140,7 @@ decode_base64(buffer, len, data)
 	}
 }
 
-#if __STDC__
+#ifdef __STDC__
 static void
 encode_salt(char *salt, u_int8_t *csalt, u_int16_t clen, u_int8_t logr)
 #else
@@ -166,7 +166,7 @@ encode_salt(salt, csalt, clen, logr)
    seems sensible.
  */
 
-#if __STDC__
+#ifdef __STDC__
 char *
 bcrypt_gensalt(u_int8_t log_rounds)
 #else
@@ -293,7 +293,7 @@ bcrypt(key, salt)
 	return encrypted;
 }
 
-#if __STDC__
+#ifdef __STDC__
 static void
 encode_base64(u_int8_t *buffer, u_int8_t *data, u_int16_t len)
 #else
