@@ -1,4 +1,4 @@
-/*	$OpenBSD: inf.c,v 1.1 2002/02/16 17:22:16 pvalchev Exp $	*/
+/*	$OpenBSD: inf.c,v 1.2 2002/02/18 11:24:13 art Exp $	*/
 
 /*
  * Peter Valchev <pvalchev@openbsd.org> Public Domain, 2002.
@@ -7,7 +7,7 @@
 #include <math.h>
 
 int
-main()
+main(int argc, char *argv[])
 {
 	if (isinf(HUGE_VAL))
 		return 0;
