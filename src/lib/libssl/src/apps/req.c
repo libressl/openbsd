@@ -73,6 +73,7 @@
 #include <openssl/x509v3.h>
 #include <openssl/objects.h>
 #include <openssl/pem.h>
+#include "../crypto/cryptlib.h"
 
 #define SECTION		"req"
 
@@ -134,7 +135,6 @@ static int req_check_len(int len,int n_min,int n_max);
 static int check_end(char *str, char *end);
 #ifndef MONOLITH
 static char *default_config_file=NULL;
-static CONF *config=NULL;
 #endif
 static CONF *req_conf=NULL;
 static int batch=0;
@@ -162,7 +162,9 @@ int MAIN(int argc, char **argv)
 	int informat,outformat,verify=0,noout=0,text=0,keyform=FORMAT_PEM;
 	int nodes=0,kludge=0,newhdr=0,subject=0,pubkey=0;
 	char *infile,*outfile,*prog,*keyfile=NULL,*template=NULL,*keyout=NULL;
+#ifndef OPENSSL_NO_ENGINE
 	char *engine=NULL;
+#endif
 	char *extensions = NULL;
 	char *req_exts = NULL;
 	const EVP_CIPHER *cipher=NULL;
@@ -176,7 +178,7 @@ int MAIN(int argc, char **argv)
 	const EVP_MD *md_alg=NULL,*digest=EVP_md5();
 	unsigned long chtype = MBSTRING_ASC;
 #ifndef MONOLITH
-	MS_STATIC char config_name[256];
+	char *to_free;
 	long errline;
 #endif
 
@@ -210,11 +212,13 @@ int MAIN(int argc, char **argv)
 			if (--argc < 1) goto bad;
 			outformat=str2fmt(*(++argv));
 			}
+#ifndef OPENSSL_NO_ENGINE
 		else if (strcmp(*argv,"-engine") == 0)
 			{
 			if (--argc < 1) goto bad;
 			engine= *(++argv);
 			}
+#endif
 		else if (strcmp(*argv,"-key") == 0)
 			{
 			if (--argc < 1) goto bad;
@@ -428,7 +432,9 @@ bad:
 		BIO_printf(bio_err," -verify        verify signature on REQ\n");
 		BIO_printf(bio_err," -modulus       RSA modulus\n");
 		BIO_printf(bio_err," -nodes         don't encrypt the output key\n");
+#ifndef OPENSSL_NO_ENGINE
 		BIO_printf(bio_err," -engine e      use engine e, possibly a hardware device\n");
+#endif
 		BIO_printf(bio_err," -subject       output the request's subject\n");
 		BIO_printf(bio_err," -passin        private key password source\n");
 		BIO_printf(bio_err," -key file      use the private key contained in file\n");
@@ -453,7 +459,7 @@ bad:
 		BIO_printf(bio_err," -extensions .. specify certificate extension section (override value in config file)\n");
 		BIO_printf(bio_err," -reqexts ..    specify request extension section (override value in config file)\n");
 		BIO_printf(bio_err," -utf8          input characters are UTF8 (default ASCII)\n");
-		BIO_printf(bio_err," -nameopt arg   - various certificate name options\n");
+		BIO_printf(bio_err," -nameopt arg    - various certificate name options\n");
 		BIO_printf(bio_err," -reqopt arg    - various request text options\n\n");
 		goto end;
 		}
@@ -470,14 +476,7 @@ bad:
 	if (p == NULL)
 		p=getenv("SSLEAY_CONF");
 	if (p == NULL)
-		{
-		strcpy(config_name,X509_get_default_cert_area());
-#ifndef OPENSSL_SYS_VMS
-		strcat(config_name,"/");
-#endif
-		strcat(config_name,OPENSSL_CONF);
-		p=config_name;
-		}
+		p=to_free=make_config_name();
 	default_config_file=p;
 	config=NCONF_new(NULL);
 	i=NCONF_load(config, p, &errline);
@@ -485,7 +484,7 @@ bad:
 
 	if (template != NULL)
 		{
-		long errline;
+		long errline = -1;
 
 		if( verbose )
 			BIO_printf(bio_err,"Using configuration from %s\n",template);
@@ -624,7 +623,9 @@ bad:
 	if ((in == NULL) || (out == NULL))
 		goto end;
 
+#ifndef OPENSSL_NO_ENGINE
         e = setup_engine(bio_err, engine, 0);
+#endif
 
 	if (keyfile != NULL)
 		{
@@ -1059,6 +1060,10 @@ loop:
 		}
 	ex=0;
 end:
+#ifndef MONOLITH
+	if(to_free)
+		OPENSSL_free(to_free);
+#endif
 	if (ex)
 		{
 		ERR_print_errors(bio_err);
@@ -1077,7 +1082,7 @@ end:
 	if (dsa_params != NULL) DSA_free(dsa_params);
 #endif
 	apps_shutdown();
-	EXIT(ex);
+	OPENSSL_EXIT(ex);
 	}
 
 static int make_REQ(X509_REQ *req, EVP_PKEY *pkey, char *subj, int attribs,
@@ -1218,13 +1223,19 @@ start:		for (;;)
 				}
 			/* If OBJ not recognised ignore it */
 			if ((nid=OBJ_txt2nid(type)) == NID_undef) goto start;
+
+			if(strlen(v->name) > sizeof buf-9)
+			   {
+			   BIO_printf(bio_err,"Name '%s' too long\n",v->name);
+			   return 0;
+			   }
+
 			sprintf(buf,"%s_default",v->name);
 			if ((def=NCONF_get_string(req_conf,dn_sect,buf)) == NULL)
 				{
 				ERR_clear_error();
 				def="";
 				}
-				
 			sprintf(buf,"%s_value",v->name);
 			if ((value=NCONF_get_string(req_conf,dn_sect,buf)) == NULL)
 				{
@@ -1234,11 +1245,17 @@ start:		for (;;)
 
 			sprintf(buf,"%s_min",v->name);
 			if (!NCONF_get_number(req_conf,dn_sect,buf, &n_min))
+				{
+				ERR_clear_error();
 				n_min = -1;
+				}
 
 			sprintf(buf,"%s_max",v->name);
 			if (!NCONF_get_number(req_conf,dn_sect,buf, &n_max))
+				{
+				ERR_clear_error();
 				n_max = -1;
+				}
 
 			if (!add_DN_object(subj,v->value,def,value,nid,
 				n_min,n_max, chtype))
@@ -1270,6 +1287,12 @@ start2:			for (;;)
 				type=v->name;
 				if ((nid=OBJ_txt2nid(type)) == NID_undef)
 					goto start2;
+
+				if(strlen(v->name) > sizeof buf-9)
+				   {
+				   BIO_printf(bio_err,"Name '%s' too long\n",v->name);
+				   return 0;
+				   }
 
 				sprintf(buf,"%s_default",type);
 				if ((def=NCONF_get_string(req_conf,attr_sect,buf))
@@ -1374,6 +1397,7 @@ start:
 	(void)BIO_flush(bio_err);
 	if(value != NULL)
 		{
+		OPENSSL_assert(strlen(value) < sizeof buf-2);
 		strcpy(buf,value);
 		strcat(buf,"\n");
 		BIO_printf(bio_err,"%s\n",value);
@@ -1383,7 +1407,7 @@ start:
 		buf[0]='\0';
 		if (!batch)
 			{
-			fgets(buf,1024,stdin);
+			fgets(buf,sizeof buf,stdin);
 			}
 		else
 			{
@@ -1432,6 +1456,7 @@ start:
 	(void)BIO_flush(bio_err);
 	if (value != NULL)
 		{
+		OPENSSL_assert(strlen(value) < sizeof buf-2);
 		strcpy(buf,value);
 		strcat(buf,"\n");
 		BIO_printf(bio_err,"%s\n",value);
@@ -1441,7 +1466,7 @@ start:
 		buf[0]='\0';
 		if (!batch)
 			{
-			fgets(buf,1024,stdin);
+			fgets(buf,sizeof buf,stdin);
 			}
 		else
 			{
