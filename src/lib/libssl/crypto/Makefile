@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.31 2003/06/02 08:45:58 markus Exp $
+# $OpenBSD: Makefile,v 1.32 2003/11/18 12:39:05 markus Exp $
 
 LIB=	crypto
 
@@ -281,7 +281,7 @@ SSLASM=\
 SRCS+=	${f}.S
 GENERATED+=${f}.S
 ${f}.S: ${LCRYPTO_SRC}/${dir}/asm/${f}.pl ${LCRYPTO_SRC}/perlasm/x86unix.pl
-	/usr/bin/perl -I${LCRYPTO_SRC}/perlasm:${LCRYPTO_SRC}/${dir}/asm \
+	/usr/bin/perl -I${LCRYPTO_SRC}/perlasm -I${LCRYPTO_SRC}/${dir}/asm \
 		${LCRYPTO_SRC}/${dir}/asm/${f}.pl openbsd-elf 386 > ${.TARGET}
 .endfor
 SRCS+= bf_cbc.c	
