@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.4 1999/06/29 23:54:05 provos Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.5 1999/09/28 01:24:48 deraadt Exp $	*/
 
 /*
  * Arc4 random number generator for OpenBSD.
@@ -6,8 +6,7 @@
  *
  * Modification and redistribution in source and binary forms is
  * permitted provided that due credit is given to the author and the
- * OpenBSD project (for instance by leaving this copyright notice
- * intact).
+ * OpenBSD project by leaving this copyright notice intact.
  */
 
 /*
