@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.60 2003/07/07 14:12:18 avsm Exp $ */
+/* $OpenBSD: netcat.c,v 1.61 2003/07/07 21:36:23 deraadt Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -467,11 +467,8 @@ remote_connect(char *host, char *port, struct addrinfo hints)
 				errx(1, "getaddrinfo: %s", gai_strerror(error));
 
 			if (bind(s, (struct sockaddr *)ares->ai_addr,
-			    ares->ai_addrlen) < 0) {
+			    ares->ai_addrlen) < 0)
 				errx(1, "bind failed: %s", strerror(errno));
-				freeaddrinfo(ares);
-				continue;
-			}
 			freeaddrinfo(ares);
 		}
 
