@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: malloc_errno.c,v 1.1 2003/07/15 10:06:31 otto Exp $	*/
 /*
  * Public domain.  2003, Otto Moerbeek
  */
@@ -30,7 +30,7 @@ testerrno(size_t sz)
  * correctly.
  */
 int
-main()
+main(int argc, char *argv[])
 {
 	size_t i;
 
