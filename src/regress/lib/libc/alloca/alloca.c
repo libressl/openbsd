@@ -1,4 +1,4 @@
-/*	$OpeBSD$	*/
+/*	$OpenBSD$	*/
 
 /*	Copyright (c) 2003 Michael Shalayeff. Public Domain.	*/
 
