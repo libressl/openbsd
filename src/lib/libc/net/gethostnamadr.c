@@ -52,7 +52,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.43 2001/06/27 00:58:55 lebel Exp $";
+static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.44 2002/02/16 21:27:23 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -126,8 +126,7 @@ typedef union {
 	char ac;
 } align;
 
-static struct hostent *getanswer __P((const querybuf *, int, const char *,
-				      int));
+static struct hostent *getanswer(const querybuf *, int, const char *, int);
 
 extern int h_errno;
 
