@@ -60,16 +60,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cryptlib.h"
-#include "bio.h"
-#include "err.h"
+#include <openssl/bio.h>
+#include <openssl/err.h>
 
-long MS_CALLBACK BIO_debug_callback(bio,cmd,argp,argi,argl,ret)
-BIO *bio;
-int cmd;
-char *argp;
-int argi;
-long argl;
-long ret;
+long MS_CALLBACK BIO_debug_callback(BIO *bio, int cmd, const char *argp,
+	     int argi, long argl, long ret)
 	{
 	BIO *b;
 	MS_STATIC char buf[256];
@@ -130,7 +125,7 @@ long ret;
 	b=(BIO *)bio->cb_arg;
 	if (b != NULL)
 		BIO_write(b,buf,strlen(buf));
-#if !defined(NO_STDIO) && !defined(WIN16)
+#if !defined(OPENSSL_NO_STDIO) && !defined(OPENSSL_SYS_WIN16)
 	else
 		fputs(buf,stderr);
 #endif

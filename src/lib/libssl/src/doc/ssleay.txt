@@ -1,6 +1,22 @@
 
 Bundle of old SSLeay documentation files [OBSOLETE!]
 
+*** WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! ***
+
+OBSOLETE means that nothing in this document should be trusted.  This
+document is provided mostly for historical purposes (it wasn't even up
+to date at the time SSLeay 0.8.1 was released) and as inspiration.  If
+you copy some snippet of code from this document, please _check_ that
+it really is correct from all points of view.  For example, you can
+check with the other documents in this directory tree, or by comparing
+with relevant parts of the include files.
+
+People have done the mistake of trusting what's written here.  Please
+don't do that.
+
+*** WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! ***
+
+
 ==== readme ========================================================
 
 This is the old 0.6.6 docuementation.  Most of the cipher stuff is still
@@ -5743,7 +5759,7 @@ strucutre but also the private key and certificate associated with
 
 EXAMPLES.
 
-So lets play at being a wierd SSL server.
+So lets play at being a weird SSL server.
 
 /* setup a context */
 ctx=SSL_CTX_new();
@@ -6710,8 +6726,8 @@ CRYPTO_set_locking_callback(locking_function);
 before any multithreading is started.
 id_function does not need to be defined under Windows NT or 95, the
 correct function will be called if it is not.  Under unix, getpid()
-is call if the id_callback is not defined, for solaris this is wrong
-(since threads id's are not pid's) but under IRIX it is correct
+is call if the id_callback is not defined, for Solaris this is wrong
+(since threads id's are not pid's) but under Linux it is correct
 (threads are just processes sharing the data segement).
 
 The locking_callback is used to perform locking by the SSLeay library.

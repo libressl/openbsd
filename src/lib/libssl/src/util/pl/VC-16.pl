@@ -1,10 +1,9 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 # VCw16lib.pl - the file for Visual C++ 1.52b for windows, static libraries
 #
 
 $ssl=	"ssleay16";
 $crypto="libeay16";
-$RSAref="RSAref16";
 
 $o='\\';
 $cp='copy';
@@ -34,7 +33,7 @@ $lflags="$base_lflags /STACK:20000";
 
 if ($win16)
 	{
-	$cflags.=" -DWINDOWS -DWIN16";
+	$cflags.=" -DOPENSSL_SYSNAME_WIN16";
 	$app_cflag="/Gw /FPi87";
 	$lib_cflag="/Gw";
 	$lib_cflag.=" -D_WINDLL -D_DLL" if $shlib;
@@ -84,8 +83,8 @@ $lfile='';
 $asm='ml /Cp /c /Cx';
 $afile='/Fo';
 
-$bn_mulw_obj='';
-$bn_mulw_src='';
+$bn_asm_obj='';
+$bn_asm_src='';
 $des_enc_obj='';
 $des_enc_src='';
 $bf_enc_obj='';
@@ -95,13 +94,13 @@ if (!$no_asm)
 	{
 	if ($asmbits == 32)
 		{
-		$bn_mulw_obj='crypto\bn\asm\x86w32.obj';
-		$bn_mulw_src='crypto\bn\asm\x86w32.asm';
+		$bn_asm_obj='crypto\bn\asm\x86w32.obj';
+		$bn_asm_src='crypto\bn\asm\x86w32.asm';
 		}
 	else
 		{
-		$bn_mulw_obj='crypto\bn\asm\x86w16.obj';
-		$bn_mulw_src='crypto\bn\asm\x86w16.asm';
+		$bn_asm_obj='crypto\bn\asm\x86w16.obj';
+		$bn_asm_src='crypto\bn\asm\x86w16.asm';
 		}
 	}
 

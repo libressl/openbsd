@@ -56,7 +56,7 @@
  *
  */
 
-#ifndef NO_HMAC
+#ifndef OPENSSL_NO_HMAC
 #include <stdio.h>
 #include "cryptlib.h"
 #include <openssl/hmac.h>
@@ -71,6 +71,7 @@ int PKCS12_gen_mac (PKCS12 *p12, const char *pass, int passlen,
 	HMAC_CTX hmac;
 	unsigned char key[PKCS12_MAC_KEY_LENGTH], *salt;
 	int saltlen, iter;
+
 	salt = p12->mac->salt->data;
 	saltlen = p12->mac->salt->length;
 	if (!p12->mac->iter) iter = 1;
@@ -85,10 +86,12 @@ int PKCS12_gen_mac (PKCS12 *p12, const char *pass, int passlen,
 		PKCS12err(PKCS12_F_PKCS12_GEN_MAC,PKCS12_R_KEY_GEN_ERROR);
 		return 0;
 	}
-	HMAC_Init (&hmac, key, PKCS12_MAC_KEY_LENGTH, md_type);
-    	HMAC_Update (&hmac, p12->authsafes->d.data->data,
+	HMAC_CTX_init(&hmac);
+	HMAC_Init_ex(&hmac, key, PKCS12_MAC_KEY_LENGTH, md_type, NULL);
+    	HMAC_Update(&hmac, p12->authsafes->d.data->data,
 					 p12->authsafes->d.data->length);
-    	HMAC_Final (&hmac, mac, maclen);
+    	HMAC_Final(&hmac, mac, maclen);
+    	HMAC_CTX_cleanup(&hmac);
 	return 1;
 }
 
@@ -106,17 +109,14 @@ int PKCS12_verify_mac (PKCS12 *p12, const char *pass, int passlen)
 		return 0;
 	}
 	if ((maclen != (unsigned int)p12->mac->dinfo->digest->length)
-	|| memcmp (mac, p12->mac->dinfo->digest->data, maclen)) {
-		PKCS12err(PKCS12_F_VERIFY_MAC,PKCS12_R_MAC_VERIFY_ERROR);
-		return 0;
-	}
+	|| memcmp (mac, p12->mac->dinfo->digest->data, maclen)) return 0;
 	return 1;
 }
 
 /* Set a mac */
 
 int PKCS12_set_mac (PKCS12 *p12, const char *pass, int passlen,
-	     unsigned char *salt, int saltlen, int iter, EVP_MD *md_type)
+	     unsigned char *salt, int saltlen, int iter, const EVP_MD *md_type)
 {
 	unsigned char mac[EVP_MAX_MD_SIZE];
 	unsigned int maclen;
@@ -131,7 +131,7 @@ int PKCS12_set_mac (PKCS12 *p12, const char *pass, int passlen,
 		PKCS12err(PKCS12_F_PKCS12_SET_MAC,PKCS12_R_MAC_GENERATION_ERROR);
 		return 0;
 	}
-	if (!(ASN1_OCTET_STRING_set (p12->mac->dinfo->digest, mac, maclen))) {
+	if (!(M_ASN1_OCTET_STRING_set (p12->mac->dinfo->digest, mac, maclen))) {
 		PKCS12err(PKCS12_F_PKCS12_SET_MAC,PKCS12_R_MAC_STRING_SET_ERROR);
 						return 0;
 	}
@@ -140,23 +140,26 @@ int PKCS12_set_mac (PKCS12 *p12, const char *pass, int passlen,
 
 /* Set up a mac structure */
 int PKCS12_setup_mac (PKCS12 *p12, int iter, unsigned char *salt, int saltlen,
-	     EVP_MD *md_type)
+	     const EVP_MD *md_type)
 {
-	if (!(p12->mac = PKCS12_MAC_DATA_new ())) return PKCS12_ERROR;
+	if (!(p12->mac = PKCS12_MAC_DATA_new())) return PKCS12_ERROR;
 	if (iter > 1) {
-		if(!(p12->mac->iter = ASN1_INTEGER_new())) {
+		if(!(p12->mac->iter = M_ASN1_INTEGER_new())) {
 			PKCS12err(PKCS12_F_PKCS12_SETUP_MAC, ERR_R_MALLOC_FAILURE);
 			return 0;
 		}
-		ASN1_INTEGER_set (p12->mac->iter, iter);
+		ASN1_INTEGER_set(p12->mac->iter, iter);
 	}
 	if (!saltlen) saltlen = PKCS12_SALT_LEN;
 	p12->mac->salt->length = saltlen;
-	if (!(p12->mac->salt->data = Malloc (saltlen))) {
+	if (!(p12->mac->salt->data = OPENSSL_malloc (saltlen))) {
 		PKCS12err(PKCS12_F_PKCS12_SETUP_MAC, ERR_R_MALLOC_FAILURE);
 		return 0;
 	}
-	if (!salt) RAND_bytes (p12->mac->salt->data, saltlen);
+	if (!salt) {
+		if (RAND_pseudo_bytes (p12->mac->salt->data, saltlen) < 0)
+			return 0;
+	}
 	else memcpy (p12->mac->salt->data, salt, saltlen);
 	p12->mac->dinfo->algor->algorithm = OBJ_nid2obj(EVP_MD_type(md_type));
 	if (!(p12->mac->dinfo->algor->parameter = ASN1_TYPE_new())) {

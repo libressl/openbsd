@@ -65,7 +65,7 @@
 #undef PROG
 #define PROG nseq_main
 
-static int dump_cert_text(BIO *out, X509 *x);
+int MAIN(int, char **);
 
 int MAIN(int argc, char **argv)
 {
@@ -119,11 +119,18 @@ int MAIN(int argc, char **argv)
 				 "Can't open output file %s\n", outfile);
 			goto end;
 		}
-	} else out = BIO_new_fp(stdout, BIO_NOCLOSE);
-
+	} else {
+		out = BIO_new_fp(stdout, BIO_NOCLOSE);
+#ifdef OPENSSL_SYS_VMS
+		{
+		BIO *tmpbio = BIO_new(BIO_f_linebuffer());
+		out = BIO_push(tmpbio, out);
+		}
+#endif
+	}
 	if (toseq) {
 		seq = NETSCAPE_CERT_SEQUENCE_new();
-		seq->certs = sk_X509_new(NULL);
+		seq->certs = sk_X509_new_null();
 		while((x509 = PEM_read_bio_X509(in, NULL, NULL, NULL))) 
 		    sk_X509_push(seq->certs,x509);
 
@@ -152,23 +159,9 @@ int MAIN(int argc, char **argv)
 	ret = 0;
 end:
 	BIO_free(in);
-	BIO_free(out);
+	BIO_free_all(out);
 	NETSCAPE_CERT_SEQUENCE_free(seq);
 
 	EXIT(ret);
-}
-
-static int dump_cert_text(BIO *out, X509 *x)
-{
-	char buf[256];
-	X509_NAME_oneline(X509_get_subject_name(x),buf,256);
-	BIO_puts(out,"subject=");
-	BIO_puts(out,buf);
-
-	X509_NAME_oneline(X509_get_issuer_name(x),buf,256);
-	BIO_puts(out,"\nissuer= ");
-	BIO_puts(out,buf);
-	BIO_puts(out,"\n");
-	return 0;
 }
 

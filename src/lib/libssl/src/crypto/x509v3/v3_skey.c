@@ -61,23 +61,14 @@
 #include "cryptlib.h"
 #include <openssl/x509v3.h>
 
-static ASN1_OCTET_STRING *octet_string_new(void);
 static ASN1_OCTET_STRING *s2i_skey_id(X509V3_EXT_METHOD *method, X509V3_CTX *ctx, char *str);
 X509V3_EXT_METHOD v3_skey_id = { 
-NID_subject_key_identifier, 0,
-(X509V3_EXT_NEW)octet_string_new,
-(X509V3_EXT_FREE)ASN1_STRING_free,
-(X509V3_EXT_D2I)d2i_ASN1_OCTET_STRING,
-(X509V3_EXT_I2D)i2d_ASN1_OCTET_STRING,
+NID_subject_key_identifier, 0, ASN1_ITEM_ref(ASN1_OCTET_STRING),
+0,0,0,0,
 (X509V3_EXT_I2S)i2s_ASN1_OCTET_STRING,
 (X509V3_EXT_S2I)s2i_skey_id,
-NULL, NULL, NULL, NULL, NULL};
-
-
-static ASN1_OCTET_STRING *octet_string_new(void)
-{
-	return ASN1_OCTET_STRING_new();
-}
+0,0,0,0,
+NULL};
 
 char *i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method,
 	     ASN1_OCTET_STRING *oct)
@@ -91,13 +82,13 @@ ASN1_OCTET_STRING *s2i_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method,
 	ASN1_OCTET_STRING *oct;
 	long length;
 
-	if(!(oct = ASN1_OCTET_STRING_new())) {
+	if(!(oct = M_ASN1_OCTET_STRING_new())) {
 		X509V3err(X509V3_F_S2I_ASN1_OCTET_STRING,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 
 	if(!(oct->data = string_to_hex(str, &length))) {
-		ASN1_OCTET_STRING_free(oct);
+		M_ASN1_OCTET_STRING_free(oct);
 		return NULL;
 	}
 
@@ -113,12 +104,11 @@ static ASN1_OCTET_STRING *s2i_skey_id(X509V3_EXT_METHOD *method,
 	ASN1_OCTET_STRING *oct;
 	ASN1_BIT_STRING *pk;
 	unsigned char pkey_dig[EVP_MAX_MD_SIZE];
-	EVP_MD_CTX md;
 	unsigned int diglen;
 
 	if(strcmp(str, "hash")) return s2i_ASN1_OCTET_STRING(method, ctx, str);
 
-	if(!(oct = ASN1_OCTET_STRING_new())) {
+	if(!(oct = M_ASN1_OCTET_STRING_new())) {
 		X509V3err(X509V3_F_S2I_S2I_SKEY_ID,ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -139,11 +129,9 @@ static ASN1_OCTET_STRING *s2i_skey_id(X509V3_EXT_METHOD *method,
 		goto err;
 	}
 
-	EVP_DigestInit(&md, EVP_sha1());
-	EVP_DigestUpdate(&md, pk->data, pk->length);
-	EVP_DigestFinal(&md, pkey_dig, &diglen);
+	EVP_Digest(pk->data, pk->length, pkey_dig, &diglen, EVP_sha1(), NULL);
 
-	if(!ASN1_OCTET_STRING_set(oct, pkey_dig, diglen)) {
+	if(!M_ASN1_OCTET_STRING_set(oct, pkey_dig, diglen)) {
 		X509V3err(X509V3_F_S2I_S2I_SKEY_ID,ERR_R_MALLOC_FAILURE);
 		goto err;
 	}
@@ -151,6 +139,6 @@ static ASN1_OCTET_STRING *s2i_skey_id(X509V3_EXT_METHOD *method,
 	return oct;
 	
 	err:
-	ASN1_OCTET_STRING_free(oct);
+	M_ASN1_OCTET_STRING_free(oct);
 	return NULL;
 }
