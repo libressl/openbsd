@@ -1,9 +1,9 @@
-#	$OpenBSD: Makefile,v 1.0 2002/07/29 07:51:00 dhartmei Exp $
+#	$OpenBSD: Makefile,v 1.1 2002/07/29 19:51:41 dhartmei Exp $
 
 NOMAN=
 PROG=atexit_test
 
-regress: ${PROG}
+run-regress-atexit_test: ${PROG}
 	./${PROG} -valid 2>${.OBJDIR}/valid.out
 	cmp -s ${.OBJDIR}/valid.out ${.CURDIR}/valid.ok
 	./${PROG} -invalid 2>${.OBJDIR}/invalid.out
