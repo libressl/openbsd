@@ -61,7 +61,7 @@ typedef struct {
 	int sn, si;
 } stack;
 
-static inline void simplesort
+static __inline void simplesort
 	    __P((const u_char **, int, int, const u_char *, u_int));
 static void r_sort_a __P((const u_char **, int, int, const u_char *, u_int));
 static void r_sort_b __P((const u_char **,
@@ -295,7 +295,7 @@ r_sort_b(a, ta, n, i, tr, endch)
 	}
 }
 		
-static inline void
+static __inline void
 simplesort(a, n, b, tr, endch)	/* insertion sort */
 	register const u_char **a;
 	int n, b;
