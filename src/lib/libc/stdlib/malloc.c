@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.38 1999/11/10 20:12:31 millert Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.39 2000/03/01 03:09:08 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -1245,6 +1245,7 @@ free(void *ptr)
     if (malloc_active++) {
 	wrtwarning("recursive call.\n");
         malloc_active--;
+	THREAD_UNLOCK();
 	return;
     }
     ifree(ptr);
