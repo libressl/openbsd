@@ -51,7 +51,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: morecrypt.c,v 1.6 1996/08/19 08:19:51 tholo Exp $";
+static char rcsid[] = "$OpenBSD: morecrypt.c,v 1.7 1996/11/14 05:45:15 etheisen Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -487,24 +487,14 @@ des_cipher(in, out, salt, count)
 
 	setup_salt((int32_t)salt);
 
-#if 0
-	rawl = ntohl(*((u_int32_t *) in)++);
-	rawr = ntohl(*((u_int32_t *) in));
-#else
 	memcpy(x, in, sizeof x);
 	rawl = ntohl(x[0]);
 	rawr = ntohl(x[1]);
-#endif
 	retval = do_des(rawl, rawr, &l_out, &r_out, count);
 
-#if 0
-	*((u_int32_t *) out)++ = htonl(l_out);
-	*((u_int32_t *) out) = htonl(r_out);
-#else
 	x[0] = htonl(l_out);
 	x[1] = htonl(r_out);
 	memcpy(out, x, sizeof x);
-#endif
 	return(retval);
 }
 
