@@ -31,16 +31,13 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: memchr.c,v 1.4 2001/09/07 08:09:31 espie Exp $";
+static char *rcsid = "$OpenBSD: memchr.c,v 1.5 2003/06/02 20:18:38 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
 
 void *
-memchr(s, c, n)
-	const void *s;
-	int c;
-	size_t n;
+memchr(const void *s, int c, size_t n)
 {
 	if (n != 0) {
 		const unsigned char *p = s;
