@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /* 
  * Further optimized test implementation of SKIPJACK algorithm 
  * Mark Tillotson <markt@chaos.org.uk>, 25 June 98
