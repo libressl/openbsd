@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /*
  * FreeSec: libcrypt
  *
@@ -50,7 +52,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: crypt.c,v 1.11 1997/07/09 01:08:14 millert Exp $";
+static char rcsid[] = "$OpenBSD: crypt.c,v 1.12 1997/09/10 23:15:43 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
