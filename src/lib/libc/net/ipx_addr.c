@@ -1,5 +1,3 @@
-/* 	$OpenBSD$	*/
-
 /*
  * Copyright (c) 1986, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -37,6 +35,10 @@
  *
  * from @(#)ipx_addr.c
  */
+
+#if defined(LIBC_SCCS) && !defined(lint)
+static char rcsid[] = "$OpenBSD$";
+#endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
 #include <netipx/ipx.h>

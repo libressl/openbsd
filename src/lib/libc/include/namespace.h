@@ -1,4 +1,4 @@
-/*	$NetBSD: namespace.h,v 1.2 1995/02/27 13:02:12 cgd Exp $	*/
+/*	$OpenBSD: namespace.h,v 1.2 1995/02/27 13:02:12 cgd Exp $	*/
 
 #define catclose	_catclose
 #define catgets		_catgets
