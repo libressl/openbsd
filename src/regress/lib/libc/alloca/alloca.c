@@ -1,11 +1,11 @@
-/*	$OpenBSD: alloca.c,v 1.2 2003/06/26 17:15:27 david Exp $	*/
+/*	$OpenBSD: alloca.c,v 1.3 2003/07/31 03:23:41 mickey Exp $	*/
 
 /*	Written by Michael Shalayeff, 2003, Public Domain.	*/
 
 #include <stdio.h>
 
 int
-main()
+main(int argc, char *argv[])
 {
 	char *q, *p;
 
