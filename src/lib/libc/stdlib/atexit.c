@@ -29,12 +29,13 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: atexit.c,v 1.3 2002/07/29 19:54:42 dhartmei Exp $";
+static char *rcsid = "$OpenBSD: atexit.c,v 1.5 2002/08/30 07:58:07 dhartmei Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "atexit.h"
 
 int __atexit_invalid = 1;
