@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_net_ntop.c,v 1.2 2002/02/17 19:42:23 millert Exp $	*/
+/*	$OpenBSD: inet_net_ntop.c,v 1.3 2002/08/19 03:01:54 itojun Exp $	*/
 
 /*
  * Copyright (c) 1996 by Internet Software Consortium.
@@ -21,7 +21,7 @@
 #if 0
 static const char rcsid[] = "$From: inet_net_ntop.c,v 8.2 1996/08/08 06:54:44 vixie Exp $";
 #else
-static const char rcsid[] = "$OpenBSD: inet_net_ntop.c,v 1.2 2002/02/17 19:42:23 millert Exp $";
+static const char rcsid[] = "$OpenBSD: inet_net_ntop.c,v 1.3 2002/08/19 03:01:54 itojun Exp $";
 #endif
 #endif
 
@@ -85,7 +85,6 @@ inet_net_ntop_ipv4(src, bits, dst, size)
 	size_t size;
 {
 	char *odst = dst;
-	char *t;
 	u_int m;
 	int b;
 	char *ep;
