@@ -1,4 +1,4 @@
-/* $OpenBSD: thread_private.h,v 1.3 2000/01/06 07:47:09 d Exp $ */
+/* $OpenBSD: thread_private.h,v 1.4 2000/01/06 08:57:29 d Exp $ */
 
 #ifndef _THREAD_PRIVATE_H_
 #define _THREAD_PRIVATE_H_
@@ -30,7 +30,7 @@ extern int __isthreaded;
 #endif
 #define WEAK_ALIAS(name)		/* unavailable */
 #define WEAK_PROTOTYPE(name)		/* unnecessary */
-#else /* !_NO_WEAK_AILASES */
+#else /* !_NO_WEAK_ALIASES */
 #define WEAK_NAME(name)			__CONCAT(_weak_,name)
 #define WEAK_ALIAS(name)		__weak_alias(name, WEAK_NAME(name))
 #ifdef __GNUC__
