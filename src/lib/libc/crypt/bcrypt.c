@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcrypt.c,v 1.7 1997/07/09 01:08:18 millert Exp $	*/
+/*	$OpenBSD: bcrypt.c,v 1.8 1997/07/23 20:58:26 kstailey Exp $	*/
 
 /*
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
@@ -97,7 +97,7 @@ const static u_int8_t index_64[128] =
 };
 #define CHAR64(c)  ( (c) > 127 ? 255 : index_64[(c)])
 
-#if __STDC__
+#ifdef __STDC__
 static void
 decode_base64(u_int8_t *buffer, u_int16_t len, u_int8_t *data)
 #else
