@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.6 2002/01/15 18:51:39 art Exp $
+#	$OpenBSD: Makefile,v 1.7 2002/05/15 02:36:07 beck Exp $
 
 CLEANFILES+= testdsa.key testdsa.pem rsakey.pem rsacert.pem dsa512.pem
 
@@ -94,8 +94,8 @@ ssl-dsa:
 ssl-rsa:
 	sh ${.CURDIR}/testrsa.sh ${.OBJDIR} ${.CURDIR}
 
-e_os.h: /usr/include/openssl/e_os.h
-	cp /usr/include/openssl/e_os.h ${.OBJDIR}
+e_os.h: ${.CURDIR}/../../../lib/libssl/src/e_os.h
+	cp ${.CURDIR}/../../../lib/libssl/src/e_os.h ${.OBJDIR}
 
 ossltests: ${OTESTS} ${BNTEST} ${EVPTEST}
 	@echo running ${BNTEST}, check ${.OBJDIR}/${BNTEST}.out if this fails.
