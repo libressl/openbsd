@@ -567,8 +567,13 @@ no_passphrase_callback(char *buf, int num, int w, void *arg)
     return -1;
 }
 
+#if OPENSSL_VERSION_NUMBER >= 0x00907000L
 static int
 verify_dont_fail_cb(X509_STORE_CTX *c, void *unused_arg)
+#else
+static int
+verify_dont_fail_cb(X509_STORE_CTX *c)
+#endif
 {
     int i;
     
