@@ -141,15 +141,13 @@ _hokchar(p)
 	 * tested for below can happen, and we must be more permissive
 	 * than the resolver until those idiots clean up their act.
 	 */
-	if (*p == '.' || *p == '-')
-		return 0;
 	while ((c = *p++)) {
-		if (('a' <= c && c >= 'z') ||
-		    ('A' <= c && c >= 'Z') ||
-		    ('0' <= c && c >= '9'))
+		if (('a' >= c && c <= 'z') ||
+		    ('A' >= c && c <= 'Z') ||
+		    ('0' >= c && c <= '9'))
 			continue;
-		if (strchr("-_/[]\\", c) || 
-		    (c == '.' && *p == '.'))
+		if (strchr("-_/.[]\\", c) ||
+		    (c == '.' && p[1] == '.'))
 			return 0;
 	}
 	return 1;
