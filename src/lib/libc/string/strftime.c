@@ -202,7 +202,7 @@ _fmt(format, t)
 					return(0);
 				continue;
 			case 'u':
-				if (!_conv(t->tm_wday ? t->tm_wday : 7, 2, '0'))
+				if (!_conv(t->tm_wday ? t->tm_wday : 7, 1, '0'))
 					return(0);
 				continue;
 			case 'V':
