@@ -44,6 +44,7 @@ $!  keywords:
 $!
 $!	UCX		for UCX
 $!	SOCKETSHR	for SOCKETSHR+NETLIB
+$!	TCPIP		for TCPIP (post UCX)
 $!
 $!  P5, if defined, sets a compiler thread NOT needed on OpenVMS 7.1 (and up)
 $!
@@ -79,7 +80,7 @@ $!
 $! Define what programs should be compiled
 $!
 $ PROGRAMS := OPENSSL
-$!$ PROGRAMS := VERIFY,ASN1PARS,REQ,DGST,DH,ENC,GENDH,ERRSTR,CA,CRL,-
+$!$ PROGRAMS := VERIFY,ASN1PARS,REQ,DGST,DH,ENC,PASSWD,GENDH,ERRSTR,CA,CRL,-
 $!	      RSA,DSA,DSAPARAM,-
 $!	      X509,GENRSA,GENDSA,S_SERVER,S_CLIENT,SPEED,-
 $!	      S_TIME,VERSION,PKCS7,CRL2P7,SESS_ID,CIPHERS,NSEQ,
@@ -152,20 +153,18 @@ $ GOSUB CHECK_OPT_FILE
 $!
 $! Define The Application Files.
 $!
-$ LIB_FILES = "VERIFY;ASN1PARS;REQ;DGST;DH;ENC;GENDH;"+-
-	      "ERRSTR;CA;"+-
-	      "PKCS7;CRL2P7;CRL;"+-
-	      "RSA;DSA;DSAPARAM;"+-
+$ LIB_FILES = "VERIFY;ASN1PARS;REQ;DGST;DH;DHPARAM;ENC;PASSWD;GENDH;ERRSTR;"+-
+	      "CA;PKCS7;CRL2P7;CRL;"+-
+	      "RSA;RSAUTL;DSA;DSAPARAM;"+-
 	      "X509;GENRSA;GENDSA;S_SERVER;S_CLIENT;SPEED;"+-
-	      "S_TIME;APPS;S_CB;S_SOCKET;VERSION;SESS_ID;"+-
-	      "CIPHERS;NSEQ;PKCS12;PKCS8"
-$ APP_FILES := OPENSSL,'OBJ_DIR'VERIFY.OBJ,ASN1PARS.OBJ,REQ.OBJ,DGST.OBJ,DH.OBJ,ENC.OBJ,GENDH.OBJ,-
-	       ERRSTR.OBJ,CA.OBJ,-
-	       PKCS7.OBJ,CRL2P7.OBJ,CRL.OBJ,-
-	       RSA.OBJ,DSA.OBJ,DSAPARAM.OBJ,-
+	      "S_TIME;APPS;S_CB;S_SOCKET;APP_RAND;VERSION;SESS_ID;"+-
+	      "CIPHERS;NSEQ;PKCS12;PKCS8;SPKAC;SMIME;RAND;ENGINE;OCSP"
+$ APP_FILES := OPENSSL,'OBJ_DIR'VERIFY.OBJ,ASN1PARS.OBJ,REQ.OBJ,DGST.OBJ,DH.OBJ,DHPARAM.OBJ,ENC.OBJ,PASSWD.OBJ,GENDH.OBJ,ERRSTR.OBJ,-
+	       CA.OBJ,PKCS7.OBJ,CRL2P7.OBJ,CRL.OBJ,-
+	       RSA.OBJ,RSAUTL.OBJ,DSA.OBJ,DSAPARAM.OBJ,-
 	       X509.OBJ,GENRSA.OBJ,GENDSA.OBJ,S_SERVER.OBJ,S_CLIENT.OBJ,SPEED.OBJ,-
-	       S_TIME.OBJ,APPS.OBJ,S_CB.OBJ,S_SOCKET.OBJ,VERSION.OBJ,SESS_ID.OBJ,-
-	       CIPHERS.OBJ,NSEQ.OBJ,PKCS12.OBJ,PKCS8.OBJ
+	       S_TIME.OBJ,APPS.OBJ,S_CB.OBJ,S_SOCKET.OBJ,APP_RAND.OBJ,VERSION.OBJ,SESS_ID.OBJ,-
+	       CIPHERS.OBJ,NSEQ.OBJ,PKCS12.OBJ,PKCS8.OBJ,SPKAC.OBJ,SMIME.OBJ,RAND.OBJ,ENGINE.OBJ,OCSP.OBJ
 $ TCPIP_PROGRAMS = ",,"
 $ IF COMPILER .EQS. "VAXC" THEN -
      TCPIP_PROGRAMS = ",OPENSSL,"
@@ -583,6 +582,7 @@ $ CHECK_OPTIONS:
 $!
 $! Check To See If P1 Is Blank.
 $!
+$ P1 = "NORSAREF"
 $ IF (P1.EQS."NORSAREF")
 $ THEN
 $!
@@ -807,13 +807,13 @@ $ ENDIF
 $!
 $! Set Up Initial CC Definitions, Possibly With User Ones
 $!
-$ CCDEFS = "VMS=1,MONOLITH"
+$ CCDEFS = "MONOLITH"
 $ IF F$TYPE(USER_CCDEFS) .NES. "" THEN CCDEFS = CCDEFS + "," + USER_CCDEFS
 $ CCEXTRAFLAGS = ""
 $ IF F$TYPE(USER_CCFLAGS) .NES. "" THEN CCEXTRAFLAGS = USER_CCFLAGS
-$ CCDISABLEWARNINGS = ""
+$ CCDISABLEWARNINGS = "LONGLONGTYPE,LONGLONGSUFX"
 $ IF F$TYPE(USER_CCDISABLEWARNINGS) .NES. "" THEN -
-	CCDISABLEWARNINGS = USER_CCDISABLEWARNINGS
+	CCDISABLEWARNINGS = CCDISABLEWARNINGS + "," + USER_CCDISABLEWARNINGS
 $!
 $!  Check To See If The User Entered A Valid Paramter.
 $!
@@ -839,7 +839,8 @@ $     CC = "CC"
 $     IF ARCH.EQS."VAX" .AND. F$TRNLNM("DECC$CC_DEFAULT").NES."/DECC" -
 	 THEN CC = "CC/DECC"
 $     CC = CC + "/''CC_OPTIMIZE'/''DEBUGGER'/STANDARD=ANSI89" + -
-           "/NOLIST/PREFIX=ALL" + CCEXTRAFLAGS
+           "/NOLIST/PREFIX=ALL" + -
+	   "/INCLUDE=(SYS$DISK:[-])" + CCEXTRAFLAGS
 $!
 $!    Define The Linker Options File Name.
 $!
@@ -870,7 +871,8 @@ $	WRITE SYS$OUTPUT "There is no VAX C on Alpha!"
 $	EXIT
 $     ENDIF
 $     IF F$TRNLNM("DECC$CC_DEFAULT").EQS."/DECC" THEN CC = "CC/VAXC"
-$     CC = CC + "/''CC_OPTIMIZE'/''DEBUGGER'/NOLIST" + CCEXTRAFLAGS
+$     CC = CC + "/''CC_OPTIMIZE'/''DEBUGGER'/NOLIST" + -
+	   "/INCLUDE=(SYS$DISK:[-])" + CCEXTRAFLAGS
 $     CCDEFS = CCDEFS + ",""VAXC"""
 $!
 $!    Define <sys> As SYS$COMMON:[SYSLIB]
@@ -901,7 +903,8 @@ $!
 $!    Use GNU C...
 $!
 $     IF F$TYPE(GCC) .EQS. "" THEN GCC := GCC
-$     CC = GCC+"/NOCASE_HACK/''GCC_OPTIMIZE'/''DEBUGGER'/NOLIST" + CCEXTRAFLAGS
+$     CC = GCC+"/NOCASE_HACK/''GCC_OPTIMIZE'/''DEBUGGER'/NOLIST" + -
+	   "/INCLUDE=(SYS$DISK:[-])" + CCEXTRAFLAGS
 $!
 $!    Define The Linker Options File Name.
 $!
@@ -961,7 +964,8 @@ $ ENDIF
 $!
 $! Time to check the contents, and to make sure we get the correct library.
 $!
-$ IF P4.EQS."SOCKETSHR" .OR. P4.EQS."MULTINET" .OR. P4.EQS."UCX"
+$ IF P4.EQS."SOCKETSHR" .OR. P4.EQS."MULTINET" .OR. P4.EQS."UCX" -
+     .OR. P4.EQS."TCPIP" .OR. P4.EQS."NONE"
 $ THEN
 $!
 $!  Check to see if SOCKETSHR was chosen
@@ -971,7 +975,7 @@ $   THEN
 $!
 $!    Set the library to use SOCKETSHR
 $!
-$     TCPIP_LIB = "[-.VMS]SOCKETSHR_SHR.OPT/OPT"
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]SOCKETSHR_SHR.OPT/OPT"
 $!
 $!    Done with SOCKETSHR
 $!
@@ -997,16 +1001,42 @@ $   THEN
 $!
 $!    Set the library to use UCX.
 $!
-$     TCPIP_LIB = "[-.VMS]UCX_SHR_DECC.OPT/OPT"
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_DECC.OPT/OPT"
 $     IF F$TRNLNM("UCX$IPC_SHR") .NES. ""
 $     THEN
-$       TCPIP_LIB = "[-.VMS]UCX_SHR_DECC_LOG.OPT/OPT"
+$       TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_DECC_LOG.OPT/OPT"
 $     ELSE
 $       IF COMPILER .NES. "DECC" .AND. ARCH .EQS. "VAX" THEN -
-	  TCPIP_LIB = "[-.VMS]UCX_SHR_VAXC.OPT/OPT"
+	  TCPIP_LIB = "SYS$DISK:[-.VMS]UCX_SHR_VAXC.OPT/OPT"
 $     ENDIF
 $!
 $!    Done with UCX
+$!
+$   ENDIF
+$!
+$!  Check to see if TCPIP (post UCX) was chosen
+$!
+$   IF P4.EQS."TCPIP"
+$   THEN
+$!
+$!    Set the library to use TCPIP.
+$!
+$     TCPIP_LIB = "SYS$DISK:[-.VMS]TCPIP_SHR_DECC.OPT/OPT"
+$!
+$!    Done with TCPIP
+$!
+$   ENDIF
+$!
+$!  Check to see if NONE was chosen
+$!
+$   IF P4.EQS."NONE"
+$   THEN
+$!
+$!    Do not use TCPIP.
+$!
+$     TCPIP_LIB = ""
+$!
+$!    Done with TCPIP
 $!
 $   ENDIF
 $!
@@ -1029,6 +1059,7 @@ $   WRITE SYS$OUTPUT "The Option ",P4," Is Invalid.  The Valid Options Are:"
 $   WRITE SYS$OUTPUT ""
 $   WRITE SYS$OUTPUT "    SOCKETSHR  :  To link with SOCKETSHR TCP/IP library."
 $   WRITE SYS$OUTPUT "    UCX        :  To link with UCX TCP/IP library."
+$   WRITE SYS$OUTPUT "    TCPIP      :  To link with TCPIP (post UCX) TCP/IP library."
 $   WRITE SYS$OUTPUT ""
 $!
 $!  Time To EXIT.
@@ -1111,6 +1142,7 @@ $!
 $! Save directory information
 $!
 $ __HERE = F$PARSE(F$PARSE("A.;",F$ENVIRONMENT("PROCEDURE"))-"A.;","[]A.;") - "A.;"
+$ __HERE = F$EDIT(__HERE,"UPCASE")
 $ __TOP = __HERE - "APPS]"
 $ __INCLUDE = __TOP + "INCLUDE.OPENSSL]"
 $!

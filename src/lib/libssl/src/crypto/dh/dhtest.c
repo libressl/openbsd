@@ -59,52 +59,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef WINDOWS
+#ifdef OPENSSL_SYS_WINDOWS
 #include "../bio/bss_file.c" 
 #endif
-#include "crypto.h"
-#include "bio.h"
-#include "bn.h"
-#include "dh.h"
+#include <openssl/crypto.h>
+#include <openssl/bio.h>
+#include <openssl/bn.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
 
-#ifdef WIN16
+#ifdef OPENSSL_NO_DH
+int main(int argc, char *argv[])
+{
+    printf("No DH support\n");
+    return(0);
+}
+#else
+#include <openssl/dh.h>
+
+#ifdef OPENSSL_SYS_WIN16
 #define MS_CALLBACK	_far _loadds
 #else
 #define MS_CALLBACK
 #endif
 
-#ifndef NOPROTO
-static void MS_CALLBACK cb(int p, int n, char *arg);
-#else
-static void MS_CALLBACK cb();
-#endif
-
-#ifdef NO_STDIO
+static void MS_CALLBACK cb(int p, int n, void *arg);
+#ifdef OPENSSL_NO_STDIO
 #define APPS_WIN16
 #include "bss_file.c"
 #endif
 
-BIO *out=NULL;
+static const char rnd_seed[] = "string to make the random number generator think it has entropy";
 
-int main(argc,argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 	{
-	DH *a,*b;
+	DH *a;
+	DH *b=NULL;
 	char buf[12];
 	unsigned char *abuf=NULL,*bbuf=NULL;
 	int i,alen,blen,aout,bout,ret=1;
+	BIO *out;
 
-#ifdef WIN32
+	CRYPTO_malloc_debug_init();
+	CRYPTO_dbg_set_options(V_CRYPTO_MDEBUG_ALL);
+	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
+
+#ifdef OPENSSL_SYS_WIN32
 	CRYPTO_malloc_init();
 #endif
+
+	RAND_seed(rnd_seed, sizeof rnd_seed);
 
 	out=BIO_new(BIO_s_file());
 	if (out == NULL) exit(1);
 	BIO_set_fp(out,stdout,BIO_NOCLOSE);
 
-	a=DH_generate_parameters(64,DH_GENERATOR_5,cb,(char *)out);
+	a=DH_generate_parameters(64,DH_GENERATOR_5,cb,out);
 	if (a == NULL) goto err;
+
+	if (!DH_check(a, &i)) goto err;
+	if (i & DH_CHECK_P_NOT_PRIME)
+		BIO_puts(out, "p value is not prime\n");
+	if (i & DH_CHECK_P_NOT_SAFE_PRIME)
+		BIO_puts(out, "p value is not a safe prime\n");
+	if (i & DH_UNABLE_TO_CHECK_GENERATOR)
+		BIO_puts(out, "unable to check the generator value\n");
+	if (i & DH_NOT_SUITABLE_GENERATOR)
+		BIO_puts(out, "the g value is not a generator\n");
 
 	BIO_puts(out,"\np    =");
 	BN_print(out,a->p);
@@ -134,7 +155,7 @@ char *argv[];
 	BIO_puts(out,"\n");
 
 	alen=DH_size(a);
-	abuf=(unsigned char *)Malloc(alen);
+	abuf=(unsigned char *)OPENSSL_malloc(alen);
 	aout=DH_compute_key(abuf,b->pub_key,a);
 
 	BIO_puts(out,"key1 =");
@@ -146,7 +167,7 @@ char *argv[];
 	BIO_puts(out,"\n");
 
 	blen=DH_size(b);
-	bbuf=(unsigned char *)Malloc(blen);
+	bbuf=(unsigned char *)OPENSSL_malloc(blen);
 	bout=DH_compute_key(bbuf,a->pub_key,b);
 
 	BIO_puts(out,"key2 =");
@@ -164,16 +185,21 @@ char *argv[];
 	else
 		ret=0;
 err:
-	if (abuf != NULL) Free(abuf);
-	if (bbuf != NULL) Free(bbuf);
+	ERR_print_errors_fp(stderr);
+
+	if (abuf != NULL) OPENSSL_free(abuf);
+	if (bbuf != NULL) OPENSSL_free(bbuf);
+	if(b != NULL) DH_free(b);
+	if(a != NULL) DH_free(a);
+	BIO_free(out);
+	CRYPTO_cleanup_all_ex_data();
+	ERR_remove_state(0);
+	CRYPTO_mem_leaks_fp(stderr);
 	exit(ret);
 	return(ret);
 	}
 
-static void MS_CALLBACK cb(p, n,arg)
-int p;
-int n;
-char *arg;
+static void MS_CALLBACK cb(int p, int n, void *arg)
 	{
 	char c='*';
 
@@ -182,7 +208,9 @@ char *arg;
 	if (p == 2) c='*';
 	if (p == 3) c='\n';
 	BIO_write((BIO *)arg,&c,1);
+	(void)BIO_flush((BIO *)arg);
 #ifdef LINT
 	p=n;
 #endif
 	}
+#endif

@@ -1,14 +1,10 @@
-#!/usr/bin/perl
-
-# Because the bswapl instruction is not supported for old assembers
-# (it was a new instruction for the 486), I've added .byte xxxx code
-# to put it in.
-# eric 24-Apr-1998
-#
+#!/usr/local/bin/perl
 
 package x86unix;
 
 $label="L000";
+$const="";
+$constl=0;
 
 $align=($main'aout)?"4":"16";
 $under=($main'aout)?"_":"";
@@ -85,12 +81,17 @@ sub main'DWP
 	local($addr,$reg1,$reg2,$idx)=@_;
 
 	$ret="";
-	$addr =~ s/(^|[+ \t])([A-Za-z_]+)($|[+ \t])/$1$under$2$3/;
+	$addr =~ s/(^|[+ \t])([A-Za-z_]+[A-Za-z0-9_]+)($|[+ \t])/$1$under$2$3/;
 	$reg1="$regs{$reg1}" if defined($regs{$reg1});
 	$reg2="$regs{$reg2}" if defined($regs{$reg2});
 	$ret.=$addr if ($addr ne "") && ($addr ne 0);
 	if ($reg2 ne "")
-		{ $ret.="($reg1,$reg2,$idx)"; }
+		{
+		if($idx ne "")
+		    { $ret.="($reg1,$reg2,$idx)"; }
+		else
+		    { $ret.="($reg1,$reg2)"; }
+	        }
 	else
 		{ $ret.="($reg1)" }
 	return($ret);
@@ -99,6 +100,16 @@ sub main'DWP
 sub main'BP
 	{
 	return(&main'DWP(@_));
+	}
+
+sub main'BC
+	{
+	return @_;
+	}
+
+sub main'DWC
+	{
+	return @_;
 	}
 
 #sub main'BP
@@ -153,11 +164,28 @@ sub main'dec	{ &out1("decl",@_); }
 sub main'inc	{ &out1("incl",@_); }
 sub main'push	{ &out1("pushl",@_); $stack+=4; }
 sub main'pop	{ &out1("popl",@_); $stack-=4; }
-sub main'bswap	{ &out1("bswapl",@_); }
+sub main'pushf	{ &out0("pushf"); $stack+=4; }
+sub main'popf	{ &out0("popf"); $stack-=4; }
 sub main'not	{ &out1("notl",@_); }
 sub main'call	{ &out1("call",$under.$_[0]); }
 sub main'ret	{ &out0("ret"); }
 sub main'nop	{ &out0("nop"); }
+
+# The bswapl instruction is new for the 486. Emulate if i386.
+sub main'bswap
+	{
+	if ($main'i386)
+		{
+		&main'comment("bswapl @_");
+		&main'exch(main'HB(@_),main'LB(@_));
+		&main'rotr(@_,16);
+		&main'exch(main'HB(@_),main'LB(@_));
+		}
+	else
+		{
+		&out1("bswapl",@_);
+		}
+	}
 
 sub out2
 	{
@@ -268,6 +296,8 @@ EOF
 	push(@out,$tmp);
 	if ($main'cpp)
 		{ $tmp=push(@out,"\tTYPE($func,\@function)\n"); }
+	elsif ($main'gaswin)
+		{ $tmp=push(@out,"\t.def\t$func;\t.scl\t2;\t.type\t32;\t.endef\n"); }
 	else	{ $tmp=push(@out,"\t.type\t$func,\@function\n"); }
 	push(@out,"$func:\n");
 	$tmp=<<"EOF";
@@ -296,6 +326,8 @@ EOF
 	push(@out,$tmp);
 	if ($main'cpp)
 		{ push(@out,"\tTYPE($func,\@function)\n"); }
+	elsif ($main'gaswin)
+		{ $tmp=push(@out,"\t.def\t$func;\t.scl\t2;\t.type\t32;\t.endef\n"); }
 	else	{ push(@out,"\t.type	$func,\@function\n"); }
 	push(@out,"$func:\n");
 	$stack=4;
@@ -316,8 +348,11 @@ sub main'function_end
 .${func}_end:
 EOF
 	push(@out,$tmp);
+
 	if ($main'cpp)
 		{ push(@out,"\tSIZE($func,.${func}_end-$func)\n"); }
+	elsif ($main'gaswin)
+                { $tmp=push(@out,"\t.align 4\n"); }
 	else	{ push(@out,"\t.size\t$func,.${func}_end-$func\n"); }
 	push(@out,".ident	\"$func\"\n");
 	$stack=0;
@@ -344,10 +379,12 @@ sub main'function_end_B
 
 	$func=$under.$func;
 
-	push(@out,".${func}_end:\n");
+	push(@out,".L_${func}_end:\n");
 	if ($main'cpp)
-		{ push(@out,"\tSIZE($func,.${func}_end-$func)\n"); }
-	else	{ push(@out,"\t.size\t$func,.${func}_end-$func\n"); }
+		{ push(@out,"\tSIZE($func,.L_${func}_end-$func)\n"); }
+        elsif ($main'gaswin)
+                { push(@out,"\t.align 4\n"); }
+	else	{ push(@out,"\t.size\t$func,.L_${func}_end-$func\n"); }
 	push(@out,".ident	\"desasm.pl\"\n");
 	$stack=0;
 	%label=();
@@ -421,9 +458,87 @@ sub main'set_label
 
 sub main'file_end
 	{
+	if ($const ne "")
+		{
+		push(@out,".section .rodata\n");
+		push(@out,$const);
+		$const="";
+		}
 	}
 
 sub main'data_word
 	{
 	push(@out,"\t.long $_[0]\n");
+	}
+
+# debug output functions: puts, putx, printf
+
+sub main'puts
+	{
+	&pushvars();
+	&main'push('$Lstring' . ++$constl);
+	&main'call('puts');
+	$stack-=4;
+	&main'add("esp",4);
+	&popvars();
+
+	$const .= "Lstring$constl:\n\t.string \"@_[0]\"\n";
+	}
+
+sub main'putx
+	{
+	&pushvars();
+	&main'push($_[0]);
+	&main'push('$Lstring' . ++$constl);
+	&main'call('printf');
+	&main'add("esp",8);
+	$stack-=8;
+	&popvars();
+
+	$const .= "Lstring$constl:\n\t.string \"\%X\"\n";
+	}
+
+sub main'printf
+	{
+	$ostack = $stack;
+	&pushvars();
+	for ($i = @_ - 1; $i >= 0; $i--)
+		{
+		if ($i == 0) # change this to support %s format strings
+			{
+			&main'push('$Lstring' . ++$constl);
+			$const .= "Lstring$constl:\n\t.string \"@_[$i]\"\n";
+			}
+		else
+			{
+			if ($_[$i] =~ /([0-9]*)\(%esp\)/)
+				{
+				&main'push(($1 + $stack - $ostack) . '(%esp)');
+				}
+			else
+				{
+				&main'push($_[$i]);
+				}
+			}
+		}
+	&main'call('printf');
+	$stack-=4*@_;
+	&main'add("esp",4*@_);
+	&popvars();
+	}
+
+sub pushvars
+	{
+	&main'pushf();
+	&main'push("edx");
+	&main'push("ecx");
+	&main'push("eax");
+	}
+
+sub popvars
+	{
+	&main'pop("eax");
+	&main'pop("ecx");
+	&main'pop("edx");
+	&main'popf();
 	}

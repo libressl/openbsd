@@ -67,7 +67,7 @@
 	and everything was OK. BUT if user types wrong password 
 	BIO_f_cipher outputs only garbage and my function crashes. Yes
 	I can and I should fix my function, but BIO_f_cipher is 
-	easy way to add encryption support to many exisiting applications
+	easy way to add encryption support to many existing applications
 	and it's hard to debug and fix them all. 
 
 	So I wanted another BIO which would catch the incorrect passwords and
@@ -80,10 +80,10 @@
 	1) you must somehow separate checksum from actual data. 
 	2) you need lot's of memory when reading the file, because you 
 	must read to the end of the file and verify the checksum before
-	leting the application to read the data. 
+	letting the application to read the data. 
 	
 	BIO_f_reliable tries to solve both problems, so that you can 
-	read and write arbitraly long streams using only fixed amount
+	read and write arbitrary long streams using only fixed amount
 	of memory.
 
 	BIO_f_reliable splits data stream into blocks. Each block is prefixed
@@ -91,7 +91,7 @@
 	several Kbytes of memory to buffer single block before verifying 
 	it's digest. 
 
-	BIO_f_reliable goes futher and adds several important capabilities:
+	BIO_f_reliable goes further and adds several important capabilities:
 
 	1) the digest of the block is computed over the whole stream 
 	-- so nobody can rearrange the blocks or remove or replace them.
@@ -110,7 +110,7 @@
 	and then compare the digest output.
 
 	Bad things: BIO_f_reliable knows what's going on in EVP_Digest. I 
-	initialy wrote and tested this code on x86 machine and wrote the
+	initially wrote and tested this code on x86 machine and wrote the
 	digests out in machine-dependent order :( There are people using
 	this code and I cannot change this easily without making existing
 	data files unreadable.
@@ -125,11 +125,13 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
-static int ok_write(BIO *h,char *buf,int num);
-static int ok_read(BIO *h,char *buf,int size);
-static long ok_ctrl(BIO *h,int cmd,long arg1,char *arg2);
+static int ok_write(BIO *h, const char *buf, int num);
+static int ok_read(BIO *h, char *buf, int size);
+static long ok_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int ok_new(BIO *h);
 static int ok_free(BIO *data);
+static long ok_callback_ctrl(BIO *h, int cmd, bio_info_cb *fp);
+
 static void sig_out(BIO* b);
 static void sig_in(BIO* b);
 static void block_out(BIO* b);
@@ -160,7 +162,7 @@ typedef struct ok_struct
 	EVP_MD_CTX md;
 	int blockout;		/* output block is ready */ 
 	int sigio;		/* must process signature */
-	char buf[IOBS];
+	unsigned char buf[IOBS];
 	} BIO_OK_CTX;
 
 static BIO_METHOD methods_ok=
@@ -173,6 +175,7 @@ static BIO_METHOD methods_ok=
 	ok_ctrl,
 	ok_new,
 	ok_free,
+	ok_callback_ctrl,
 	};
 
 BIO_METHOD *BIO_f_reliable(void)
@@ -184,7 +187,7 @@ static int ok_new(BIO *bi)
 	{
 	BIO_OK_CTX *ctx;
 
-	ctx=(BIO_OK_CTX *)Malloc(sizeof(BIO_OK_CTX));
+	ctx=(BIO_OK_CTX *)OPENSSL_malloc(sizeof(BIO_OK_CTX));
 	if (ctx == NULL) return(0);
 
 	ctx->buf_len=0;
@@ -196,6 +199,8 @@ static int ok_new(BIO *bi)
 	ctx->blockout= 0;
 	ctx->sigio=1;
 
+	EVP_MD_CTX_init(&ctx->md);
+
 	bi->init=0;
 	bi->ptr=(char *)ctx;
 	bi->flags=0;
@@ -205,8 +210,9 @@ static int ok_new(BIO *bi)
 static int ok_free(BIO *a)
 	{
 	if (a == NULL) return(0);
+	EVP_MD_CTX_cleanup(&((BIO_OK_CTX *)a->ptr)->md);
 	memset(a->ptr,0,sizeof(BIO_OK_CTX));
-	Free(a->ptr);
+	OPENSSL_free(a->ptr);
 	a->ptr=NULL;
 	a->init=0;
 	a->flags=0;
@@ -284,7 +290,7 @@ static int ok_read(BIO *b, char *out, int outl)
 	return(ret);
 	}
 
-static int ok_write(BIO *b, char *in, int inl)
+static int ok_write(BIO *b, const char *in, int inl)
 	{
 	int ret=0,n,i;
 	BIO_OK_CTX *ctx;
@@ -342,7 +348,7 @@ static int ok_write(BIO *b, char *in, int inl)
 	return(ret);
 	}
 
-static long ok_ctrl(BIO *b, int cmd, long num, char *ptr)
+static long ok_ctrl(BIO *b, int cmd, long num, void *ptr)
 	{
 	BIO_OK_CTX *ctx;
 	EVP_MD *md;
@@ -350,7 +356,7 @@ static long ok_ctrl(BIO *b, int cmd, long num, char *ptr)
 	long ret=1;
 	int i;
 
-	ctx=(BIO_OK_CTX *)b->ptr;
+	ctx=b->ptr;
 
 	switch (cmd)
 		{
@@ -408,14 +414,14 @@ static long ok_ctrl(BIO *b, int cmd, long num, char *ptr)
 		ret=(long)ctx->cont;
 		break;
 	case BIO_C_SET_MD:
-		md=(EVP_MD *)ptr;
-		EVP_DigestInit(&(ctx->md),md);
+		md=ptr;
+		EVP_DigestInit_ex(&ctx->md, md, NULL);
 		b->init=1;
 		break;
 	case BIO_C_GET_MD:
 		if (b->init)
 			{
-			ppmd=(const EVP_MD **)ptr;
+			ppmd=ptr;
 			*ppmd=ctx->md.digest;
 			}
 		else
@@ -423,6 +429,20 @@ static long ok_ctrl(BIO *b, int cmd, long num, char *ptr)
 		break;
 	default:
 		ret=BIO_ctrl(b->next_bio,cmd,num,ptr);
+		break;
+		}
+	return(ret);
+	}
+
+static long ok_callback_ctrl(BIO *b, int cmd, bio_info_cb *fp)
+	{
+	long ret=1;
+
+	if (b->next_bio == NULL) return(0);
+	switch (cmd)
+		{
+	default:
+		ret=BIO_callback_ctrl(b->next_bio,cmd,fp);
 		break;
 		}
 	return(ret);
@@ -445,19 +465,22 @@ static void sig_out(BIO* b)
 	BIO_OK_CTX *ctx;
 	EVP_MD_CTX *md;
 
-	ctx=(BIO_OK_CTX *)b->ptr;
-	md= &(ctx->md);
+	ctx=b->ptr;
+	md=&ctx->md;
 
 	if(ctx->buf_len+ 2* md->digest->md_size > OK_BLOCK_SIZE) return;
 
-	EVP_DigestInit(md, md->digest);
-	RAND_bytes(&(md->md.base[0]), md->digest->md_size);
-	memcpy(&(ctx->buf[ctx->buf_len]), &(md->md.base[0]), md->digest->md_size);
+	EVP_DigestInit_ex(md, md->digest, NULL);
+	/* FIXME: there's absolutely no guarantee this makes any sense at all,
+	 * particularly now EVP_MD_CTX has been restructured.
+	 */
+	RAND_pseudo_bytes(md->md_data, md->digest->md_size);
+	memcpy(&(ctx->buf[ctx->buf_len]), md->md_data, md->digest->md_size);
 	longswap(&(ctx->buf[ctx->buf_len]), md->digest->md_size);
 	ctx->buf_len+= md->digest->md_size;
 
-	EVP_DigestUpdate(md, (unsigned char*)WELLKNOWN, strlen(WELLKNOWN));
-	md->digest->final(&(ctx->buf[ctx->buf_len]), &(md->md.base[0]));
+	EVP_DigestUpdate(md, WELLKNOWN, strlen(WELLKNOWN));
+	EVP_DigestFinal_ex(md, &(ctx->buf[ctx->buf_len]), NULL);
 	ctx->buf_len+= md->digest->md_size;
 	ctx->blockout= 1;
 	ctx->sigio= 0;
@@ -470,18 +493,18 @@ static void sig_in(BIO* b)
 	unsigned char tmp[EVP_MAX_MD_SIZE];
 	int ret= 0;
 
-	ctx=(BIO_OK_CTX *)b->ptr;
-	md= &(ctx->md);
+	ctx=b->ptr;
+	md=&ctx->md;
 
 	if(ctx->buf_len- ctx->buf_off < 2* md->digest->md_size) return;
 
-	EVP_DigestInit(md, md->digest);
-	memcpy(&(md->md.base[0]), &(ctx->buf[ctx->buf_off]), md->digest->md_size);
-	longswap(&(md->md.base[0]), md->digest->md_size);
+	EVP_DigestInit_ex(md, md->digest, NULL);
+	memcpy(md->md_data, &(ctx->buf[ctx->buf_off]), md->digest->md_size);
+	longswap(md->md_data, md->digest->md_size);
 	ctx->buf_off+= md->digest->md_size;
 
-	EVP_DigestUpdate(md, (unsigned char*)WELLKNOWN, strlen(WELLKNOWN));
-	md->digest->final(tmp, &(md->md.base[0]));
+	EVP_DigestUpdate(md, WELLKNOWN, strlen(WELLKNOWN));
+	EVP_DigestFinal_ex(md, tmp, NULL);
 	ret= memcmp(&(ctx->buf[ctx->buf_off]), tmp, md->digest->md_size) == 0;
 	ctx->buf_off+= md->digest->md_size;
 	if(ret == 1)
@@ -506,15 +529,15 @@ static void block_out(BIO* b)
 	EVP_MD_CTX *md;
 	unsigned long tl;
 
-	ctx=(BIO_OK_CTX *)b->ptr;
-	md= &(ctx->md);
+	ctx=b->ptr;
+	md=&ctx->md;
 
 	tl= ctx->buf_len- OK_BLOCK_BLOCK;
 	tl= swapem(tl);
 	memcpy(ctx->buf, &tl, OK_BLOCK_BLOCK);
 	tl= swapem(tl);
 	EVP_DigestUpdate(md, (unsigned char*) &(ctx->buf[OK_BLOCK_BLOCK]), tl);
-	md->digest->final(&(ctx->buf[ctx->buf_len]), &(md->md.base[0]));
+	EVP_DigestFinal_ex(md, &(ctx->buf[ctx->buf_len]), NULL);
 	ctx->buf_len+= md->digest->md_size;
 	ctx->blockout= 1;
 	}
@@ -526,15 +549,15 @@ static void block_in(BIO* b)
 	long tl= 0;
 	unsigned char tmp[EVP_MAX_MD_SIZE];
 
-	ctx=(BIO_OK_CTX *)b->ptr;
-	md= &(ctx->md);
+	ctx=b->ptr;
+	md=&ctx->md;
 
 	memcpy(&tl, ctx->buf, OK_BLOCK_BLOCK);
 	tl= swapem(tl);
 	if (ctx->buf_len < tl+ OK_BLOCK_BLOCK+ md->digest->md_size) return;
  
 	EVP_DigestUpdate(md, (unsigned char*) &(ctx->buf[OK_BLOCK_BLOCK]), tl);
-	md->digest->final(tmp, &(md->md.base[0]));
+	EVP_DigestFinal_ex(md, tmp, NULL);
 	if(memcmp(&(ctx->buf[tl+ OK_BLOCK_BLOCK]), tmp, md->digest->md_size) == 0)
 		{
 		/* there might be parts from next block lurking around ! */
