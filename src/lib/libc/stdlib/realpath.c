@@ -35,7 +35,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: realpath.c,v 1.7 2002/05/24 21:22:37 deraadt Exp $";
+static char *rcsid = "$OpenBSD: realpath.c,v 1.7.4.1 2003/08/03 02:17:03 brad Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -60,7 +60,7 @@ realpath(path, resolved)
 	char *resolved;
 {
 	struct stat sb;
-	int fd, n, rootd, serrno;
+	int fd, n, needslash, serrno;
 	char *p, *q, wbuf[MAXPATHLEN];
 	int symlinks = 0;
 
@@ -134,18 +134,18 @@ loop:
 	 * happens if the last component is empty, or the dirname is root.
 	 */
 	if (resolved[0] == '/' && resolved[1] == '\0')
-		rootd = 1;
+		needslash = 0;
 	else
-		rootd = 0;
+		needslash = 1;
 
 	if (*wbuf) {
-		if (strlen(resolved) + strlen(wbuf) + rootd + 1 > MAXPATHLEN) {
+		if (strlen(resolved) + strlen(wbuf) + needslash >= MAXPATHLEN) {
 			errno = ENAMETOOLONG;
 			goto err1;
 		}
-		if (rootd == 0)
-			(void)strcat(resolved, "/");
-		(void)strcat(resolved, wbuf);
+		if (needslash)
+			(void)strlcat(resolved, "/", MAXPATHLEN);
+		(void)strlcat(resolved, wbuf, MAXPATHLEN);
 	}
 
 	/* Go back to where we came from. */
