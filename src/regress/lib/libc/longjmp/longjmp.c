@@ -1,6 +1,6 @@
-/*	$OpenBSD: longjmp.c,v 1.2 2002/01/04 13:33:17 art Exp $	*/
+/*	$OpenBSD: longjmp.c,v 1.3 2002/01/04 13:48:52 art Exp $	*/
 /*
- * Artur Grabowski <art@openbsd.org> Public Domain.
+ *	Artur Grabowski <art@openbsd.org>, 2002 Public Domain.
  */
 
 #include <stdio.h>
