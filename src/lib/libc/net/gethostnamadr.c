@@ -52,7 +52,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.40 2000/01/03 11:51:07 itojun Exp $";
+static char rcsid[] = "$OpenBSD: gethostnamadr.c,v 1.41 2000/01/06 08:24:17 d Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
@@ -954,14 +954,14 @@ _yphostent(line)
 	q = host.h_aliases = host_aliases;
 
 nextline:
+	/* check for host_addrs overflow */
+	if (buf >= &host_addrs[sizeof(host_addrs) / sizeof(host_addrs[0])])
+		goto done;
+
 	more = 0;
 	cp = strpbrk(p, " \t");
-	if (cp == NULL) {
-		if (host.h_name == NULL)
-			return (NULL);
-		else
-			goto done;
-	}
+	if (cp == NULL)
+		goto done;
 	*cp++ = '\0';
 
 	*hap++ = (char *)buf;
@@ -1002,6 +1002,8 @@ nextline:
 			*cp++ = '\0';
 	}
 done:
+	if (host.h_name == NULL)
+		return (NULL);
 	*q = NULL;
 	*hap = NULL;
 	return (&host);
