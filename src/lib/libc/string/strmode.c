@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strmode.c,v 1.1.1.1 1995/10/18 08:42:22 deraadt Exp $";
+static char *rcsid = "$OpenBSD: strmode.c,v 1.2 1996/08/19 08:34:20 tholo Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -67,6 +67,11 @@ strmode(mode, p)
 #ifdef S_IFIFO
 	case S_IFIFO:			/* fifo */
 		*p++ = 'p';
+		break;
+#endif
+#ifdef S_IFWHT
+	case S_IFWHT:			/* whiteout */
+		*p++ = 'w';
 		break;
 #endif
 	default:			/* unknown */
