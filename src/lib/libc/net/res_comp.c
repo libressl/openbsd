@@ -1,4 +1,4 @@
-/*	$OpenBSD: res_comp.c,v 1.5 1997/03/27 20:45:33 deraadt Exp $	*/
+/*	$OpenBSD: res_comp.c,v 1.6 1997/04/19 10:10:47 deraadt Exp $	*/
 
 /*
  * ++Copyright++ 1985, 1993
@@ -60,7 +60,7 @@
 static char sccsid[] = "@(#)res_comp.c	8.1 (Berkeley) 6/4/93";
 static char rcsid[] = "$From: res_comp.c,v 8.11 1996/12/02 09:17:22 vixie Exp $";
 #else
-static char rcsid[] = "$OpenBSD: res_comp.c,v 1.5 1997/03/27 20:45:33 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: res_comp.c,v 1.6 1997/04/19 10:10:47 deraadt Exp $";
 #endif
 #endif /* LIBC_SCCS and not lint */
 
@@ -368,7 +368,7 @@ int
 res_hnok(dn)
 	const char *dn;
 {
-	int ppch = '\0', pch = PERIOD, ch = *dn++;
+	int pch = PERIOD, ch = *dn++;
 
 	while (ch != '\0') {
 		int nch = *dn++;
@@ -385,7 +385,7 @@ res_hnok(dn)
 			if (!middlechar(ch))
 				return (0);
 		}
-		ppch = pch, pch = ch, ch = nch;
+		pch = ch, ch = nch;
 	}
 	return (1);
 }
