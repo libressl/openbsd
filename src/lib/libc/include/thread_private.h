@@ -1,4 +1,4 @@
-/* $OpenBSD: thread_private.h,v 1.4 2000/01/06 08:57:29 d Exp $ */
+/* $OpenBSD: thread_private.h,v 1.5 2000/09/08 06:11:36 brad Exp $ */
 
 #ifndef _THREAD_PRIVATE_H_
 #define _THREAD_PRIVATE_H_
@@ -6,7 +6,7 @@
 #include <pthread.h>
 
 /*
- * This variable is initally 0 when there is exactly one thread.
+ * This variable is initially 0 when there is exactly one thread.
  * It should never decrease.
  */
 extern int __isthreaded;
