@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /* Generic xor handler.
 
    With no args, xors stdin against 0xFF to stdout.  A single argument is a

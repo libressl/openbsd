@@ -1,3 +1,5 @@
+#	$OpenBSD$
+
 # dns "any for ." query, to udp 53
 # if tcp: precede with 2 bytes of len:
 # 0

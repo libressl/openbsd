@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /* generate ^@string1^@string2^@cmd^@ input to netcat, for scripting up
    rsh/rexec attacks.  Needs to be a prog because shells strip out nulls.
 

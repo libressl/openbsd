@@ -1,4 +1,6 @@
 #! /bin/sh
+#	$OpenBSD$
+
 ## web relay -- a degenerate version of webproxy, usable with browsers that
 ## don't understand proxies.  This just forwards connections to a given server.
 ## No query logging, no access control [although you can add it to XNC for
