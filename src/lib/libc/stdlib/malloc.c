@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.40 2000/04/10 19:36:29 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.41 2001/05/10 16:14:19 art Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -485,7 +485,7 @@ extend_pgdir(index)
 
     /* Get new pages */
     new = (struct pginfo**) MMAP(i * malloc_pagesize);
-    if (new == (struct pginfo **)-1)
+    if (new == MAP_FAILED)
 	return 0;
 
     /* Copy the old stuff */
@@ -592,7 +592,7 @@ malloc_init ()
     /* Allocate one page for the page directory */
     page_dir = (struct pginfo **) MMAP(malloc_pagesize);
 
-    if (page_dir == (struct pginfo **) -1)
+    if (page_dir == MAP_FAILED)
 	wrterror("mmap(2) failed, check limits.\n");
 
     /*
