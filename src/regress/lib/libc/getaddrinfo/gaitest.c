@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: gaitest.c,v 1.1 2002/07/05 15:54:30 itojun Exp $	*/
 /*	$NetBSD: gaitest.c,v 1.3 2002/07/05 15:47:43 itojun Exp $	*/
 
 /*
@@ -45,9 +45,9 @@ char host[NI_MAXHOST];
 char serv[NI_MAXSERV];
 int vflag = 0;
 
-static void usage __P((void));
-static void print1 __P((const char *, const struct addrinfo *, char *, char *));
-int main __P((int, char *[]));
+static void usage(void);
+static void print1(const char *, const struct addrinfo *, char *, char *);
+int main(int, char *[]);
 
 static void
 usage()
