@@ -8,7 +8,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.46 2002/01/23 20:42:24 fgsch Exp $";
+static char rcsid[] = "$OpenBSD: malloc.c,v 1.47 2002/02/16 21:27:24 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 /*
@@ -186,10 +186,10 @@ static int fdzero;
 #endif
 
 /* Set when initialization has been done */
-static unsigned malloc_started;
+static unsigned int malloc_started;
 
 /* Number of free pages we cache */
-static unsigned malloc_cache = 16;
+static unsigned int malloc_cache = 16;
 
 /* The offset from pagenumber to index into the page directory */
 static u_long malloc_origo;
