@@ -32,7 +32,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: __strsignal.c,v 1.3 1996/09/16 05:43:39 tholo Exp $";
+static char *rcsid = "$OpenBSD: __strsignal.c,v 1.4 1996/09/25 08:17:31 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #ifdef NLS
@@ -45,6 +45,7 @@ static char *rcsid = "$OpenBSD: __strsignal.c,v 1.3 1996/09/16 05:43:39 tholo Ex
 #define sys_siglist	_sys_siglist
 
 #include <stdio.h>
+#include <limits.h>
 #include <signal.h>
 #include <string.h>
 
