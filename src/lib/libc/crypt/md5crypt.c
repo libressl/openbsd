@@ -1,4 +1,4 @@
-/*	$OpenBSD: md5crypt.c,v 1.1 1996/05/30 02:36:33 deraadt Exp $ */
+/*	$OpenBSD: md5crypt.c,v 1.2 1996/06/03 22:20:37 niklas Exp $ */
 
 /*
  * ----------------------------------------------------------------------------
@@ -11,7 +11,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.1 1996/05/30 02:36:33 deraadt Exp $";
+static char rcsid[] = "$OpenBSD: md5crypt.c,v 1.2 1996/06/03 22:20:37 niklas Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <unistd.h>
@@ -44,12 +44,12 @@ md5crypt(pw, salt)
 	register const char *pw;
 	register const char *salt;
 {
-	static char	*magic = "$1$";	/*
-						 * This string is magic for
-						 * this algorithm.  Having
-						 * it this way, we can get
-						 * get better later on
-						 */
+	/*
+	 * This string is magic for this algorithm.  Having
+	 * it this way, we can get get better later on
+	 */
+	static char	*magic = "$1$";	
+
 	static char     passwd[120], *p;
 	static const char *sp,*ep;
 	unsigned char	final[16];
