@@ -1,4 +1,8 @@
 /*
+ * $OpenBSD$
+ *
+ * Public Domain
+ *
  * Playing games with sigreturn.   Check if calling sigreturn from a
  * signal handler screws anything up.
  *
