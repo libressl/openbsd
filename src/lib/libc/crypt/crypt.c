@@ -50,7 +50,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: crypt.c,v 1.9 1997/03/27 23:36:53 downsj Exp $";
+static char rcsid[] = "$OpenBSD: crypt.c,v 1.10 1997/03/30 20:24:46 deraadt Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
@@ -612,7 +612,7 @@ crypt(key, setting)
 	 */
 	q = (u_char *) keybuf;
 	while ((q - (u_char *) keybuf) < sizeof(keybuf)) {
-		if (*q++ = *key << 1)
+		if ((*q++ = *key << 1))
 			key++;
 	}
 	if (des_setkey((u_char *) keybuf))
