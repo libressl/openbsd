@@ -90,7 +90,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strtod.c,v 1.14 2001/07/09 06:57:45 deraadt Exp $";
+static char *rcsid = "$OpenBSD: strtod.c,v 1.15 2002/02/19 19:39:37 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #if defined(__m68k__) || defined(__sparc__) || defined(__i386__) || \
@@ -1992,7 +1992,7 @@ __dtoa
 		*decpt = 9999;
 		s =
 #ifdef IEEE_Arith
-			!word1(d) && !(word0(d) & 0xfffff) ? "Infinity" :
+			!word1(d) && !(word0(d) & 0xfffff) ? ndigits < 8 ? "Inf" : "Infinity" :
 #endif
 				"NaN";
 		if (rve)
