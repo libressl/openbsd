@@ -1,4 +1,4 @@
-/* crypto/rc5/rc5.h */
+/* crypto/asn1/f.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -55,62 +55,26 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  */
+#include <stdio.h>
+#include <openssl/asn1.h>
+#include <openssl/err.h>
 
-#ifndef HEADER_RC5_H
-#define HEADER_RC5_H
-
-#ifdef  __cplusplus
-extern "C" {
-#endif
-
-#ifdef OPENSSL_NO_RC5
-#error RC5 is disabled.
-#endif
-
-#define RC5_ENCRYPT	1
-#define RC5_DECRYPT	0
-
-/* 32 bit.  For Alpha, things may get weird */
-#define RC5_32_INT unsigned long
-
-#define RC5_32_BLOCK		8
-#define RC5_32_KEY_LENGTH	16 /* This is a default, max is 255 */
-
-/* This are the only values supported.  Tweak the code if you want more
- * The most supported modes will be
- * RC5-32/12/16
- * RC5-32/16/8
- */
-#define RC5_8_ROUNDS	8
-#define RC5_12_ROUNDS	12
-#define RC5_16_ROUNDS	16
-
-typedef struct rc5_key_st
+main()
 	{
-	/* Number of rounds */
-	int rounds;
-	RC5_32_INT data[2*(RC5_16_ROUNDS+1)];
-	} RC5_32_KEY;
+	ASN1_TYPE *at;
+	char buf[512];
+	int n;
+	long l;
 
- 
-void RC5_32_set_key(RC5_32_KEY *key, int len, const unsigned char *data,
-	int rounds);
-void RC5_32_ecb_encrypt(const unsigned char *in,unsigned char *out,RC5_32_KEY *key,
-	int enc);
-void RC5_32_encrypt(unsigned long *data,RC5_32_KEY *key);
-void RC5_32_decrypt(unsigned long *data,RC5_32_KEY *key);
-void RC5_32_cbc_encrypt(const unsigned char *in, unsigned char *out,
-			long length, RC5_32_KEY *ks, unsigned char *iv,
-			int enc);
-void RC5_32_cfb64_encrypt(const unsigned char *in, unsigned char *out,
-			  long length, RC5_32_KEY *schedule,
-			  unsigned char *ivec, int *num, int enc);
-void RC5_32_ofb64_encrypt(const unsigned char *in, unsigned char *out,
-			  long length, RC5_32_KEY *schedule,
-			  unsigned char *ivec, int *num);
+	at=ASN1_TYPE_new();
 
-#ifdef  __cplusplus
-}
-#endif
-
-#endif
+	n=ASN1_TYPE_set_int_octetstring(at,98736,"01234567",8);
+	printf("%d\n",n);
+	n=ASN1_TYPE_get_int_octetstring(at,&l,buf,8);
+	buf[8]='\0';
+	printf("%ld %d %d\n",l,n,buf[8]);
+	buf[8]='\0';
+	printf("%s\n",buf);
+	ERR_load_crypto_strings();
+	ERR_print_errors_fp(stderr);
+	}
