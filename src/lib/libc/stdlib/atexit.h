@@ -30,8 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)atexit.h	5.1 (Berkeley) 5/15/90
- *	$Id$
+ *	$OpenBSD: atexit.h,v 1.1.1.1 1995/10/18 08:42:16 deraadt Exp $
  */
 
 /* must be at least 32 to guarantee ANSI conformance */
