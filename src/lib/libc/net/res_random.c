@@ -1,4 +1,4 @@
-/* $OpenBSD: res_random.c,v 1.7 1997/07/25 20:30:08 mickey Exp $ */
+/* $OpenBSD: res_random.c,v 1.8 1999/08/26 13:38:10 provos Exp $ */
 
 /*
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
@@ -125,7 +125,7 @@ pmod(gen, exp, mod)
 }
 
 /* 
- * Initalizes the seed and chooses a suitable generator. Also toggles 
+ * Initializes the seed and chooses a suitable generator. Also toggles 
  * the msb flag. The msb flag is used to generate two distinct
  * cycles of random numbers and thus avoiding reuse of ids.
  *
