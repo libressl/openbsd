@@ -1,3 +1,5 @@
+/*	$OpenBSD$	*/
+
 /*-
  * Copyright (c) 1994
  *	The Regents of the University of California.  All rights reserved.
@@ -34,10 +36,10 @@
  * SUCH DAMAGE.
  */
 
-#ifndef lint
-/* from: static char sccsid[] = "@(#)bm.c	8.7 (Berkeley) 6/21/94"; */
+#if defined(LIBC_SCCS) && !defined(lint)
+/* from: static char sccsid[] = "@(#)bm.c     8.7 (Berkeley) 6/21/94"; */
 static char *rcsid = "$Id$";
-#endif /* not lint */
+#endif /* LIBC_SCCS && not lint */
 
 #include <sys/types.h>
 
