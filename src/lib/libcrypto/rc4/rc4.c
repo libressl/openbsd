@@ -59,7 +59,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rc4.h"
+#include <openssl/rc4.h>
 
 char *usage[]={
 "usage: rc4 args\n",
@@ -70,9 +70,7 @@ char *usage[]={
 NULL
 };
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 	{
 	FILE *in=NULL,*out=NULL;
 	char *infile=NULL,*outfile=NULL,*keystr=NULL;
@@ -115,7 +113,7 @@ char *argv[];
 		{
 bad:
 		for (pp=usage; (*pp != NULL); pp++)
-			fprintf(stderr,*pp);
+			fprintf(stderr,"%s",*pp);
 		exit(1);
 		}
 
@@ -143,7 +141,7 @@ bad:
 			}
 		}
 		
-#ifdef MSDOS
+#ifdef OPENSSL_SYS_MSDOS
 	/* This should set the file to binary mode. */
 	{
 #include <fcntl.h>
@@ -164,7 +162,7 @@ bad:
 		keystr=buf;
 		}
 
-	MD5((unsigned char *)keystr,(unsigned long)strlen(keystr),md);
+	EVP_Digest((unsigned char *)keystr,(unsigned long)strlen(keystr),md,NULL,EVP_md5());
 	memset(keystr,0,strlen(keystr));
 	RC4_set_key(&key,MD5_DIGEST_LENGTH,md);
 	

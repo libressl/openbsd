@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 # VCw16lib.pl - the file for Visual C++ 1.52b for windows, static libraries
 #
 
@@ -21,14 +21,14 @@ $lflags="$base_lflags";
 if ($win16)
 	{
 	$shlib=1;
-	$cflags.=" -DWINDOWS -DWIN16";
+	$cflags.=" -DOPENSSL_SYSNAME_WIN16";
 	$app_cflag="-W";
 	$lib_cflag="-WD";
 	$lflags.="/Twe";
 	}
 else
 	{
-	$cflags.=" -DMSDOS";
+	$cflags.=" -DOENSSL_SYSNAME_MSDOS";
 	$lflags.=" /Tde";
 	}
 
@@ -66,18 +66,18 @@ $asm='bcc -c -B -Tml';
 $afile='/o';
 if ($no_asm)
 	{
-	$bn_mulw_obj='';
-	$bn_mulw_src='';
+	$bn_asm_obj='';
+	$bn_asm_src='';
 	}
 elsif ($asmbits == 32)
 	{
-	$bn_mulw_obj='crypto\bn\asm\x86w32.obj';
-	$bn_mulw_src='crypto\bn\asm\x86w32.asm';
+	$bn_asm_obj='crypto\bn\asm\x86w32.obj';
+	$bn_asm_src='crypto\bn\asm\x86w32.asm';
 	}
 else
 	{
-	$bn_mulw_obj='crypto\bn\asm\x86w16.obj';
-	$bn_mulw_src='crypto\bn\asm\x86w16.asm';
+	$bn_asm_obj='crypto\bn\asm\x86w16.obj';
+	$bn_asm_src='crypto\bn\asm\x86w16.asm';
 	}
 
 sub do_lib_rule

@@ -60,20 +60,10 @@
 #include "cryptlib.h"
 #include <openssl/x509v3.h>
 
-static ASN1_INTEGER *asn1_integer_new(void);
-
 X509V3_EXT_METHOD v3_crl_num = { 
-NID_crl_number, 0,
-(X509V3_EXT_NEW)asn1_integer_new,
-(X509V3_EXT_FREE)ASN1_STRING_free,
-(X509V3_EXT_D2I)d2i_ASN1_INTEGER,
-(X509V3_EXT_I2D)i2d_ASN1_INTEGER,
+NID_crl_number, 0, ASN1_ITEM_ref(ASN1_INTEGER),
+0,0,0,0,
 (X509V3_EXT_I2S)i2s_ASN1_INTEGER,
-(X509V3_EXT_S2I)NULL,
-NULL, NULL, NULL, NULL, NULL};
+0,
+0,0,0,0, NULL};
 
-
-static ASN1_INTEGER *asn1_integer_new(void)
-{
-	return ASN1_INTEGER_new();
-}

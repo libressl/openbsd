@@ -27,14 +27,14 @@
 # tjh@cryptsoft.com
 #
 
-# default ssleay.cnf file has setup as per the following
+# default openssl.cnf file has setup as per the following
 # demoCA ... where everything is stored
 
 DAYS="-days 365"
-REQ="ssleay req $SSLEAY_CONFIG"
-CA="ssleay ca $SSLEAY_CONFIG"
-VERIFY="ssleay verify"
-X509="ssleay x509"
+REQ="openssl req $SSLEAY_CONFIG"
+CA="openssl ca $SSLEAY_CONFIG"
+VERIFY="openssl verify"
+X509="openssl x509"
 
 CATOP=./demoCA
 CAKEY=./cakey.pem
@@ -60,7 +60,7 @@ case $i in
     echo "Request (and private key) is in newreq.pem"
     ;;
 -newca)     
-    # if explictly asked for or it doesn't exist then setup the directory
+    # if explicitly asked for or it doesn't exist then setup the directory
     # structure that Eric likes to manage things 
     NEW="1"
     if [ "$NEW" -o ! -f ${CATOP}/serial ]; then
