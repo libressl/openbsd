@@ -1,4 +1,4 @@
-/*	$OpenBSD: getopt_long.c,v 1.14 2003/06/17 21:56:24 millert Exp $	*/
+/*	$OpenBSD: getopt_long.c,v 1.14.2.1 2004/02/13 07:14:52 brad Exp $	*/
 /*	$NetBSD: getopt_long.c,v 1.15 2002/01/31 22:43:40 tv Exp $	*/
 
 /*
@@ -57,7 +57,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: getopt_long.c,v 1.14 2003/06/17 21:56:24 millert Exp $";
+static char *rcsid = "$OpenBSD: getopt_long.c,v 1.14.2.1 2004/02/13 07:14:52 brad Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <err.h>
@@ -379,11 +379,9 @@ start:
 			nonopt_end = optind;
 
 		/*
-		 * Check for "--" or "--foo" with no long options
-		 * but if place is simply "-" leave it unmolested.
+		 * If we have "-" do nothing, if "--" we are done.
 		 */
-		if (place[1] != '\0' && *++place == '-' &&
-		    (place[1] == '\0' || long_options == NULL)) {
+		if (place[1] != '\0' && *++place == '-' && place[1] == '\0') {
 			optind++;
 			place = EMSG;
 			/*
@@ -423,14 +421,15 @@ start:
 	}
 
 	if ((optchar = (int)*place++) == (int)':' ||
+	    optchar == (int)'-' && *place != '\0' ||
 	    (oli = strchr(options, optchar)) == NULL) {
 		/*
-		 * If the user didn't specify '-' as an option,
-		 * assume it means -1 as POSIX specifies.
+		 * If the user specified "-" and  '-' isn't listed in
+		 * options, return -1 (non-option) as per POSIX.
+		 * Otherwise, it is an unknown option character (or ':').
 		 */
-		if (optchar == (int)'-')
+		if (optchar == (int)'-' && *place == '\0')
 			return (-1);
-		/* option letter unknown or ':' */
 		if (!*place)
 			++optind;
 		if (PRINT_ERROR)
