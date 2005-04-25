@@ -1,4 +1,4 @@
-/*	$OpenBSD: acss.h,v 1.2 2004/01/23 19:23:33 hshoexer Exp $	*/
+/*	$OpenBSD: acss.h,v 1.3 2004/02/13 10:05:44 hshoexer Exp $	*/
 /*
  * Copyright (c) 2004 The OpenBSD project
  *
@@ -19,7 +19,7 @@
 #define _ACSS_H_
 
 #ifdef OPENSSL_NO_ACSS
-#error acss is idsabled.
+#error acss is disabled.
 #endif
 
 /* 40bit key */
