@@ -45,17 +45,18 @@ static char *rcsid = "$OpenBSD: __strsignal.c,v 1.8 2003/06/02 20:18:38 millert 
 #include <signal.h>
 #include <string.h>
 
-static char *itoa(int num)
+static char *
+itoa(char *buffer, size_t buffer_size, unsigned int num)
 {
-	static char buffer[11];
-	char *p;
+	char *p = buffer + buffer_size;
 
-	p = buffer + 4;
-	while (num >= 10) {
+	*--p = '\0';
+	while (num >= 10 && p > buffer + 1) {
 		*--p = (num % 10) + '0';
 		num /= 10;
 	}
-	*p = (num % 10) + '0';
+	/* num < 10 || p == buffer + 1 */
+	*--p = (num % 10) + '0';
 	return p;
 }
 
@@ -79,12 +80,15 @@ __strsignal(int num, char *buf)
 		return((char *)sys_siglist[signum]);
 #endif
 	} else {
+#define MAXINTDIGS 11
+		char str[MAXINTDIGS];
+
 #ifdef NLS
 		strlcpy(buf, catgets(catd, 1, 0xffff, UPREFIX), NL_TEXTMAX);
 #else
 		strlcpy(buf, UPREFIX, NL_TEXTMAX);
 #endif
-		strlcat(buf, itoa(signum), NL_TEXTMAX);
+		strlcat(buf, itoa(str, sizeof(str), signum), NL_TEXTMAX);
 	}
 
 #ifdef NLS
