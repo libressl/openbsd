@@ -1,4 +1,4 @@
-/*	$OpenBSD: wcscpy.c,v 1.1 2005/04/13 16:35:58 espie Exp $	*/
+/*	$OpenBSD: wcscpy.c,v 1.2 2005/04/16 10:40:45 tom Exp $	*/
 /*	$NetBSD: wcscpy.c,v 1.2 2001/01/03 14:29:36 lukem Exp $	*/
 
 /*-
@@ -30,15 +30,18 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: wcscpy.c,v 1.1 2005/04/13 16:35:58 espie Exp $";
+static char *rcsid = "$OpenBSD: wcscpy.c,v 1.2 2005/04/16 10:40:45 tom Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <wchar.h>
 
+#if defined(APIWARN)
+__warn_references(wcscpy,
+    "warning: wcscpy() is almost always misused, please use wcslcpy()");
+#endif
+
 wchar_t *
-wcscpy(s1, s2)
-	wchar_t *s1;
-	const wchar_t *s2;
+wcscpy(wchar_t *s1, const wchar_t *s2)
 {
 	wchar_t *p;
 	const wchar_t *q;
