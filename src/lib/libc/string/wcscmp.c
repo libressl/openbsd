@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: wcscmp.c,v 1.1 2005/04/13 16:35:58 espie Exp $	*/
 /*	$NetBSD: wcscmp.c,v 1.5 2003/08/07 16:43:54 agc Exp $	*/
 
 /*-
@@ -34,7 +34,7 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD$";
+static char *rcsid = "$OpenBSD: wcscmp.c,v 1.1 2005/04/13 16:35:58 espie Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <wchar.h>
@@ -44,8 +44,7 @@ static char *rcsid = "$OpenBSD$";
  * Compare strings.
  */
 int
-wcscmp(s1, s2)
-	const wchar_t *s1, *s2;
+wcscmp(const wchar_t *s1, const wchar_t *s2)
 {
 
 	while (*s1 == *s2++)
