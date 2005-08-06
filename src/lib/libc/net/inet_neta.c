@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_neta.c,v 1.5 2005/03/02 12:27:26 millert Exp $	*/
+/*	$OpenBSD: inet_neta.c,v 1.6 2005/03/25 13:24:12 otto Exp $	*/
 
 /*
  * Copyright (c) 1996 by Internet Software Consortium.
@@ -16,10 +16,6 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static const char rcsid[] = "$OpenBSD: inet_neta.c,v 1.5 2005/03/02 12:27:26 millert Exp $";
-#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>

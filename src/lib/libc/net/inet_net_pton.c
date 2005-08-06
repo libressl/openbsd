@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_net_pton.c,v 1.3 2003/04/25 19:40:25 henning Exp $	*/
+/*	$OpenBSD: inet_net_pton.c,v 1.4 2005/03/25 13:24:12 otto Exp $	*/
 
 /*
  * Copyright (c) 1996 by Internet Software Consortium.
@@ -16,14 +16,6 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static const char rcsid[] = "$From: inet_net_pton.c,v 8.3 1996/11/11 06:36:52 vixie Exp $";
-#else
-static const char rcsid[] = "$OpenBSD: inet_net_pton.c,v 1.3 2003/04/25 19:40:25 henning Exp $";
-#endif
-#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>
