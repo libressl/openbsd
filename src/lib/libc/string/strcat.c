@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: strcat.c,v 1.7 2004/11/28 07:16:54 mickey Exp $	*/
 
 /*
  * Copyright (c) 1988 Regents of the University of California.
@@ -28,10 +28,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strcat.c,v 1.6 2003/07/24 01:15:42 deraadt Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 #if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <string.h>

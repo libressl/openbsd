@@ -1,3 +1,4 @@
+/*	$OpenBSD$ */
 /*
  * Copyright (c) 1988 Regents of the University of California.
  * All rights reserved.
@@ -26,10 +27,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: rindex.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
 

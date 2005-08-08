@@ -1,3 +1,4 @@
+/*	$OpenBSD$ */
 /*
  * Copyright (c) 1985 Regents of the University of California.
  * All rights reserved.
@@ -26,10 +27,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: abort.c,v 1.12 2003/06/02 20:18:37 millert Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 #include <signal.h>
 #include <stdlib.h>
