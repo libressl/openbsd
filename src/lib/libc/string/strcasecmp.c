@@ -1,4 +1,4 @@
-/*	$OpenBSD: strcasecmp.c,v 1.4 2003/06/02 20:18:38 millert Exp $	*/
+/*	$OpenBSD: strcasecmp.c,v 1.5 2003/06/11 21:08:16 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1987, 1993
@@ -30,14 +30,6 @@
  */
 
 #include <string.h>
-
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static char sccsid[] = "@(#)strcasecmp.c	8.1 (Berkeley) 6/4/93";
-#else
-static char *rcsid = "$OpenBSD: strcasecmp.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif
-#endif /* LIBC_SCCS and not lint */
 
 typedef unsigned char u_char;
 

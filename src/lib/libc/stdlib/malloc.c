@@ -1,3 +1,4 @@
+/*	$OpenBSD$ */
 /*
  * ----------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
@@ -6,10 +7,6 @@
  * this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
  * ----------------------------------------------------------------------------
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char rcsid[] = "$OpenBSD: malloc.c,v 1.74 2005/06/07 04:42:42 tedu Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 /*
  * Defining MALLOC_EXTRA_SANITY will enable extra checks which are
