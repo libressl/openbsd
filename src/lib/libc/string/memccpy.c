@@ -1,4 +1,4 @@
-/*	$OpenBSD: memccpy.c,v 1.4 2003/06/02 20:18:38 millert Exp $	*/
+/*	$OpenBSD: memccpy.c,v 1.5 2005/03/30 20:13:52 otto Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -28,14 +28,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static char sccsid[] = "@(#)memccpy.c	8.1 (Berkeley) 6/4/93";
-#else
-static char *rcsid = "$OpenBSD: memccpy.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif
-#endif /* LIBC_SCCS and not lint */
 
 #include <string.h>
 

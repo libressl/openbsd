@@ -1,3 +1,4 @@
+/*	$OpenBSD$ */
 /*
  * Copyright (c) 2003 Constantin S. Svintsoff <kostik@iclub.nsu.ru>
  *
@@ -25,15 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if 0
-#include <sys/cdefs.h>
-__FBSDID("$FreeBSD: /usr/local/www/cvsroot/FreeBSD/src/lib/libc/stdlib/realpath.c,v 1.9.2.1 2003/05/22 17:11:44 fjoe Exp $");
-#endif
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: realpath.c,v 1.11 2004/11/30 15:12:59 millert Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
 #include <sys/stat.h>
