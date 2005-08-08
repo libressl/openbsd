@@ -27,10 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strtok.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <string.h>
 
 char *

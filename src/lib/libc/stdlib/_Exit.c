@@ -1,12 +1,8 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: _Exit.c,v 1.1 2004/05/03 17:21:13 millert Exp $	*/
 
 /*
  * Placed in the public domain by Todd C. Miller on January 21, 2004.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD$";
-#endif /* LIBC_SCCS and not lint */
 
 #include <stdlib.h>
 #include <unistd.h>

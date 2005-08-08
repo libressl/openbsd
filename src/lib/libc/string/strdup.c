@@ -1,4 +1,4 @@
-/*	$OpenBSD: strdup.c,v 1.4 2003/06/02 20:18:38 millert Exp $	*/
+/*	$OpenBSD: strdup.c,v 1.5 2003/06/11 21:08:16 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1988, 1993
@@ -28,14 +28,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static char sccsid[] = "@(#)strdup.c	8.1 (Berkeley) 6/4/93";
-#else
-static char *rcsid = "$OpenBSD: strdup.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif
-#endif /* LIBC_SCCS and not lint */
 
 #include <sys/types.h>
 

@@ -1,4 +1,4 @@
-/*	$OpenBSD: strsep.c,v 1.4 2003/06/02 20:18:38 millert Exp $	*/
+/*	$OpenBSD: strsep.c,v 1.5 2003/06/11 21:08:16 deraadt Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -31,14 +31,6 @@
 
 #include <string.h>
 #include <stdio.h>
-
-#if defined(LIBC_SCCS) && !defined(lint)
-#if 0
-static char sccsid[] = "@(#)strsep.c	8.1 (Berkeley) 6/4/93";
-#else
-static char *rcsid = "$OpenBSD: strsep.c,v 1.4 2003/06/02 20:18:38 millert Exp $";
-#endif
-#endif /* LIBC_SCCS and not lint */
 
 /*
  * Get next token from string *stringp, where tokens are possibly-empty
