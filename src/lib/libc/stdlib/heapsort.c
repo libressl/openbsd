@@ -30,10 +30,6 @@
  * SUCH DAMAGE.
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: heapsort.c,v 1.6 2003/09/08 16:24:05 deraadt Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <sys/types.h>
 #include <errno.h>
 #include <stdlib.h>

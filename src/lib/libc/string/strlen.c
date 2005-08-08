@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlen.c,v 1.5 2003/06/02 20:18:38 millert Exp $	*/
+/*	$OpenBSD: strlen.c,v 1.6 2003/06/11 21:08:16 deraadt Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -28,10 +28,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#if defined(LIBC_SCCS) && !defined(lint)
-static char *rcsid = "$OpenBSD: strlen.c,v 1.5 2003/06/02 20:18:38 millert Exp $";
-#endif /* LIBC_SCCS and not lint */
 
 #if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <string.h>
