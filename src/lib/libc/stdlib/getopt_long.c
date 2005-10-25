@@ -1,4 +1,4 @@
-/*	$OpenBSD: getopt_long.c,v 1.18 2005/03/30 18:51:49 pat Exp $	*/
+/*	$OpenBSD: getopt_long.c,v 1.19 2005/08/08 08:05:36 espie Exp $	*/
 /*	$NetBSD: getopt_long.c,v 1.15 2002/01/31 22:43:40 tv Exp $	*/
 
 /*
@@ -495,7 +495,7 @@ getopt(int nargc, char * const *nargv, const char *options)
 {
 
 	/*
-	 * We dont' pass FLAG_PERMUTE to getopt_internal() since
+	 * We don't pass FLAG_PERMUTE to getopt_internal() since
 	 * the BSD getopt(3) (unlike GNU) has never done this.
 	 *
 	 * Furthermore, since many privileged programs call getopt()
