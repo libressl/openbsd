@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile.inc,v 1.16 2005/04/16 12:26:12 jmc Exp $
+#	$OpenBSD: Makefile.inc,v 1.17 2005/05/26 12:56:01 otto Exp $
 
 # string sources
 .PATH: ${LIBCSRCDIR}/arch/${MACHINE_ARCH}/string ${LIBCSRCDIR}/string
@@ -8,7 +8,7 @@ SRCS+=	bm.c memccpy.c strcasecmp.c strcasestr.c strcoll.c strdup.c \
 	strxfrm.c \
 	wcscat.c wcschr.c wcscmp.c wcscpy.c wcscspn.c wcslcat.c wcslcpy.c \
 	wcslen.c wcsncat.c wcsncmp.c wcsncpy.c wcspbrk.c wcsrchr.c wcsspn.c \
-	wcsstr.c wcstok.c wcswcs.c wmemchr.c wmemcmp.c wmemcpy.c \
+	wcsstr.c wcstok.c wcswcs.c wcswidth.c wmemchr.c wmemcmp.c wmemcpy.c \
 	wmemmove.c wmemset.c
 
 # machine-dependent net sources
