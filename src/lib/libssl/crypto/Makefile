@@ -1,6 +1,7 @@
-# $OpenBSD: Makefile,v 1.42 2005/04/29 07:54:15 djm Exp $
+# $OpenBSD: Makefile,v 1.43 2005/05/10 14:03:22 markus Exp $
 
 LIB=	crypto
+WANTLINT=
 
 SSLEAYDIST=	src
 SSL_SRC=	${.CURDIR}/../${SSLEAYDIST}
