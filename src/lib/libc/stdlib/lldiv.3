@@ -29,27 +29,27 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: qdiv.3,v 1.6 2004/01/23 23:08:46 jmc Exp $
+.\"	$OpenBSD: ldiv.3,v 1.7 2004/01/23 23:08:46 jmc Exp $
 .\"
-.Dd June 29, 1991
-.Dt QDIV 3
+.Dd January 3, 2006
+.Dt LLDIV 3
 .Os
 .Sh NAME
-.Nm qdiv
+.Nm lldiv
 .Nd return quotient and remainder from division
 .Sh SYNOPSIS
 .Fd #include <stdlib.h>
-.Ft qdiv_t
-.Fn qdiv "quad_t num" "quad_t denom"
+.Ft lldiv_t
+.Fn lldiv "long long num" "long long denom"
 .Sh DESCRIPTION
 The
-.Fn qdiv
+.Fn lldiv
 function computes the value
 .Fa num Ns / Ns Fa denom
 and returns the quotient and remainder in a structure named
-.Li qdiv_t
+.Li lldiv_t
 that contains two
-.Li quad integer
+.Li long long integer
 members named
 .Fa quot
 and
@@ -58,5 +58,10 @@ and
 .Xr div 3 ,
 .Xr imaxdiv 3 ,
 .Xr ldiv 3 ,
-.Xr lldiv 3 ,
-.Xr math 3
+.Xr math 3 ,
+.Xr qdiv 3
+.Sh STANDARDS
+The
+.Fn lldiv
+function conforms to
+.St -ansiC-99 .
