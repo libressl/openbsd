@@ -2,8 +2,8 @@
 .\" All rights reserved.
 .\"
 .\" This code is derived from software contributed to Berkeley by
-.\" Chris Torek and the American National Standards Committee X3,
-.\" on Information Processing Systems.
+.\" the American National Standards Committee X3, on Information
+.\" Processing Systems.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,34 +29,38 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: qdiv.3,v 1.6 2004/01/23 23:08:46 jmc Exp $
+.\"	$OpenBSD: abs.3,v 1.6 2003/06/02 20:18:37 millert Exp $
 .\"
-.Dd June 29, 1991
-.Dt QDIV 3
+.Dd January 6, 2005
+.Dt IMAXABS 3
 .Os
 .Sh NAME
-.Nm qdiv
-.Nd return quotient and remainder from division
+.Nm imaxabs
+.Nd integer absolute value function
 .Sh SYNOPSIS
-.Fd #include <stdlib.h>
-.Ft qdiv_t
-.Fn qdiv "quad_t num" "quad_t denom"
+.Fd #include <inttypes.h>
+.Ft int
+.Fn imaxabs "int j"
 .Sh DESCRIPTION
 The
-.Fn qdiv
-function computes the value
-.Fa num Ns / Ns Fa denom
-and returns the quotient and remainder in a structure named
-.Li qdiv_t
-that contains two
-.Li quad integer
-members named
-.Fa quot
-and
-.Fa rem .
+.Fn imaxabs
+function computes the absolute value of the intmax_t variable
+.Fa j .
+.Sh RETURN VALUES
+The
+.Fn imaxabs
+function returns the absolute value.
 .Sh SEE ALSO
-.Xr div 3 ,
-.Xr imaxdiv 3 ,
-.Xr ldiv 3 ,
-.Xr lldiv 3 ,
+.Xr abs 3 ,
+.Xr cabs 3 ,
+.Xr floor 3 ,
+.Xr hypot 3 ,
+.Xr labs 3 ,
 .Xr math 3
+.Sh STANDARDS
+The
+.Fn abs
+function conforms to
+.St -ansiC-99 .
+.Sh BUGS
+The absolute value of the most negative integer remains negative.
