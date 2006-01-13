@@ -29,34 +29,39 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: qdiv.3,v 1.6 2004/01/23 23:08:46 jmc Exp $
+.\"	$OpenBSD: ldiv.3,v 1.7 2004/01/23 23:08:46 jmc Exp $
 .\"
-.Dd June 29, 1991
-.Dt QDIV 3
+.Dd January 3, 2006
+.Dt IMAXDIV 3
 .Os
 .Sh NAME
-.Nm qdiv
+.Nm imaxdiv
 .Nd return quotient and remainder from division
 .Sh SYNOPSIS
-.Fd #include <stdlib.h>
-.Ft qdiv_t
-.Fn qdiv "quad_t num" "quad_t denom"
+.Fd #include <inttypes.h>
+.Ft imaxdiv_t
+.Fn ldiv "intmax_t num" "intmax_t denom"
 .Sh DESCRIPTION
 The
-.Fn qdiv
+.Fn imaxdiv
 function computes the value
 .Fa num Ns / Ns Fa denom
 and returns the quotient and remainder in a structure named
-.Li qdiv_t
+.Li imaxdiv_t
 that contains two
-.Li quad integer
+.Li intmax_t
 members named
 .Fa quot
 and
 .Fa rem .
 .Sh SEE ALSO
 .Xr div 3 ,
-.Xr imaxdiv 3 ,
 .Xr ldiv 3 ,
 .Xr lldiv 3 ,
-.Xr math 3
+.Xr math 3 ,
+.Xr qdiv 3
+.Sh STANDARDS
+The
+.Fn imaxdiv
+function conforms to
+.St -ansiC-99 .
