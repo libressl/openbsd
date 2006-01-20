@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.83 2005/10/25 03:51:06 dtucker Exp $ */
+/* $OpenBSD: netcat.c,v 1.84 2005/10/25 06:51:37 dtucker Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -52,6 +52,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
 #include "atomicio.h"
 
 #ifndef SUN_LEN
