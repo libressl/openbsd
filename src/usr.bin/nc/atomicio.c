@@ -1,4 +1,4 @@
-/* $OpenBSD: atomicio.c,v 1.6 2005/05/24 20:13:28 avsm Exp $ */
+/* $OpenBSD: atomicio.c,v 1.7 2005/05/26 01:01:08 avsm Exp $ */
 
 /*
  * Copyright (c) 2005 Anil Madhavapeddy.  All rights served.
@@ -57,7 +57,7 @@ atomicio(f, fd, _s, n)
 			errno = EPIPE;
 			return pos;
 		default:
-			pos += (u_int)res;
+			pos += (size_t)res;
 		}
 	}
 	return pos;
