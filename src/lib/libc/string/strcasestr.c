@@ -1,4 +1,4 @@
-/*	$OpenBSD: strcasestr.c,v 1.1 2005/03/30 03:04:19 deraadt Exp $	*/
+/*	$OpenBSD: strcasestr.c,v 1.2 2005/08/08 08:05:37 espie Exp $	*/
 /*	$NetBSD: strcasestr.c,v 1.2 2005/02/09 21:35:47 kleink Exp $	*/
 
 /*-
@@ -46,7 +46,7 @@ strcasestr(const char *s, const char *find)
 	size_t len;
 
 	if ((c = *find++) != 0) {
-		c = tolower((unsigned char)c);
+		c = (char)tolower((unsigned char)c);
 		len = strlen(find);
 		do {
 			do {
