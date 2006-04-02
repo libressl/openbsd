@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: calloc.c,v 1.10 2005/08/08 08:05:36 espie Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -38,7 +38,7 @@ calloc(size_t num, size_t size)
 {
 	void *p;
 
-	if (num && size && SIZE_T_MAX / num < size) {
+	if (num && SIZE_MAX / num < size) {
 		errno = ENOMEM;
 		return NULL;
 	}
