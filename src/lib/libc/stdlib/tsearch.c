@@ -1,4 +1,4 @@
-/*	$OpenBSD: tsearch.c,v 1.4 2004/10/01 04:08:45 jsg Exp $	*/
+/*	$OpenBSD: tsearch.c,v 1.5 2005/03/30 18:51:49 pat Exp $	*/
 
 /*
  * Tree search generalized from Knuth (6.2.2) Algorithm T just like
@@ -86,6 +86,8 @@ tdelete(const void *vkey, void **vrootp,
 	    q->right = (*rootp)->right;
 	}
     }
+    if (p == *rootp)
+        p = q;
     free((struct node_t *) *rootp);	/* D4: Free node */
     *rootp = q;				/* link parent to new node */
     return(p);
