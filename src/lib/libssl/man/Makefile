@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.8 2005/10/03 12:02:47 djm Exp $
+# $OpenBSD: Makefile,v 1.9 2005/10/22 10:33:53 jmc Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -184,7 +184,7 @@ MANALL=	\
 PSALL=	${MANALL:S/.cat1/.ps1/g:S/.cat2/.ps2/g:S/.cat3/.ps3/g:S/.cat4/.ps4/g:S/.cat5/.ps5/g:S/.cat6/.ps6/g:S/.cat7/.ps7/g:S/.cat8/.ps8/g:S/.cat9/.ps9/g}
 .endif
 
-# these are is a real problem, since they re-document functions described in
+# these are a real problem, since they re-document functions described in
 # other pages.
 #
 # err.pod -> ERR_get_error.pod
