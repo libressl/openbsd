@@ -119,10 +119,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ctype.h>
 
 #define USE_SOCKETS
 #include "e_os.h"
+
+#define _XOPEN_SOURCE 500	/* Or isascii won't be declared properly on
+				   VMS (at least with DECompHP C).  */
+#include <ctype.h>
 
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
@@ -388,7 +391,6 @@ int main(int argc, char *argv[])
 	COMP_METHOD *cm = NULL;
 #ifdef OPENSSL_FIPS
 	int fips_mode=0;
-	const char *path=argv[0];
 #endif
 
 	verbose = 0;
@@ -591,7 +593,7 @@ bad:
 #ifdef OPENSSL_FIPS
 	if(fips_mode)
 		{
-		if(!FIPS_mode_set(1,path))
+		if(!FIPS_mode_set(1))
 			{
 			ERR_load_crypto_strings();
 			ERR_print_errors(BIO_new_fp(stderr,BIO_NOCLOSE));
@@ -1926,8 +1928,8 @@ static int MS_CALLBACK app_verify_callback(X509_STORE_CTX *ctx, void *arg)
 
 		fprintf(stderr, "In app_verify_callback, allowing cert. ");
 		fprintf(stderr, "Arg is: %s\n", cb_arg->string);
-		fprintf(stderr, "Finished printing do we have a context? 0x%x a cert? 0x%x\n",
-			(unsigned int)ctx, (unsigned int)ctx->cert);
+		fprintf(stderr, "Finished printing do we have a context? 0x%p a cert? 0x%p\n",
+			(void *)ctx, (void *)ctx->cert);
 		if (ctx->cert)
 			s=X509_NAME_oneline(X509_get_subject_name(ctx->cert),buf,256);
 		if (s != NULL)
@@ -1975,15 +1977,7 @@ static int MS_CALLBACK app_verify_callback(X509_STORE_CTX *ctx, void *arg)
 		}
 
 #ifndef OPENSSL_NO_X509_VERIFY
-# ifdef OPENSSL_FIPS
-	if(s->version == TLS1_VERSION)
-		FIPS_allow_md5(1);
-# endif
 	ok = X509_verify_cert(ctx);
-# ifdef OPENSSL_FIPS
-	if(s->version == TLS1_VERSION)
-		FIPS_allow_md5(0);
-# endif
 #endif
 
 	if (cb_arg->proxy_auth)
