@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcrypt.c,v 1.21 2006/07/04 19:06:00 otto Exp $	*/
+/*	$OpenBSD: bcrypt.c,v 1.22 2007/02/20 01:44:16 ray Exp $	*/
 
 /*
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
@@ -44,10 +44,6 @@
  * 6. RETURN Concatenate (salt, ctext);
  *
  */
-
-#if 0
-#include <stdio.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
