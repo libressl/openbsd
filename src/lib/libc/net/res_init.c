@@ -1,4 +1,4 @@
-/*	$OpenBSD: res_init.c,v 1.34 2005/12/22 06:52:11 tedu Exp $	*/
+/*	$OpenBSD: res_init.c,v 1.35 2006/09/23 04:56:43 ray Exp $	*/
 
 /*
  * ++Copyright++ 1985, 1989, 1993
@@ -506,7 +506,7 @@ _res_init(int usercall)
 				    m = -1;
 				    break;
 				}
-				/*FALLTHRU*/
+				/* FALLTHROUGH */
 			    default:
 				m = sizeof(struct in6_addr) * NBBY;
 				break;
