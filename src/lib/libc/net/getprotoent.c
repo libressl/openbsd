@@ -1,4 +1,4 @@
-/*	$OpenBSD: getprotoent.c,v 1.8 2005/08/06 20:30:03 espie Exp $ */
+/*	$OpenBSD: getprotoent.c,v 1.9 2006/01/17 15:41:52 millert Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -102,7 +102,7 @@ again:
 	pe->p_proto = l;
 	if (pd->aliases == NULL) {
 		pd->maxaliases = 5;
-		pd->aliases = malloc(pd->maxaliases * sizeof(char *));
+		pd->aliases = calloc(pd->maxaliases, sizeof(char *));
 		if (pd->aliases == NULL) {
 			serrno = errno;
 			endprotoent_r(pd);

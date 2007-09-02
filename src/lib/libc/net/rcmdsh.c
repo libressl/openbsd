@@ -1,4 +1,4 @@
-/*	$OpenBSD: rcmdsh.c,v 1.10 2005/03/25 13:24:12 otto Exp $	*/ 
+/*	$OpenBSD: rcmdsh.c,v 1.11 2005/08/06 20:30:03 espie Exp $	*/ 
 
 /*
  * Copyright (c) 2001, MagniComp
@@ -151,7 +151,7 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 			for (n = 7; (p = strchr(++p, ' ')) != NULL; n++)
 				continue;
 			rshprog = strdup(rshprog);
-			ap = argv = malloc(sizeof(char *) * n);
+			ap = argv = calloc(sizeof(char *), n);
 			if (rshprog == NULL || argv == NULL) {
 				perror("rcmdsh");
 				_exit(255);

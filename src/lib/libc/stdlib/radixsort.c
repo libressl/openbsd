@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: radixsort.c,v 1.8 2005/08/08 08:05:37 espie Exp $ */
 /*-
  * Copyright (c) 1990, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -104,7 +104,7 @@ sradixsort(const u_char **a, int n, const u_char *tab, u_int endch)
 	if (n < THRESHOLD)
 		simplesort(a, n, 0, tr, endch);
 	else {
-		if ((ta = malloc(n * sizeof(a))) == NULL)
+		if ((ta = calloc(n, sizeof(a))) == NULL)
 			return (-1);
 		r_sort_b(a, ta, n, 0, tr, endch);
 		free(ta);
