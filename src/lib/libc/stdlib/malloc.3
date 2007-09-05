@@ -30,7 +30,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: malloc.3,v 1.48 2007/09/03 14:37:02 millert Exp $
+.\"	$OpenBSD: malloc.3,v 1.49 2007/09/03 21:38:34 millert Exp $
 .\"
 .Dd $Mdocdate: September 3 2007 $
 .Dt MALLOC 3
@@ -115,7 +115,7 @@ function allocates space for an array of
 .Fa nmemb
 objects, each of whose size is
 .Fa size .
-The space is initialized to all bits zero.
+The space is initialized to zero.
 The use of
 .Fn calloc
 is strongly encouraged when allocating multiple sized objects
