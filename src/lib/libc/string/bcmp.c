@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcmp.c,v 1.7 2005/03/30 20:13:52 otto Exp $	*/
+/*	$OpenBSD: bcmp.c,v 1.8 2005/08/08 08:05:37 espie Exp $	*/
 
 /*
  * Copyright (c) 1987 Regents of the University of California.
@@ -44,12 +44,12 @@ bcmp(const void *b1, const void *b2, size_t length)
 	char *p1, *p2;
 
 	if (length == 0)
-		return(0);
+		return (0);
 	p1 = (char *)b1;
 	p2 = (char *)b2;
 	do
 		if (*p1++ != *p2++)
-			break;
+			return (1);
 	while (--length);
-	return(length);
+	return (0);
 }
