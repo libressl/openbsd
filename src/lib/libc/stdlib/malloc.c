@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.87 2007/09/03 14:37:02 millert Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.88 2008/02/20 18:31:34 otto Exp $	*/
 
 /*
  * ----------------------------------------------------------------------------
@@ -1140,7 +1140,7 @@ malloc_bytes(size_t size)
 
 	if (malloc_guard) {
 		/* Walk to a random position. */
-		i = arc4random() % bp->free;
+		i = arc4random_uniform(bp->free);
 		while (i > 0) {
 			u += u;
 			k++;
