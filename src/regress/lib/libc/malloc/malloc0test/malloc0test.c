@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc0test.c,v 1.3 2004/02/11 08:16:00 deraadt Exp $	*/
+/*	$OpenBSD: malloc0test.c,v 1.4 2004/08/04 12:02:57 otto Exp $	*/
 /*
  * Public domain.  2001, Theo de Raadt
  */
@@ -92,7 +92,7 @@ usage:
 		limit = LONG_MAX;
 
 	for (count = 0; count < limit; count++) {
-		size = arc4random() % SIZE;
+		size = arc4random_uniform(SIZE);
 		blob = malloc(size);
 		if (blob == NULL) {
 			fprintf(stderr, "success: out of memory\n");
