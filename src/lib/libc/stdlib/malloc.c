@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.89 2008/04/13 00:22:16 djm Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.90 2008/05/19 19:36:15 otto Exp $	*/
 
 /*
  * ----------------------------------------------------------------------------
@@ -655,8 +655,6 @@ malloc_init(void)
 {
 	char		*p, b[64];
 	int		i, j, save_errno = errno;
-
-	_MALLOC_LOCK_INIT();
 
 #ifdef MALLOC_EXTRA_SANITY
 	malloc_junk = 1;
