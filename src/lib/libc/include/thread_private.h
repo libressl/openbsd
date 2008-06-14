@@ -1,4 +1,4 @@
-/* $OpenBSD: thread_private.h,v 1.22 2008/01/01 00:43:39 kurt Exp $ */
+/* $OpenBSD: thread_private.h,v 1.23 2008/06/13 21:18:42 otto Exp $ */
 
 /* PUBLIC DOMAIN: No Rights Reserved. Marco S Hyman <marc@snafu.org> */
 
@@ -121,7 +121,6 @@ extern void *__THREAD_NAME(serv_mutex);
 /*
  * malloc lock/unlock prototypes and definitions
  */
-void	_thread_malloc_init(void);
 void	_thread_malloc_lock(void);
 void	_thread_malloc_unlock(void);
 
