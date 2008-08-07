@@ -30,9 +30,9 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: malloc.3,v 1.52 2008/05/20 11:25:26 jmc Exp $
+.\"	$OpenBSD: malloc.3,v 1.53 2008/07/28 19:53:03 otto Exp $
 .\"
-.Dd $Mdocdate: May 20 2008 $
+.Dd $Mdocdate: July 28 2008 $
 .Dt MALLOC 3
 .Os
 .Sh NAME
@@ -391,7 +391,7 @@ or
 an unallocated pointer was made.
 .It Dq chunk is already free
 There was an attempt to free a chunk that had already been freed.
-.It Dq modified (chunk-) pointer
+.It Dq modified chunk-pointer
 The pointer passed to
 .Fn free
 or
