@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.94 2008/08/22 17:14:57 otto Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.95 2008/08/22 21:25:10 otto Exp $	*/
 /*
  * Copyright (c) 2008 Otto Moerbeek <otto@drijf.net>
  *
@@ -1085,7 +1085,7 @@ omalloc(size_t sz, int zero_fill)
 			malloc_guarded += malloc_guard;
 		}
 		if (malloc_junk)
-			memset(p, SOME_JUNK, psz - malloc_guard);
+			memset(p + sz, SOME_JUNK, psz - sz - malloc_guard);
 
 		/* shift towards the end */
 		if (malloc_move &&
