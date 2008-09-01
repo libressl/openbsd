@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_net_pton.c,v 1.4 2005/03/25 13:24:12 otto Exp $	*/
+/*	$OpenBSD: inet_net_pton.c,v 1.5 2005/08/06 20:30:03 espie Exp $	*/
 
 /*
  * Copyright (c) 1996 by Internet Software Consortium.
@@ -142,12 +142,12 @@ inet_net_pton_ipv4(const char *src, u_char *dst, size_t size)
 			assert(n >= 0 && n <= 9);
 			bits *= 10;
 			bits += n;
+			if (bits > 32)
+				goto emsgsize;
 		} while ((ch = *src++) != '\0' &&
 			 isascii(ch) && isdigit(ch));
 		if (ch != '\0')
 			goto enoent;
-		if (bits > 32)
-			goto emsgsize;
 	}
 
 	/* Firey death and destruction unless we prefetched EOS. */
