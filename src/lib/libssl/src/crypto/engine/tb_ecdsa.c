@@ -1,9 +1,5 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
- */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2000-2002 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +52,67 @@
  *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include "eng_int.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+/* If this symbol is defined then ENGINE_get_default_ECDSA(), the function that is
+ * used by ECDSA to hook in implementation code and cache defaults (etc), will
+ * display brief debugging summaries to stderr with the 'nid'. */
+/* #define ENGINE_ECDSA_DEBUG */
+
+static ENGINE_TABLE *ecdsa_table = NULL;
+static const int dummy_nid = 1;
+
+void ENGINE_unregister_ECDSA(ENGINE *e)
 	{
-	int j;
-	unsigned char *p;
-
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
-
-	j = tlen - flen - 2;
-
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	engine_table_unregister(&ecdsa_table, e);
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+static void engine_unregister_all_ECDSA(void)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	engine_table_cleanup(&ecdsa_table);
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
+int ENGINE_register_ECDSA(ENGINE *e)
 	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
+	if(e->ecdsa_meth)
+		return engine_table_register(&ecdsa_table,
+				engine_unregister_all_ECDSA, e, &dummy_nid, 1, 0);
+	return 1;
 	}
 
+void ENGINE_register_all_ECDSA()
+	{
+	ENGINE *e;
+
+	for(e=ENGINE_get_first() ; e ; e=ENGINE_get_next(e))
+		ENGINE_register_ECDSA(e);
+	}
+
+int ENGINE_set_default_ECDSA(ENGINE *e)
+	{
+	if(e->ecdsa_meth)
+		return engine_table_register(&ecdsa_table,
+				engine_unregister_all_ECDSA, e, &dummy_nid, 1, 1);
+	return 1;
+	}
+
+/* Exposed API function to get a functional reference from the implementation
+ * table (ie. try to get a functional reference from the tabled structural
+ * references). */
+ENGINE *ENGINE_get_default_ECDSA(void)
+	{
+	return engine_table_select(&ecdsa_table, dummy_nid);
+	}
+
+/* Obtains an ECDSA implementation from an ENGINE functional reference */
+const ECDSA_METHOD *ENGINE_get_ECDSA(const ENGINE *e)
+	{
+	return e->ecdsa_meth;
+	}
+
+/* Sets an ECDSA implementation in an ENGINE structure */
+int ENGINE_set_ECDSA(ENGINE *e, const ECDSA_METHOD *ecdsa_meth)
+	{
+	e->ecdsa_meth = ecdsa_meth;
+	return 1;
+	}
