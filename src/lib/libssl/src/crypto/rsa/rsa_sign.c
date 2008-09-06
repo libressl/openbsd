@@ -146,7 +146,7 @@ int RSA_verify(int dtype, const unsigned char *m, unsigned int m_len,
 	     unsigned char *sigbuf, unsigned int siglen, RSA *rsa)
 	{
 	int i,ret=0,sigtype;
-	unsigned char *p,*s;
+	unsigned char *s;
 	X509_SIG *sig=NULL;
 
 	if (siglen != (unsigned int)RSA_size(rsa))
@@ -181,10 +181,27 @@ int RSA_verify(int dtype, const unsigned char *m, unsigned int m_len,
 				RSAerr(RSA_F_RSA_VERIFY,RSA_R_BAD_SIGNATURE);
 		else ret = 1;
 	} else {
-		p=s;
+		const unsigned char *p=s;
 		sig=d2i_X509_SIG(NULL,&p,(long)i);
 
 		if (sig == NULL) goto err;
+
+		/* Excess data can be used to create forgeries */
+		if(p != s+i)
+			{
+			RSAerr(RSA_F_RSA_VERIFY,RSA_R_BAD_SIGNATURE);
+			goto err;
+			}
+
+		/* Parameters to the signature algorithm can also be used to
+		   create forgeries */
+		if(sig->algor->parameter
+		   && ASN1_TYPE_get(sig->algor->parameter) != V_ASN1_NULL)
+			{
+			RSAerr(RSA_F_RSA_VERIFY,RSA_R_BAD_SIGNATURE);
+			goto err;
+			}
+
 		sigtype=OBJ_obj2nid(sig->algor->algorithm);
 
 
