@@ -1,9 +1,9 @@
-/* rsa_x931.c */
+/* pcy_lib.c */
 /* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+ * project 2004.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +56,112 @@
  *
  */
 
-#include <stdio.h>
+
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+#include "pcy_int.h"
+
+/* accessor functions */
+
+/* X509_POLICY_TREE stuff */
+
+int X509_policy_tree_level_count(const X509_POLICY_TREE *tree)
 	{
-	int j;
-	unsigned char *p;
+	if (!tree)
+		return 0;
+	return tree->nlevel;
+	}
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+X509_POLICY_LEVEL *
+	X509_policy_tree_get0_level(const X509_POLICY_TREE *tree, int i)
+	{
+	if (!tree || (i < 0) || (i >= tree->nlevel))
+		return NULL;
+	return tree->levels + i;
+	}
 
-	j = tlen - flen - 2;
+STACK_OF(X509_POLICY_NODE) *
+		X509_policy_tree_get0_policies(const X509_POLICY_TREE *tree)
+	{
+	if (!tree)
+		return NULL;
+	return tree->auth_policies;
+	}
 
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
+STACK_OF(X509_POLICY_NODE) *
+	X509_policy_tree_get0_user_policies(const X509_POLICY_TREE *tree)
+	{
+	if (!tree)
+		return NULL;
+	if (tree->flags & POLICY_FLAG_ANY_POLICY)
+		return tree->auth_policies;
 	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+		return tree->user_policies;
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+/* X509_POLICY_LEVEL stuff */
+
+int X509_policy_level_node_count(X509_POLICY_LEVEL *level)
 	{
-	int i = 0,j;
-	const unsigned char *p;
+	int n;
+	if (!level)
+		return 0;
+	if (level->anyPolicy)
+		n = 1;
+	else
+		n = 0;
+	if (level->nodes)
+		n += sk_X509_POLICY_NODE_num(level->nodes);
+	return n;
+	}
 
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
+X509_POLICY_NODE *X509_policy_level_get0_node(X509_POLICY_LEVEL *level, int i)
+	{
+	if (!level)
+		return NULL;
+	if (level->anyPolicy)
 		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
 		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
+			return level->anyPolicy;
+		i--;
 		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	return sk_X509_POLICY_NODE_value(level->nodes, i);
 	}
 
-/* Translate between X931 hash ids and NIDs */
+/* X509_POLICY_NODE stuff */
 
-int RSA_X931_hash_id(int nid)
+const ASN1_OBJECT *X509_policy_node_get0_policy(const X509_POLICY_NODE *node)
 	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
+	if (!node)
+		return NULL;
+	return node->data->valid_policy;
 	}
+
+#if 0
+int X509_policy_node_get_critical(const X509_POLICY_NODE *node)
+	{
+	if (node_critical(node))
+		return 1;
+	return 0;
+	}
+#endif
+
+STACK_OF(POLICYQUALINFO) *
+		X509_policy_node_get0_qualifiers(const X509_POLICY_NODE *node)
+	{
+	if (!node)
+		return NULL;
+	return node->data->qualifier_set;
+	}
+
+const X509_POLICY_NODE *
+		X509_policy_node_get0_parent(const X509_POLICY_NODE *node)
+	{
+	if (!node)
+		return NULL;
+	return node->parent;
+	}
+
 

@@ -1,9 +1,9 @@
-/* rsa_x931.c */
+/* pcy_data.c */
 /* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+ * project 2004.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +56,68 @@
  *
  */
 
-#include <stdio.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+#include "pcy_int.h"
+
+/* Policy Node routines */
+
+void policy_data_free(X509_POLICY_DATA *data)
 	{
-	int j;
-	unsigned char *p;
+	ASN1_OBJECT_free(data->valid_policy);
+	/* Don't free qualifiers if shared */
+	if (!(data->flags & POLICY_DATA_FLAG_SHARED_QUALIFIERS))
+		sk_POLICYQUALINFO_pop_free(data->qualifier_set,
+					POLICYQUALINFO_free);
+	sk_ASN1_OBJECT_pop_free(data->expected_policy_set, ASN1_OBJECT_free);
+	OPENSSL_free(data);
+	}
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+/* Create a data based on an existing policy. If 'id' is NULL use the
+ * oid in the policy, otherwise use 'id'. This behaviour covers the two
+ * types of data in RFC3280: data with from a CertificatePolcies extension
+ * and additional data with just the qualifiers of anyPolicy and ID from
+ * another source.
+ */
 
-	j = tlen - flen - 2;
-
-	if (j < 0)
+X509_POLICY_DATA *policy_data_new(POLICYINFO *policy, ASN1_OBJECT *id, int crit)
+	{
+	X509_POLICY_DATA *ret;
+	if (!policy && !id)
+		return NULL;
+	ret = OPENSSL_malloc(sizeof(X509_POLICY_DATA));
+	if (!ret)
+		return NULL;
+	ret->expected_policy_set = sk_ASN1_OBJECT_new_null();
+	if (!ret->expected_policy_set)
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+		OPENSSL_free(ret);
+		return NULL;
 		}
-	
-	p=(unsigned char *)to;
 
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
+	if (crit)
+		ret->flags = POLICY_DATA_FLAG_CRITICAL;
+	else
+		ret->flags = 0;
+
+	if (id)
+		ret->valid_policy = id;
 	else
 		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
+		ret->valid_policy = policy->policyid;
+		policy->policyid = NULL;
 		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
-	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
-	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
+	if (policy)
 		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
+		ret->qualifier_set = policy->qualifiers;
+		policy->qualifiers = NULL;
 		}
+	else
+		ret->qualifier_set = NULL;
 
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
-	}
-
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
+	return ret;
 	}
 
