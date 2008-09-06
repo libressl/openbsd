@@ -1,9 +1,9 @@
-/* rsa_x931.c */
+/* v3_pcons.c */
 /* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+ * project.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +56,81 @@
  *
  */
 
+
 #include <stdio.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/asn1.h>
+#include <openssl/asn1t.h>
+#include <openssl/conf.h>
+#include <openssl/x509v3.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
-	{
-	int j;
-	unsigned char *p;
+static STACK_OF(CONF_VALUE) *i2v_POLICY_CONSTRAINTS(X509V3_EXT_METHOD *method,
+				void *bcons, STACK_OF(CONF_VALUE) *extlist);
+static void *v2i_POLICY_CONSTRAINTS(X509V3_EXT_METHOD *method,
+				X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *values);
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+const X509V3_EXT_METHOD v3_policy_constraints = {
+NID_policy_constraints, 0,
+ASN1_ITEM_ref(POLICY_CONSTRAINTS),
+0,0,0,0,
+0,0,
+i2v_POLICY_CONSTRAINTS,
+v2i_POLICY_CONSTRAINTS,
+NULL,NULL,
+NULL
+};
 
-	j = tlen - flen - 2;
+ASN1_SEQUENCE(POLICY_CONSTRAINTS) = {
+	ASN1_IMP_OPT(POLICY_CONSTRAINTS, requireExplicitPolicy, ASN1_INTEGER,0),
+	ASN1_IMP_OPT(POLICY_CONSTRAINTS, inhibitPolicyMapping, ASN1_INTEGER,1)
+} ASN1_SEQUENCE_END(POLICY_CONSTRAINTS)
 
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+IMPLEMENT_ASN1_ALLOC_FUNCTIONS(POLICY_CONSTRAINTS)
+
+
+static STACK_OF(CONF_VALUE) *i2v_POLICY_CONSTRAINTS(X509V3_EXT_METHOD *method,
+	     void *a, STACK_OF(CONF_VALUE) *extlist)
+{
+	POLICY_CONSTRAINTS *pcons = a;
+	X509V3_add_value_int("Require Explicit Policy",
+			pcons->requireExplicitPolicy, &extlist);
+	X509V3_add_value_int("Inhibit Policy Mapping",
+			pcons->inhibitPolicyMapping, &extlist);
+	return extlist;
+}
+
+static void *v2i_POLICY_CONSTRAINTS(X509V3_EXT_METHOD *method,
+	     X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *values)
+{
+	POLICY_CONSTRAINTS *pcons=NULL;
+	CONF_VALUE *val;
+	int i;
+	if(!(pcons = POLICY_CONSTRAINTS_new())) {
+		X509V3err(X509V3_F_V2I_POLICY_CONSTRAINTS, ERR_R_MALLOC_FAILURE);
+		return NULL;
+	}
+	for(i = 0; i < sk_CONF_VALUE_num(values); i++) {
+		val = sk_CONF_VALUE_value(values, i);
+		if(!strcmp(val->name, "requireExplicitPolicy")) {
+			if(!X509V3_get_value_int(val,
+				&pcons->requireExplicitPolicy)) goto err;
+		} else if(!strcmp(val->name, "inhibitPolicyMapping")) {
+			if(!X509V3_get_value_int(val,
+				&pcons->inhibitPolicyMapping)) goto err;
+		} else {
+			X509V3err(X509V3_F_V2I_POLICY_CONSTRAINTS, X509V3_R_INVALID_NAME);
+			X509V3_conf_err(val);
+			goto err;
 		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	}
+	if (!pcons->inhibitPolicyMapping && !pcons->requireExplicitPolicy) {
+		X509V3err(X509V3_F_V2I_POLICY_CONSTRAINTS, X509V3_R_ILLEGAL_EMPTY_EXTENSION);
+		goto err;
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
-	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
-	}
-
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
-	}
+	return pcons;
+	err:
+	POLICY_CONSTRAINTS_free(pcons);
+	return NULL;
+}
 

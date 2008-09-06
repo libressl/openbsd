@@ -1,9 +1,9 @@
-/* rsa_x931.c */
+/* pcy_node.c */
 /* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+ * project 2004.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +56,103 @@
  *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/asn1.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+#include "pcy_int.h"
+
+static int node_cmp(const X509_POLICY_NODE * const *a,
+			const X509_POLICY_NODE * const *b)
 	{
-	int j;
-	unsigned char *p;
-
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
-
-	j = tlen - flen - 2;
-
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	return OBJ_cmp((*a)->data->valid_policy, (*b)->data->valid_policy);
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+STACK_OF(X509_POLICY_NODE) *policy_node_cmp_new(void)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	return sk_X509_POLICY_NODE_new(node_cmp);
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
+X509_POLICY_NODE *tree_find_sk(STACK_OF(X509_POLICY_NODE) *nodes,
+					const ASN1_OBJECT *id)
 	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
+	X509_POLICY_DATA n;
+	X509_POLICY_NODE l;
+	int idx;
 
-		case NID_sha256:
-		return 0x34;
+	n.valid_policy = (ASN1_OBJECT *)id;
+	l.data = &n;
 
-		case NID_sha384:
-		return 0x36;
+	idx = sk_X509_POLICY_NODE_find(nodes, &l);
+	if (idx == -1)
+		return NULL;
 
-		case NID_sha512:
-		return 0x35;
+	return sk_X509_POLICY_NODE_value(nodes, idx);
 
-		}
-	return -1;
 	}
+
+X509_POLICY_NODE *level_find_node(const X509_POLICY_LEVEL *level,
+					const ASN1_OBJECT *id)
+	{
+	return tree_find_sk(level->nodes, id);
+	}
+
+X509_POLICY_NODE *level_add_node(X509_POLICY_LEVEL *level,
+			X509_POLICY_DATA *data,
+			X509_POLICY_NODE *parent,
+			X509_POLICY_TREE *tree)
+	{
+	X509_POLICY_NODE *node;
+	node = OPENSSL_malloc(sizeof(X509_POLICY_NODE));
+	if (!node)
+		return NULL;
+	node->data = data;
+	node->parent = parent;
+	node->nchild = 0;
+	if (level)
+		{
+		if (OBJ_obj2nid(data->valid_policy) == NID_any_policy)
+			{
+			if (level->anyPolicy)
+				goto node_error;
+			level->anyPolicy = node;
+			}
+		else
+			{
+
+			if (!level->nodes)
+				level->nodes = policy_node_cmp_new();
+			if (!level->nodes)
+				goto node_error;
+			if (!sk_X509_POLICY_NODE_push(level->nodes, node))
+				goto node_error;
+			}
+		}
+
+	if (tree)
+		{
+		if (!tree->extra_data)
+			 tree->extra_data = sk_X509_POLICY_DATA_new_null();
+		if (!tree->extra_data)
+			goto node_error;
+		if (!sk_X509_POLICY_DATA_push(tree->extra_data, data))
+			goto node_error;
+		}
+
+	if (parent)
+		parent->nchild++;
+
+	return node;
+
+	node_error:
+	policy_node_free(node);
+	return 0;
+
+	}
+
+void policy_node_free(X509_POLICY_NODE *node)
+	{
+	OPENSSL_free(node);
+	}
+
 
