@@ -71,6 +71,12 @@ The solution is simple for now: don't run parallell make when testing.
   The recomendation is to upgrade your compiler. This naturally applies to
   other similar cases.
 
+- There is a subtle Solaris x86-specific gcc run-time environment bug, which
+  "falls between" OpenSSL [0.9.8 and later], Solaris ld and GCC. The bug
+  manifests itself as Segmentation Fault upon early application start-up.
+  The problem can be worked around by patching the environment according to
+  http://www.openssl.org/~appro/values.c.
+
 * solaris64-sparcv9-cc SHA-1 performance with WorkShop 6 compiler.
 
 As subject suggests SHA-1 might perform poorly (4 times slower)
@@ -162,3 +168,30 @@ hire /bin/ksh to do the job /bin/sh fails to do.
    your $PATH with chosen location, e.g. PATH=/tmp:$PATH. Alter-
    natively just replace system /bin/test and /bin/[ with the
    above script.
+
+* hpux64-ia64-cc fails blowfish test.
+
+Compiler bug, presumably at particular patch level. It should be noted
+that same compiler generates correct 32-bit code, a.k.a. hpux-ia64-cc
+target. Drop optimization level to +O2 when compiling 64-bit bf_skey.o.
+
+* no-engines generates errors.
+
+Unfortunately, the 'no-engines' configuration option currently doesn't
+work properly.  Use 'no-hw' and you'll will at least get no hardware
+support.  We'll see how we fix that on OpenSSL versions past 0.9.8.
+
+* 'make test' fails in BN_sqr [commonly with "error 139" denoting SIGSEGV]
+  if elder GNU binutils were deployed to link shared libcrypto.so.
+
+As subject suggests the failure is caused by a bug in elder binutils,
+either as or ld, and was observed on FreeBSD and Linux. There are two
+options. First is naturally to upgrade binutils, the second one - to
+reconfigure with additional no-sse2 [or 386] option passed to ./config.
+
+* If configured with ./config no-dso, toolkit still gets linked with -ldl,
+  which most notably poses a problem when linking with dietlibc.
+
+We don't have framework to associate -ldl with no-dso, therefore the only
+way is to edit Makefile right after ./config no-dso and remove -ldl from
+EX_LIBS line.
