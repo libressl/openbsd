@@ -89,8 +89,10 @@ static ERR_STRING_DATA DSA_str_functs[]=
 
 static ERR_STRING_DATA DSA_str_reasons[]=
 	{
+{ERR_REASON(DSA_R_BAD_Q_VALUE)           ,"bad q value"},
 {ERR_REASON(DSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE),"data too large for key size"},
 {ERR_REASON(DSA_R_MISSING_PARAMETERS)    ,"missing parameters"},
+{ERR_REASON(DSA_R_MODULUS_TOO_LARGE)     ,"modulus too large"},
 {0,NULL}
 	};
 
@@ -98,15 +100,12 @@ static ERR_STRING_DATA DSA_str_reasons[]=
 
 void ERR_load_DSA_strings(void)
 	{
-	static int init=1;
-
-	if (init)
-		{
-		init=0;
 #ifndef OPENSSL_NO_ERR
+
+	if (ERR_func_error_string(DSA_str_functs[0].error) == NULL)
+		{
 		ERR_load_strings(0,DSA_str_functs);
 		ERR_load_strings(0,DSA_str_reasons);
-#endif
-
 		}
+#endif
 	}
