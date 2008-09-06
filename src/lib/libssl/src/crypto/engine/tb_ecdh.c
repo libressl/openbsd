@@ -1,9 +1,20 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+/* crypto/engine/tb_ecdh.c */
+/* ====================================================================
+ * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
+ *
+ * The Elliptic Curve Public-Key Crypto Library (ECC Code) included
+ * herein is developed by SUN MICROSYSTEMS, INC., and is contributed
+ * to the OpenSSL project.
+ *
+ * The ECC Code is licensed pursuant to the OpenSSL open source
+ * license provided below.
+ *
+ * The ECDH engine software is originally written by Nils Gura and
+ * Douglas Stebila of Sun Microsystems Laboratories.
+ *
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2000-2002 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,122 +67,67 @@
  *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include "eng_int.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+/* If this symbol is defined then ENGINE_get_default_ECDH(), the function that is
+ * used by ECDH to hook in implementation code and cache defaults (etc), will
+ * display brief debugging summaries to stderr with the 'nid'. */
+/* #define ENGINE_ECDH_DEBUG */
+
+static ENGINE_TABLE *ecdh_table = NULL;
+static const int dummy_nid = 1;
+
+void ENGINE_unregister_ECDH(ENGINE *e)
 	{
-	int j;
-	unsigned char *p;
-
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
-
-	j = tlen - flen - 2;
-
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	engine_table_unregister(&ecdh_table, e);
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+static void engine_unregister_all_ECDH(void)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	engine_table_cleanup(&ecdh_table);
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
+int ENGINE_register_ECDH(ENGINE *e)
 	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
+	if(e->ecdh_meth)
+		return engine_table_register(&ecdh_table,
+				engine_unregister_all_ECDH, e, &dummy_nid, 1, 0);
+	return 1;
 	}
 
+void ENGINE_register_all_ECDH()
+	{
+	ENGINE *e;
+
+	for(e=ENGINE_get_first() ; e ; e=ENGINE_get_next(e))
+		ENGINE_register_ECDH(e);
+	}
+
+int ENGINE_set_default_ECDH(ENGINE *e)
+	{
+	if(e->ecdh_meth)
+		return engine_table_register(&ecdh_table,
+				engine_unregister_all_ECDH, e, &dummy_nid, 1, 1);
+	return 1;
+	}
+
+/* Exposed API function to get a functional reference from the implementation
+ * table (ie. try to get a functional reference from the tabled structural
+ * references). */
+ENGINE *ENGINE_get_default_ECDH(void)
+	{
+	return engine_table_select(&ecdh_table, dummy_nid);
+	}
+
+/* Obtains an ECDH implementation from an ENGINE functional reference */
+const ECDH_METHOD *ENGINE_get_ECDH(const ENGINE *e)
+	{
+	return e->ecdh_meth;
+	}
+
+/* Sets an ECDH implementation in an ENGINE structure */
+int ENGINE_set_ECDH(ENGINE *e, const ECDH_METHOD *ecdh_meth)
+	{
+	e->ecdh_meth = ecdh_meth;
+	return 1;
+	}

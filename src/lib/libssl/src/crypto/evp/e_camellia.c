@@ -1,9 +1,6 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
- */
+/* crypto/evp/e_camellia.c -*- mode:C; c-file-style: "eay" -*- */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,12 +17,12 @@
  * 3. All advertising materials mentioning features or use of this
  *    software must display the following acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
  *
  * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
  *    endorse or promote products derived from this software without
  *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
+ *    openssl-core@openssl.org.
  *
  * 5. Products derived from this software may not be called "OpenSSL"
  *    nor may "OpenSSL" appear in their names without prior written
@@ -34,7 +31,7 @@
  * 6. Redistributions of any form whatsoever must retain the following
  *    acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
  *
  * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
  * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -56,122 +53,79 @@
  *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_CAMELLIA
+#include <openssl/evp.h>
+#include <openssl/err.h>
+#include <string.h>
+#include <assert.h>
+#include <openssl/camellia.h>
+#include "evp_locl.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+static int camellia_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+	const unsigned char *iv, int enc);
+
+/* Camellia subkey Structure */
+typedef struct
 	{
-	int j;
-	unsigned char *p;
+	CAMELLIA_KEY ks;
+	} EVP_CAMELLIA_KEY;
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+/* Attribute operation for Camellia */
+#define data(ctx)	EVP_C_DATA(EVP_CAMELLIA_KEY,ctx)
 
-	j = tlen - flen - 2;
+IMPLEMENT_BLOCK_CIPHER(camellia_128, ks, Camellia, EVP_CAMELLIA_KEY,
+	NID_camellia_128, 16, 16, 16, 128,
+	0, camellia_init_key, NULL, 
+	EVP_CIPHER_set_asn1_iv,
+	EVP_CIPHER_get_asn1_iv,
+	NULL)
+IMPLEMENT_BLOCK_CIPHER(camellia_192, ks, Camellia, EVP_CAMELLIA_KEY,
+	NID_camellia_192, 16, 24, 16, 128,
+	0, camellia_init_key, NULL, 
+	EVP_CIPHER_set_asn1_iv,
+	EVP_CIPHER_get_asn1_iv,
+	NULL)
+IMPLEMENT_BLOCK_CIPHER(camellia_256, ks, Camellia, EVP_CAMELLIA_KEY,
+	NID_camellia_256, 16, 32, 16, 128,
+	0, camellia_init_key, NULL, 
+	EVP_CIPHER_set_asn1_iv,
+	EVP_CIPHER_get_asn1_iv,
+	NULL)
 
-	if (j < 0)
+#define IMPLEMENT_CAMELLIA_CFBR(ksize,cbits)	IMPLEMENT_CFBR(camellia,Camellia,EVP_CAMELLIA_KEY,ks,ksize,cbits,16)
+
+IMPLEMENT_CAMELLIA_CFBR(128,1)
+IMPLEMENT_CAMELLIA_CFBR(192,1)
+IMPLEMENT_CAMELLIA_CFBR(256,1)
+
+IMPLEMENT_CAMELLIA_CFBR(128,8)
+IMPLEMENT_CAMELLIA_CFBR(192,8)
+IMPLEMENT_CAMELLIA_CFBR(256,8)
+
+
+
+/* The subkey for Camellia is generated. */ 
+static int camellia_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+	const unsigned char *iv, int enc)
+	{
+	int ret;
+
+	ret=Camellia_set_key(key, ctx->key_len * 8, ctx->cipher_data);
+
+	if(ret < 0)
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+		EVPerr(EVP_F_CAMELLIA_INIT_KEY,EVP_R_CAMELLIA_KEY_SETUP_FAILED);
+		return 0;
 		}
-	
-	p=(unsigned char *)to;
 
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	return 1;
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
-	{
-	int i = 0,j;
-	const unsigned char *p;
+#else
 
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
+# ifdef PEDANTIC
+static void *dummy=&dummy;
+# endif
 
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
-	}
-
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
-	}
-
+#endif
