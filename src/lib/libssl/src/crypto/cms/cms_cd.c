@@ -1,9 +1,9 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+/* crypto/cms/cms_cd.c */
+/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
+ * project.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2008 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,129 +49,86 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
  */
 
-#include <stdio.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/asn1t.h>
+#include <openssl/pem.h>
+#include <openssl/x509v3.h>
+#include <openssl/err.h>
+#include <openssl/cms.h>
+#include <openssl/bio.h>
+#include <openssl/comp.h>
+#include "cms_lcl.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+DECLARE_ASN1_ITEM(CMS_CompressedData)
+
+#ifdef ZLIB
+
+/* CMS CompressedData Utilities */
+
+CMS_ContentInfo *cms_CompressedData_create(int comp_nid)
 	{
-	int j;
-	unsigned char *p;
-
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
+	CMS_ContentInfo *cms;
+	CMS_CompressedData *cd;
+	/* Will need something cleverer if there is ever more than one
+	 * compression algorithm or parameters have some meaning...
 	 */
-
-	j = tlen - flen - 2;
-
-	if (j < 0)
+	if (comp_nid != NID_zlib_compression)
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+		CMSerr(CMS_F_CMS_COMPRESSEDDATA_CREATE,
+				CMS_R_UNSUPPORTED_COMPRESSION_ALGORITHM);
+		return NULL;
 		}
-	
-	p=(unsigned char *)to;
+	cms = CMS_ContentInfo_new();
+	if (!cms)
+		return NULL;
 
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	cd = M_ASN1_new_of(CMS_CompressedData);
+
+	if (!cd)
+		goto err;
+
+	cms->contentType = OBJ_nid2obj(NID_id_smime_ct_compressedData);
+	cms->d.compressedData = cd;
+
+	cd->version = 0;
+
+	X509_ALGOR_set0(cd->compressionAlgorithm,
+			OBJ_nid2obj(NID_zlib_compression),
+			V_ASN1_UNDEF, NULL);
+
+	cd->encapContentInfo->eContentType = OBJ_nid2obj(NID_pkcs7_data);
+
+	return cms;
+
+	err:
+
+	if (cms)
+		CMS_ContentInfo_free(cms);
+
+	return NULL;
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+BIO *cms_CompressedData_init_bio(CMS_ContentInfo *cms)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
+	CMS_CompressedData *cd;
+	ASN1_OBJECT *compoid;
+	if (OBJ_obj2nid(cms->contentType) != NID_id_smime_ct_compressedData)
 		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
+		CMSerr(CMS_F_CMS_COMPRESSEDDATA_INIT_BIO,
+				CMS_R_CONTENT_TYPE_NOT_COMPRESSED_DATA);
+		return NULL;
 		}
-
-	if (*p++ == 0x6B)
+	cd = cms->d.compressedData;
+	X509_ALGOR_get0(&compoid, NULL, NULL, cd->compressionAlgorithm);
+	if (OBJ_obj2nid(compoid) != NID_zlib_compression)
 		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
+		CMSerr(CMS_F_CMS_COMPRESSEDDATA_INIT_BIO,
+				CMS_R_UNSUPPORTED_COMPRESSION_ALGORITHM);
+		return NULL;
 		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	return BIO_new(BIO_f_zlib());
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
-	}
-
+#endif
