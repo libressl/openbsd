@@ -1,9 +1,6 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
- */
+/* crypto/bn/bn_depr.c */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,12 +17,12 @@
  * 3. All advertising materials mentioning features or use of this
  *    software must display the following acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
  *
  * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
  *    endorse or promote products derived from this software without
  *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
+ *    openssl-core@openssl.org.
  *
  * 5. Products derived from this software may not be called "OpenSSL"
  *    nor may "OpenSSL" appear in their names without prior written
@@ -34,7 +31,7 @@
  * 6. Redistributions of any form whatsoever must retain the following
  *    acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
  *
  * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
  * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -56,122 +53,60 @@
  *
  */
 
+/* Support for deprecated functions goes here - static linkage will only slurp
+ * this code if applications are using them directly. */
+
 #include <stdio.h>
+#include <time.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
+#include "bn_lcl.h"
 #include <openssl/rand.h>
-#include <openssl/objects.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+static void *dummy=&dummy;
+
+#ifndef OPENSSL_NO_DEPRECATED
+BIGNUM *BN_generate_prime(BIGNUM *ret, int bits, int safe,
+	const BIGNUM *add, const BIGNUM *rem,
+	void (*callback)(int,int,void *), void *cb_arg)
 	{
-	int j;
-	unsigned char *p;
+	BN_GENCB cb;
+	BIGNUM *rnd=NULL;
+	int found = 0;
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+	BN_GENCB_set_old(&cb, callback, cb_arg);
 
-	j = tlen - flen - 2;
-
-	if (j < 0)
+	if (ret == NULL)
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+		if ((rnd=BN_new()) == NULL) goto err;
 		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
 	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+		rnd=ret;
+	if(!BN_generate_prime_ex(rnd, bits, safe, add, rem, &cb))
+		goto err;
+
+	/* we have a prime :-) */
+	found = 1;
+err:
+	if (!found && (ret == NULL) && (rnd != NULL)) BN_free(rnd);
+	return(found ? rnd : NULL);
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+int BN_is_prime(const BIGNUM *a, int checks, void (*callback)(int,int,void *),
+	BN_CTX *ctx_passed, void *cb_arg)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	BN_GENCB cb;
+	BN_GENCB_set_old(&cb, callback, cb_arg);
+	return BN_is_prime_ex(a, checks, ctx_passed, &cb);
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
+int BN_is_prime_fasttest(const BIGNUM *a, int checks,
+		void (*callback)(int,int,void *),
+		BN_CTX *ctx_passed, void *cb_arg,
+		int do_trial_division)
 	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
+	BN_GENCB cb;
+	BN_GENCB_set_old(&cb, callback, cb_arg);
+	return BN_is_prime_fasttest_ex(a, checks, ctx_passed,
+				do_trial_division, &cb);
 	}
-
+#endif

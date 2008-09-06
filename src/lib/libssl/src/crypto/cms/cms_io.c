@@ -1,9 +1,9 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+/* crypto/cms/cms_io.c */
+/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
+ * project.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2008 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,129 +49,92 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/asn1t.h>
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include "cms.h"
+#include "cms_lcl.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+CMS_ContentInfo *d2i_CMS_bio(BIO *bp, CMS_ContentInfo **cms)
 	{
-	int j;
-	unsigned char *p;
+	return ASN1_item_d2i_bio(ASN1_ITEM_rptr(CMS_ContentInfo), bp, cms);
+	}
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+int i2d_CMS_bio(BIO *bp, CMS_ContentInfo *cms)
+	{
+	return ASN1_item_i2d_bio(ASN1_ITEM_rptr(CMS_ContentInfo), bp, cms);
+	}
 
-	j = tlen - flen - 2;
+IMPLEMENT_PEM_rw_const(CMS, CMS_ContentInfo, PEM_STRING_CMS, CMS_ContentInfo)
 
-	if (j < 0)
+/* Callback for int_smime_write_ASN1 */
+
+static int cms_output_data(BIO *out, BIO *data, ASN1_VALUE *val, int flags,
+					const ASN1_ITEM *it)
+	{
+	CMS_ContentInfo *cms = (CMS_ContentInfo *)val;
+	BIO *tmpbio, *cmsbio;
+	int r = 0;
+
+	if (!(flags & SMIME_DETACHED))
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
+		SMIME_crlf_copy(data, out, flags);
+		return 1;
 		}
-	
-	p=(unsigned char *)to;
 
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
+	/* Let CMS code prepend any needed BIOs */
+
+	cmsbio = CMS_dataInit(cms, out);
+
+	if (!cmsbio)
+		return 0;
+
+	/* Copy data across, passing through filter BIOs for processing */
+	SMIME_crlf_copy(data, cmsbio, flags);
+
+	/* Finalize structure */
+	if (CMS_dataFinal(cms, cmsbio) <= 0)
+		goto err;
+
+	r = 1;
+
+	err:
+
+	/* Now remove any digests prepended to the BIO */
+
+	while (cmsbio != out)
+		{
+		tmpbio = BIO_pop(cmsbio);
+		BIO_free(cmsbio);
+		cmsbio = tmpbio;
+		}
+
+	return 1;
+
+	}
+
+
+int SMIME_write_CMS(BIO *bio, CMS_ContentInfo *cms, BIO *data, int flags)
+	{
+	STACK_OF(X509_ALGOR) *mdalgs;
+	int ctype_nid = OBJ_obj2nid(cms->contentType);
+	int econt_nid = OBJ_obj2nid(CMS_get0_eContentType(cms));
+	if (ctype_nid == NID_pkcs7_signed)
+		mdalgs = cms->d.signedData->digestAlgorithms;
 	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+		mdalgs = NULL;
+
+	return int_smime_write_ASN1(bio, (ASN1_VALUE *)cms, data, flags,
+					ctype_nid, econt_nid, mdalgs,
+					cms_output_data,
+					ASN1_ITEM_rptr(CMS_ContentInfo));	
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+CMS_ContentInfo *SMIME_read_CMS(BIO *bio, BIO **bcont)
 	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	return (CMS_ContentInfo *)SMIME_read_ASN1(bio, bcont,
+					ASN1_ITEM_rptr(CMS_ContentInfo));
 	}
-
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
-	}
-

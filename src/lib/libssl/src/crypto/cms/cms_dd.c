@@ -1,9 +1,9 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (shenson@bigfoot.com) for the OpenSSL
- * project 2005.
+/* crypto/cms/cms_dd.c */
+/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
+ * project.
  */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2008 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,129 +49,100 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com).
- *
  */
 
-#include <stdio.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/asn1t.h>
+#include <openssl/pem.h>
+#include <openssl/x509v3.h>
+#include <openssl/err.h>
+#include <openssl/cms.h>
+#include "cms_lcl.h"
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+DECLARE_ASN1_ITEM(CMS_DigestedData)
+
+/* CMS DigestedData Utilities */
+
+CMS_ContentInfo *cms_DigestedData_create(const EVP_MD *md)
 	{
-	int j;
-	unsigned char *p;
+	CMS_ContentInfo *cms;
+	CMS_DigestedData *dd;
+	cms = CMS_ContentInfo_new();
+	if (!cms)
+		return NULL;
 
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
+	dd = M_ASN1_new_of(CMS_DigestedData);
 
-	j = tlen - flen - 2;
+	if (!dd)
+		goto err;
 
-	if (j < 0)
+	cms->contentType = OBJ_nid2obj(NID_pkcs7_digest);
+	cms->d.digestedData = dd;
+
+	dd->version = 0;
+	dd->encapContentInfo->eContentType = OBJ_nid2obj(NID_pkcs7_data);
+
+	cms_DigestAlgorithm_set(dd->digestAlgorithm, md);
+
+	return cms;
+
+	err:
+
+	if (cms)
+		CMS_ContentInfo_free(cms);
+
+	return NULL;
+	}
+
+BIO *cms_DigestedData_init_bio(CMS_ContentInfo *cms)
+	{
+	CMS_DigestedData *dd;
+	dd = cms->d.digestedData;
+	return cms_DigestAlgorithm_init_bio(dd->digestAlgorithm);
+	}
+
+int cms_DigestedData_do_final(CMS_ContentInfo *cms, BIO *chain, int verify)
+	{
+	EVP_MD_CTX mctx;
+	unsigned char md[EVP_MAX_MD_SIZE];
+	unsigned int mdlen;
+	int r = 0;
+	CMS_DigestedData *dd;
+	EVP_MD_CTX_init(&mctx);
+
+	dd = cms->d.digestedData;
+
+	if (!cms_DigestAlgorithm_find_ctx(&mctx, chain, dd->digestAlgorithm))
+		goto err;
+
+	if (EVP_DigestFinal_ex(&mctx, md, &mdlen) <= 0)
+		goto err;
+
+	if (verify)
 		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
+		if (mdlen != (unsigned int)dd->digest->length)
+			{
+			CMSerr(CMS_F_CMS_DIGESTEDDATA_DO_FINAL,
+				CMS_R_MESSAGEDIGEST_WRONG_LENGTH);
+			goto err;
+			}
 
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
+		if (memcmp(md, dd->digest->data, mdlen))
+			CMSerr(CMS_F_CMS_DIGESTEDDATA_DO_FINAL,
+				CMS_R_VERIFICATION_FAILURE);
+		else
+			r = 1;
+		}
 	else
 		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
+		if (!ASN1_STRING_set(dd->digest, md, mdlen))
+			goto err;
+		r = 1;
 		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+
+	err:
+	EVP_MD_CTX_cleanup(&mctx);
+
+	return r;
+
 	}
-
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
-	{
-	int i = 0,j;
-	const unsigned char *p;
-
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
-		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
-	}
-
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
-	{
-	switch (nid)
-		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
-		}
-	return -1;
-	}
-
