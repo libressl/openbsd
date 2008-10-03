@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.100 2008/10/03 18:44:29 otto Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.101 2008/10/03 19:01:12 otto Exp $	*/
 /*
  * Copyright (c) 2008 Otto Moerbeek <otto@drijf.net>
  *
@@ -161,7 +161,7 @@ static int	malloc_stats;		/* dump statistics at end */
 #endif
 
 static size_t rbytesused;		/* random bytes used */
-static u_char rbytes[4096];		/* random bytes */
+static u_char rbytes[512];		/* random bytes */
 static u_char getrbyte(void);
 
 extern char	*__progname;
