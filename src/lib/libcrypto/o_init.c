@@ -1,9 +1,9 @@
-/* x509spki.c */
+/* o_init.c */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
- * project 1999.
+ * project.
  */
 /* ====================================================================
- * Copyright (c) 1999 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2007 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,12 +20,12 @@
  * 3. All advertising materials mentioning features or use of this
  *    software must display the following acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
  *
  * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
  *    endorse or promote products derived from this software without
  *    prior written permission. For written permission, please contact
- *    licensing@OpenSSL.org.
+ *    openssl-core@openssl.org.
  *
  * 5. Products derived from this software may not be called "OpenSSL"
  *    nor may "OpenSSL" appear in their names without prior written
@@ -34,7 +34,7 @@
  * 6. Redistributions of any form whatsoever must retain the following
  *    acknowledgment:
  *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
  *
  * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
  * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -56,66 +56,31 @@
  *
  */
 
-#include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/x509.h>
+#include <e_os.h>
+#include <openssl/err.h>
 
-int NETSCAPE_SPKI_set_pubkey(NETSCAPE_SPKI *x, EVP_PKEY *pkey)
-{
-	if ((x == NULL) || (x->spkac == NULL)) return(0);
-	return(X509_PUBKEY_set(&(x->spkac->pubkey),pkey));
-}
+/* Perform any essential OpenSSL initialization operations.
+ * Currently only sets FIPS callbacks
+ */
 
-EVP_PKEY *NETSCAPE_SPKI_get_pubkey(NETSCAPE_SPKI *x)
-{
-	if ((x == NULL) || (x->spkac == NULL))
-		return(NULL);
-	return(X509_PUBKEY_get(x->spkac->pubkey));
-}
-
-/* Load a Netscape SPKI from a base64 encoded string */
-
-NETSCAPE_SPKI * NETSCAPE_SPKI_b64_decode(const char *str, int len)
-{
-	unsigned char *spki_der;
-	const unsigned char *p;
-	int spki_len;
-	NETSCAPE_SPKI *spki;
-	if(len <= 0) len = strlen(str);
-	if (!(spki_der = OPENSSL_malloc(len + 1))) {
-		X509err(X509_F_NETSCAPE_SPKI_B64_DECODE, ERR_R_MALLOC_FAILURE);
-		return NULL;
+void OPENSSL_init(void)
+	{
+#ifdef OPENSSL_FIPS
+	static int done = 0;
+	if (!done)
+		{
+		int_ERR_lib_init();
+#ifdef CRYPTO_MDEBUG
+		CRYPTO_malloc_debug_init();
+#endif
+#ifdef OPENSSL_ENGINE
+		int_EVP_MD_init_engine_callbacks();
+		int_EVP_CIPHER_init_engine_callbacks();
+		int_RAND_init_engine_callbacks();
+#endif
+		done = 1;
+		}
+#endif
 	}
-	spki_len = EVP_DecodeBlock(spki_der, (const unsigned char *)str, len);
-	if(spki_len < 0) {
-		X509err(X509_F_NETSCAPE_SPKI_B64_DECODE,
-						X509_R_BASE64_DECODE_ERROR);
-		OPENSSL_free(spki_der);
-		return NULL;
-	}
-	p = spki_der;
-	spki = d2i_NETSCAPE_SPKI(NULL, &p, spki_len);
-	OPENSSL_free(spki_der);
-	return spki;
-}
+		
 
-/* Generate a base64 encoded string from an SPKI */
-
-char * NETSCAPE_SPKI_b64_encode(NETSCAPE_SPKI *spki)
-{
-	unsigned char *der_spki, *p;
-	char *b64_str;
-	int der_len;
-	der_len = i2d_NETSCAPE_SPKI(spki, NULL);
-	der_spki = OPENSSL_malloc(der_len);
-	b64_str = OPENSSL_malloc(der_len * 2);
-	if(!der_spki || !b64_str) {
-		X509err(X509_F_NETSCAPE_SPKI_B64_ENCODE, ERR_R_MALLOC_FAILURE);
-		return NULL;
-	}
-	p = der_spki;
-	i2d_NETSCAPE_SPKI(spki, &p);
-	EVP_EncodeBlock((unsigned char *)b64_str, der_spki, der_len);
-	OPENSSL_free(der_spki);
-	return b64_str;
-}
