@@ -4,14 +4,21 @@
 /* OpenSSL was configured with the following options: */
 #ifndef OPENSSL_DOING_MAKEDEPEND
 
+
 #ifndef OPENSSL_NO_CAMELLIA
 # define OPENSSL_NO_CAMELLIA
+#endif
+#ifndef OPENSSL_NO_CAPIENG
+# define OPENSSL_NO_CAPIENG
 #endif
 #ifndef OPENSSL_NO_CMS
 # define OPENSSL_NO_CMS
 #endif
 #ifndef OPENSSL_NO_GMP
 # define OPENSSL_NO_GMP
+#endif
+#ifndef OPENSSL_NO_JPAKE
+# define OPENSSL_NO_JPAKE
 #endif
 #ifndef OPENSSL_NO_KRB5
 # define OPENSSL_NO_KRB5
@@ -28,11 +35,9 @@
 #ifndef OPENSSL_NO_SEED
 # define OPENSSL_NO_SEED
 #endif
-#ifndef OPENSSL_NO_TLSEXT
-# define OPENSSL_NO_TLSEXT
-#endif
 
 #endif /* OPENSSL_DOING_MAKEDEPEND */
+
 #ifndef OPENSSL_NO_DYNAMIC_ENGINE
 # define OPENSSL_NO_DYNAMIC_ENGINE
 #endif
@@ -45,11 +50,17 @@
 # if defined(OPENSSL_NO_CAMELLIA) && !defined(NO_CAMELLIA)
 #  define NO_CAMELLIA
 # endif
+# if defined(OPENSSL_NO_CAPIENG) && !defined(NO_CAPIENG)
+#  define NO_CAPIENG
+# endif
 # if defined(OPENSSL_NO_CMS) && !defined(NO_CMS)
 #  define NO_CMS
 # endif
 # if defined(OPENSSL_NO_GMP) && !defined(NO_GMP)
 #  define NO_GMP
+# endif
+# if defined(OPENSSL_NO_JPAKE) && !defined(NO_JPAKE)
+#  define NO_JPAKE
 # endif
 # if defined(OPENSSL_NO_KRB5) && !defined(NO_KRB5)
 #  define NO_KRB5
@@ -66,12 +77,24 @@
 # if defined(OPENSSL_NO_SEED) && !defined(NO_SEED)
 #  define NO_SEED
 # endif
-# if defined(OPENSSL_NO_TLSEXT) && !defined(NO_TLSEXT)
-#  define NO_TLSEXT
-# endif
 #endif
 
 /* crypto/opensslconf.h.in */
+
+#ifdef OPENSSL_DOING_MAKEDEPEND
+
+/* Include any symbols here that have to be explicitly set to enable a feature
+ * that should be visible to makedepend.
+ *
+ * [Our "make depend" doesn't actually look at this, we use actual build settings
+ * instead; we want to make it easy to remove subdirectories with disabled algorithms.]
+ */
+
+#ifndef OPENSSL_FIPS
+#define OPENSSL_FIPS
+#endif
+
+#endif
 
 /* Generate 80386 code? */
 #undef I386_ONLY
