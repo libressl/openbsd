@@ -902,21 +902,27 @@ int ssl3_get_client_hello(SSL *s)
 				break;
 				}
 			}
+		if (j == 0 && (s->options & SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG) && (sk_SSL_CIPHER_num(ciphers) == 1))
+			{
+			/* Special case as client bug workaround: the previously used cipher may
+			 * not be in the current list, the client instead might be trying to
+			 * continue using a cipher that before wasn't chosen due to server
+			 * preferences.  We'll have to reject the connection if the cipher is not
+			 * enabled, though. */
+			c = sk_SSL_CIPHER_value(ciphers, 0);
+			if (sk_SSL_CIPHER_find(SSL_get_ciphers(s), c) >= 0)
+				{
+				s->session->cipher = c;
+				j = 1;
+				}
+			}
 		if (j == 0)
 			{
-			if ((s->options & SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG) && (sk_SSL_CIPHER_num(ciphers) == 1))
-				{
-				/* Very bad for multi-threading.... */
-				s->session->cipher=sk_SSL_CIPHER_value(ciphers, 0);
-				}
-			else
-				{
-				/* we need to have the cipher in the cipher
-				 * list if we are asked to reuse it */
-				al=SSL_AD_ILLEGAL_PARAMETER;
-				SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO,SSL_R_REQUIRED_CIPHER_MISSING);
-				goto f_err;
-				}
+			/* we need to have the cipher in the cipher
+			 * list if we are asked to reuse it */
+			al=SSL_AD_ILLEGAL_PARAMETER;
+			SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO,SSL_R_REQUIRED_CIPHER_MISSING);
+			goto f_err;
 			}
 		}
 
@@ -1172,13 +1178,13 @@ int ssl3_send_server_hello(SSL *s)
 		*(d++)=SSL3_MT_SERVER_HELLO;
 		l2n3(l,d);
 
-		s->state=SSL3_ST_CW_CLNT_HELLO_B;
+		s->state=SSL3_ST_SW_SRVR_HELLO_B;
 		/* number of bytes to write */
 		s->init_num=p-buf;
 		s->init_off=0;
 		}
 
-	/* SSL3_ST_CW_CLNT_HELLO_B */
+	/* SSL3_ST_SW_SRVR_HELLO_B */
 	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
@@ -1202,7 +1208,7 @@ int ssl3_send_server_done(SSL *s)
 		s->init_off=0;
 		}
 
-	/* SSL3_ST_CW_CLNT_HELLO_B */
+	/* SSL3_ST_SW_SRVR_DONE_B */
 	return(ssl3_do_write(s,SSL3_RT_HANDSHAKE));
 	}
 
@@ -1540,6 +1546,8 @@ int ssl3_send_server_key_exchange(SSL *s)
 				j=0;
 				for (num=2; num > 0; num--)
 					{
+					EVP_MD_CTX_set_flags(&md_ctx,
+						EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
 					EVP_DigestInit_ex(&md_ctx,(num == 2)
 						?s->ctx->md5:s->ctx->sha1, NULL);
 					EVP_DigestUpdate(&md_ctx,&(s->s3->client_random[0]),SSL3_RANDOM_SIZE);
@@ -2558,7 +2566,7 @@ int ssl3_get_client_certificate(SSL *s)
 	else
 		{
 		i=ssl_verify_cert_chain(s,sk);
-		if (!i)
+		if (i <= 0)
 			{
 			al=ssl_verify_alarm_type(s->verify_result);
 			SSLerr(SSL_F_SSL3_GET_CLIENT_CERTIFICATE,SSL_R_NO_CERTIFICATE_RETURNED);
