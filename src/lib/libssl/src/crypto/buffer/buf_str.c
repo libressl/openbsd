@@ -1,9 +1,6 @@
-/* rsa_x931.c */
-/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
- * project 2005.
- */
+/* crypto/buffer/buf_str.c */
 /* ====================================================================
- * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 2007 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -58,120 +55,62 @@
 
 #include <stdio.h>
 #include "cryptlib.h"
-#include <openssl/bn.h>
-#include <openssl/rsa.h>
-#include <openssl/rand.h>
-#include <openssl/objects.h>
+#include <openssl/buffer.h>
 
-int RSA_padding_add_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen)
+char *BUF_strdup(const char *str)
 	{
-	int j;
-	unsigned char *p;
-
-	/* Absolute minimum amount of padding is 1 header nibble, 1 padding
-	 * nibble and 2 trailer bytes: but 1 hash if is already in 'from'.
-	 */
-
-	j = tlen - flen - 2;
-
-	if (j < 0)
-		{
-		RSAerr(RSA_F_RSA_PADDING_ADD_X931,RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
-		return -1;
-		}
-	
-	p=(unsigned char *)to;
-
-	/* If no padding start and end nibbles are in one byte */
-	if (j == 0)
-		*p++ = 0x6A;
-	else
-		{
-		*p++ = 0x6B;
-		if (j > 1)
-			{
-			memset(p, 0xBB, j - 1);
-			p += j - 1;
-			}
-		*p++ = 0xBA;
-		}
-	memcpy(p,from,(unsigned int)flen);
-	p += flen;
-	*p = 0xCC;
-	return(1);
+	if (str == NULL) return(NULL);
+	return BUF_strndup(str, strlen(str));
 	}
 
-int RSA_padding_check_X931(unsigned char *to, int tlen,
-	     const unsigned char *from, int flen, int num)
+char *BUF_strndup(const char *str, size_t siz)
 	{
-	int i = 0,j;
-	const unsigned char *p;
+	char *ret;
 
-	p=from;
-	if ((num != flen) || ((*p != 0x6A) && (*p != 0x6B)))
+	if (str == NULL) return(NULL);
+
+	ret=OPENSSL_malloc(siz+1);
+	if (ret == NULL) 
 		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931,RSA_R_INVALID_HEADER);
-		return -1;
+		BUFerr(BUF_F_BUF_STRNDUP,ERR_R_MALLOC_FAILURE);
+		return(NULL);
 		}
-
-	if (*p++ == 0x6B)
-		{
-		j=flen-3;
-		for (i = 0; i < j; i++)
-			{
-			unsigned char c = *p++;
-			if (c == 0xBA)
-				break;
-			if (c != 0xBB)
-				{
-				RSAerr(RSA_F_RSA_PADDING_CHECK_X931,
-					RSA_R_INVALID_PADDING);
-				return -1;
-				}
-			}
-
-		j -= i;
-
-		if (i == 0)
-			{
-			RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_PADDING);
-			return -1;
-			}
-
-		}
-	else j = flen - 2;
-
-	if (p[j] != 0xCC)
-		{
-		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
-		return -1;
-		}
-
-	memcpy(to,p,(unsigned int)j);
-
-	return(j);
+	BUF_strlcpy(ret,str,siz+1);
+	return(ret);
 	}
 
-/* Translate between X931 hash ids and NIDs */
-
-int RSA_X931_hash_id(int nid)
+void *BUF_memdup(const void *data, size_t siz)
 	{
-	switch (nid)
+	void *ret;
+
+	if (data == NULL) return(NULL);
+
+	ret=OPENSSL_malloc(siz);
+	if (ret == NULL) 
 		{
-		case NID_sha1:
-		return 0x33;
-
-		case NID_sha256:
-		return 0x34;
-
-		case NID_sha384:
-		return 0x36;
-
-		case NID_sha512:
-		return 0x35;
-
+		BUFerr(BUF_F_BUF_MEMDUP,ERR_R_MALLOC_FAILURE);
+		return(NULL);
 		}
-	return -1;
+	return memcpy(ret, data, siz);
+	}	
+
+size_t BUF_strlcpy(char *dst, const char *src, size_t size)
+	{
+	size_t l = 0;
+	for(; size > 1 && *src; size--)
+		{
+		*dst++ = *src++;
+		l++;
+		}
+	if (size)
+		*dst = '\0';
+	return l + strlen(src);
 	}
 
+size_t BUF_strlcat(char *dst, const char *src, size_t size)
+	{
+	size_t l = 0;
+	for(; size > 0 && *dst; size--, dst++)
+		l++;
+	return l + BUF_strlcpy(dst, src, size);
+	}
