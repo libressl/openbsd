@@ -100,6 +100,8 @@ typedef int ASN1_NULL;
 #undef X509_EXTENSIONS
 #undef X509_CERT_PAIR
 #undef PKCS7_ISSUER_AND_SERIAL
+#undef OCSP_REQUEST
+#undef OCSP_RESPONSE
 #endif
 
 #ifdef BIGNUM
@@ -140,6 +142,8 @@ typedef struct X509_crl_st X509_CRL;
 typedef struct X509_name_st X509_NAME;
 typedef struct x509_store_st X509_STORE;
 typedef struct x509_store_ctx_st X509_STORE_CTX;
+typedef struct ssl_st SSL;
+typedef struct ssl_ctx_st SSL_CTX;
 
 typedef struct v3_ext_ctx X509V3_CTX;
 typedef struct conf_st CONF;
