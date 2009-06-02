@@ -1,4 +1,4 @@
-/*	$OpenBSD: gai_strerror.c,v 1.5 2001/06/05 02:31:34 deraadt Exp $	*/
+/*	$OpenBSD: gai_strerror.c,v 1.6 2004/12/20 22:35:32 millert Exp $	*/
 
 /*
  * Copyright (c) 1997-1999, Craig Metz, All rights reserved.
@@ -70,6 +70,8 @@ gai_strerror(int errnum)
 		return "invalid value for hints";
 	case EAI_PROTOCOL:
 		return "resolved protocol is unknown";
+	case EAI_OVERFLOW:
+		return "argument buffer overflow";
 	default:
 		return "unknown/invalid error";
 	}
