@@ -1,4 +1,4 @@
-/*	$OpenBSD */
+/*	$OpenBSD$	*/
 
 /* Public domain. 2005, Otto Moerbeek */
 
