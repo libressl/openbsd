@@ -1,4 +1,4 @@
-/*	$OpenBSD: ecvt.c,v 1.5 2006/01/10 16:18:37 millert Exp $	*/
+/*	$OpenBSD: ecvt.c,v 1.6 2006/10/29 18:45:56 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2002, 2006 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -62,6 +62,8 @@ __cvt(double value, int ndigit, int *decpt, int *sign, int fmode, int pad)
 		*rve = '\0';
 	} else {
 		p = __dtoa(value, fmode + 2, ndigit, decpt, sign, &rve);
+		if (p == NULL)
+			return (NULL);
 		if (*decpt == 9999) {
 			/* Infinity or Nan, convert to inf or nan like printf */
 			*decpt = 0;
