@@ -1,4 +1,4 @@
-.\"     $OpenBSD: nc.1,v 1.49 2009/06/05 00:18:10 claudio Exp $
+.\"     $OpenBSD: nc.1,v 1.50 2009/06/05 06:47:12 jmc Exp $
 .\"
 .\" Copyright (c) 1996 David Sacerdote
 .\" All rights reserved.
@@ -174,7 +174,9 @@ This makes it possible to use
 .Nm
 to script telnet sessions.
 .It Fl U
-Specifies to use Unix Domain Sockets.
+Specifies to use
+.Ux
+domain sockets.
 .It Fl u
 Use UDP instead of the default option of TCP.
 .It Fl V Ar rdomain
@@ -386,7 +388,9 @@ IP for the local end of the connection:
 .Pp
 .Dl $ nc -s 10.1.2.3 host.example.com 42
 .Pp
-Create and listen on a Unix Domain Socket:
+Create and listen on a
+.Ux
+domain socket:
 .Pp
 .Dl $ nc -lU /var/tmp/dsocket
 .Pp
