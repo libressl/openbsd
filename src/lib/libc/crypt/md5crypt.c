@@ -1,4 +1,4 @@
-/*	$OpenBSD: md5crypt.c,v 1.13 2003/08/07 00:30:21 deraadt Exp $	*/
+/*	$OpenBSD: md5crypt.c,v 1.14 2005/08/08 08:05:33 espie Exp $	*/
 
 /*
  * ----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ md5crypt(const char *pw, const char *salt)
 
 	/*
 	 * and now, just to make sure things don't run too fast
-	 * On a 60 Mhz Pentium this takes 34 msec, so you would
+	 * On a 60 MHz Pentium this takes 34 msec, so you would
 	 * need 30 seconds to build a 1000 entry dictionary...
 	 */
 	for(i=0;i<1000;i++) {
