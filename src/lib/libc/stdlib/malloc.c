@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.122 2009/12/07 18:47:38 miod Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.123 2009/12/16 08:23:53 otto Exp $	*/
 /*
  * Copyright (c) 2008 Otto Moerbeek <otto@drijf.net>
  *
@@ -660,6 +660,10 @@ omalloc_init(struct dir_info **dp)
 				break;
 			case 'R':
 				mopts.malloc_realloc = 1;
+				break;
+			case 'S':
+				mopts.malloc_freeprot = mopts.malloc_junk = 1;
+				mopts.malloc_guard = MALLOC_PAGESIZE;
 				break;
 			case 'x':
 				mopts.malloc_xmalloc = 0;
