@@ -29,9 +29,9 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: strtoul.3,v 1.18 2007/06/29 18:54:37 millert Exp $
+.\"	$OpenBSD: strtoul.3,v 1.19 2007/11/13 18:30:04 tobias Exp $
 .\"
-.Dd $Mdocdate: June 29 2007 $
+.Dd $Mdocdate: November 13 2007 $
 .Dt STRTOUL 3
 .Os
 .Sh NAME
@@ -45,14 +45,11 @@
 .Fd #include <stdlib.h>
 .Ft unsigned long
 .Fn strtoul "const char *nptr" "char **endptr" "int base"
-.Pp
 .Ft unsigned long long
 .Fn strtoull "const char *nptr" "char **endptr" "int base"
-.Pp
 .Fd #include <inttypes.h>
 .Ft uintmax_t
 .Fn strtoumax "const char *nptr" "char **endptr" "int base"
-.Pp
 .Fd #include <sys/types.h>
 .Fd #include <limits.h>
 .Fd #include <stdlib.h>
@@ -179,7 +176,7 @@ If no conversion could be performed, 0 is returned;
 the global variable
 .Va errno
 is also set to
-.Er EINVAL,
+.Er EINVAL ,
 though this is not portable across all platforms.
 .Pp
 There is no way to determine if
