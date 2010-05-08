@@ -1,9 +1,10 @@
-/*	$OpenBSD: except.c,v 1.10 2006/05/15 14:00:22 kettenis Exp $	*/
+/*	$OpenBSD: except.c,v 1.11 2007/10/22 21:07:10 miod Exp $	*/
 
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <signal.h>
 #include <assert.h>
 #include <ieeefp.h>
