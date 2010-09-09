@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.15 2009/04/10 06:04:49 djm Exp $
+# $OpenBSD: Makefile,v 1.16 2010/04/03 19:34:00 schwarze Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -290,7 +290,7 @@ ${page}.cat3: ${src}.pod
 .  if MANPS
 ${page}.ps3: ${src}.pod
 	${POD2MAN} --section=3 --name=${page:U} ${.ALLSRC} | \
-	    nroff -Tps -mandoc > ${.TARGET}
+	    ${MANDOC} -Tps > ${.TARGET}
 .  endif
 .endfor
 
@@ -1092,7 +1092,7 @@ maninstall:
 
 .pod.ps${sect}:
 	${POD2MAN} --section=${sect} --name=${*:U} ${.ALLSRC} | \
-	    nroff -Tps -mandoc > ${.TARGET}
+	    ${MANDOC} -Tps > ${.TARGET}
 .endfor
 
 .include <bsd.obj.mk>
