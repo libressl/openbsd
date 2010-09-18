@@ -1,4 +1,8 @@
-/* Public domain */
+/*	$OpenBSD$	*/
+
+/*
+ * Public domain, 2010, Todd C. Miller <Todd.Miller@courtesan.com>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
