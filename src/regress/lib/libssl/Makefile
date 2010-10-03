@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.12 2003/06/16 03:15:14 mickey Exp $
+#	$OpenBSD: Makefile,v 1.13 2008/09/06 12:21:54 djm Exp $
 
 CLEANFILES+= testdsa.key testdsa.pem rsakey.pem rsacert.pem dsa512.pem
 
@@ -38,7 +38,7 @@ SHA512TEST=	sha512t
 SHATEST=	shatest
 
 SSLDIR=	${.CURDIR}/../../../lib/libssl/src/crypto
-CFLAGS= -O -g -Wall -I${SSLDIR} -I${SSLDIR}/..
+CFLAGS+= -Wall -I${SSLDIR} -I${SSLDIR}/..
 
 CLEANFILES+=	$(BNTEST).c $(ECTEST).c $(HMACTEST).c \
 	$(SHATEST).c $(SHA1TEST).c $(MDC2TEST).c $(RMDTEST).c \
