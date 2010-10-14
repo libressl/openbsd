@@ -1,4 +1,4 @@
-.\" $OpenBSD: openssl.1,v 1.76 2010/10/13 15:38:56 jmc Exp $
+.\" $OpenBSD: openssl.1,v 1.77 2010/10/13 19:16:37 jmc Exp $
 .\" ====================================================================
 .\" Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
 .\"
@@ -5419,6 +5419,9 @@ The
 .Nm prime
 command is used to generate prime numbers,
 or to check numbers for primality.
+Results are probabalistic:
+they have an exceedingly high likelihood of being correct,
+but are not guaranteed.
 .Pp
 The options are as follows:
 .Bl -tag -width ds
