@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.20 2008/10/03 18:46:04 otto Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.21 2009/12/15 18:19:06 guenther Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -25,11 +25,6 @@
  * compatible with RSA Labs "RC4" cipher (the actual description of
  * which is a trade secret).  The same algorithm is used as a stream
  * cipher called "arcfour" in Tatu Ylonen's ssh package.
- *
- * Here the stream cipher has been modified always to include the time
- * when initializing the state.  That makes it impossible to
- * regenerate the same random sequence twice, so this can't be used
- * for encryption, but will generate good random numbers.
  *
  * RC4 is a registered trademark of RSA Laboratories.
  */
