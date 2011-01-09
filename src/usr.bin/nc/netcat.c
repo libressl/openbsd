@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.98 2010/07/03 04:44:51 guenther Exp $ */
+/* $OpenBSD: netcat.c,v 1.99 2011/01/08 00:44:19 jeremy Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -930,9 +930,9 @@ usage(int ret)
 {
 	fprintf(stderr,
 	    "usage: nc [-46DdhklnrStUuvz] [-I length] [-i interval] [-O length]\n"
-	    "\t  [-P proxy_username] [-p source_port] [-s source_ip_address] [-T ToS]\n"
+	    "\t  [-P proxy_username] [-p source_port] [-s source] [-T ToS]\n"
 	    "\t  [-V rtable] [-w timeout] [-X proxy_protocol]\n"
-	    "\t  [-x proxy_address[:port]] [hostname] [port]\n");
+	    "\t  [-x proxy_address[:port]] [destination] [port]\n");
 	if (ret)
 		exit(1);
 }
