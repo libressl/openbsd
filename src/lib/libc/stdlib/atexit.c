@@ -1,4 +1,4 @@
-/*	$OpenBSD: atexit.c,v 1.13 2007/09/03 14:40:16 millert Exp $ */
+/*	$OpenBSD: atexit.c,v 1.14 2007/09/05 20:47:47 chl Exp $ */
 /*
  * Copyright (c) 2002 Daniel Hartmeier
  * All rights reserved.
@@ -147,7 +147,7 @@ __cxa_finalize(void *dso)
 				p->fns[n].fn_ptr.cxa_func = NULL;
 				mprotect(p, pgsize, PROT_READ);
 			}
-			if (dso != NULL)
+			if (fn.fn_dso != NULL)
 				(*fn.fn_ptr.cxa_func)(fn.fn_arg);
 			else
 				(*fn.fn_ptr.std_func)();
