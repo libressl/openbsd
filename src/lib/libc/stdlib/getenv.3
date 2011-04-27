@@ -29,9 +29,9 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: getenv.3,v 1.14 2010/03/10 20:46:16 kili Exp $
+.\"	$OpenBSD: getenv.3,v 1.15 2010/07/06 20:52:00 naddy Exp $
 .\"
-.Dd $Mdocdate: March 10 2010 $
+.Dd $Mdocdate: July 6 2010 $
 .Dt GETENV 3
 .Os
 .Sh NAME
@@ -53,12 +53,14 @@
 .Sh DESCRIPTION
 These functions set, unset, and fetch environment variables from the host
 .Em environment list .
-For compatibility with differing environment conventions, the given arguments
+For compatibility with differing environment conventions, the given argument
 .Fa name
+may be appended with an equal sign
+.Dq Li \&=
+followed by zero or more characters,
 and
 .Fa value
-may be appended and prepended, respectively, with an equal sign
-.Dq Li \&= .
+may be prepended with an equal sign.
 .Pp
 The
 .Fn getenv
