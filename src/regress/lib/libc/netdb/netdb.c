@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: netdb.c,v 1.1 2004/10/25 15:10:36 otto Exp $	*/
 
 /*
  * Public domain, 2004, Otto Moerbeek <otto@drijf.net>
@@ -7,6 +7,7 @@
 #include <err.h>
 #include <netdb.h>
 #include <stdarg.h>
+#include <string.h>
 
 int ret = 0;
 
