@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $OpenBSD: generate_pkgconfig.sh,v 1.4 2011/01/25 20:53:18 naddy Exp $
+# $OpenBSD: generate_pkgconfig.sh,v 1.5 2011/03/24 21:31:01 matthieu Exp $
 #
 # Generate pkg-config files for OpenSSL.
 
@@ -54,7 +54,7 @@ Name: OpenSSL-libcrypto
 Description: OpenSSL cryptography library
 Version: ${ssl_version}
 Requires: 
-Libs: -lcrypto
+Libs: -L\${libdir} -lcrypto
 Cflags: -I\${includedir}
 __EOF__
 
@@ -70,7 +70,7 @@ Name: OpenSSL
 Description: Secure Sockets Layer and cryptography libraries
 Version: ${ssl_version}
 Requires: 
-Libs: -lssl -lcrypto
+Libs: -L\${libdir} -lssl -lcrypto
 Cflags: -I\${includedir}
 __EOF__
 
@@ -86,6 +86,6 @@ Name: OpenSSL
 Description: Secure Sockets Layer and cryptography libraries and tools
 Version: ${ssl_version}
 Requires: 
-Libs: -lssl -lcrypto
+Libs: -L\${libdir} -lssl -lcrypto
 Cflags: -I\${includedir}
 __EOF__
