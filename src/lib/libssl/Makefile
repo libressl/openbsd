@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.16 2010/12/28 20:07:47 jasper Exp $
+# $OpenBSD: Makefile,v 1.17 2011/01/21 09:24:45 jasper Exp $
 
 SUBDIR=crypto ssl man
 PC_FILES=openssl.pc libssl.pc libcrypto.pc
@@ -15,8 +15,6 @@ distribution:
 
 beforeinstall:
 	/bin/sh ${.CURDIR}/generate_pkgconfig.sh -c ${.CURDIR} -o ${.OBJDIR}
-	[ -d ${DESTDIR}/usr/lib/pkgconfig/ ] || \
-		${INSTALL} -o root -g ${SHAREGRP} -d ${DESTDIR}/usr/lib/pkgconfig/
 .for p in ${PC_FILES}
 	${INSTALL} ${INSTALL_COPY} -o root -g ${SHAREGRP} \
 	    -m ${SHAREMODE} ${.OBJDIR}/$p ${DESTDIR}/usr/lib/pkgconfig/
