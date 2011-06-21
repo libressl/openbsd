@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.99 2011/01/08 00:44:19 jeremy Exp $ */
+/* $OpenBSD: netcat.c,v 1.100 2011/01/09 22:16:46 jeremy Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -552,7 +552,7 @@ remote_connect(const char *host, const char *port, struct addrinfo hints)
 			continue;
 
 		if (rtableid) {
-			if (setsockopt(s, IPPROTO_IP, SO_RTABLE, &rtableid,
+			if (setsockopt(s, SOL_SOCKET, SO_RTABLE, &rtableid,
 			    sizeof(rtableid)) == -1)
 				err(1, "setsockopt SO_RTABLE");
 		}
