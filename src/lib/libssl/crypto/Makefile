@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.58 2010/10/07 10:49:39 djm Exp $
+# $OpenBSD: Makefile,v 1.59 2011/07/08 01:37:54 mpf Exp $
 
 LIB=	crypto
 WANTLINT=
@@ -520,7 +520,6 @@ CFLAGS+= -DSHA512_ASM
 CFLAGS+= -DOPENSSL_CPUID_OBJ
 CFLAGS+= -DOPENSSL_BN_ASM_MONT
 CFLAGS+= -DWHIRLPOOL_ASM
-CFLAGS+= -DOPENSSL_IA32_SSE2
 SSLASM=\
 	aes aes-x86_64 \
 	aes aesni-x86_64 \
