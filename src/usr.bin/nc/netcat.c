@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.102 2011/09/17 14:10:05 haesbaert Exp $ */
+/* $OpenBSD: netcat.c,v 1.103 2011/10/04 08:34:34 fgsch Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -814,9 +814,6 @@ build_ports(char *p)
 	int x = 0;
 
 	if ((n = strchr(p, '-')) != NULL) {
-		if (lflag)
-			errx(1, "Cannot use -l with multiple ports!");
-
 		*n = '\0';
 		n++;
 
