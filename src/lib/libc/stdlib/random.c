@@ -1,4 +1,4 @@
-/*	$OpenBSD: random.c,v 1.14 2005/08/08 08:05:37 espie Exp $ */
+/*	$OpenBSD: random.c,v 1.15 2005/11/30 07:51:02 otto Exp $ */
 /*
  * Copyright (c) 1983 Regents of the University of California.
  * All rights reserved.
@@ -196,7 +196,8 @@ srandom(unsigned int x)
 	if (rand_type == TYPE_0)
 		state[0] = x;
 	else {
-		state[0] = x;
+		/* A seed of 0 would result in state[] always being zero. */
+		state[0] = x ? x : 1;
 		for (i = 1; i < rand_deg; i++) {
 			/*
 			 * Implement the following, without overflowing 31 bits:
