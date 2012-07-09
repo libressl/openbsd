@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.144 2012/06/22 01:30:17 tedu Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.145 2012/06/26 21:36:25 tedu Exp $	*/
 /*
  * Copyright (c) 2008 Otto Moerbeek <otto@drijf.net>
  *
@@ -54,7 +54,7 @@
 #elif defined(__mips64__)
 #define MALLOC_PAGESHIFT	(14U)
 #else
-#define MALLOC_PAGESHIFT	(PGSHIFT)
+#define MALLOC_PAGESHIFT	(PAGE_SHIFT)
 #endif
 
 #define MALLOC_MINSHIFT		4
