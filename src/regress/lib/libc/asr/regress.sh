@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.117 2011/09/17 16:59:53 pirofti Exp $
+#	$OpenBSD: regress.sh,v 1.1.1.1 2012/07/13 17:49:53 eric Exp $
 
 . regress.subr
 
@@ -40,7 +40,7 @@ test_gethostbyname()
 test_gethostbyaddr()
 {
 	for i in $@; do
-		regress gethostnamadr $i
+		regress gethostnamadr -a $i
 	done
 }
 
