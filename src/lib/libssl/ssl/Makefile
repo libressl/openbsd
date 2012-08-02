@@ -1,7 +1,6 @@
-# $OpenBSD: Makefile,v 1.23 2010/10/01 23:02:02 djm Exp $
+# $OpenBSD: Makefile,v 1.24 2012/07/11 11:02:48 sthen Exp $
 
 LIB=	ssl
-WANTLINT=
 
 SSLEAYDIST= src
 
