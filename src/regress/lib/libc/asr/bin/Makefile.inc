@@ -1,8 +1,8 @@
-#	$OpenBSD: Makefile,v 1.4 2009/07/25 08:44:26 ratchov Exp $
+#	$OpenBSD: Makefile.inc,v 1.1.1.1 2012/07/13 17:49:53 eric Exp $
 
 NOMAN=	noman
 
 SRCS+=		common.c
 CFLAGS+=	-Wall -Wstrict-prototypes -Werror -Wundef -g
-LDFLAGS+=	-static
+LDSTATIC=	${STATIC}
 PROG:=		${PROG}${EXT}
