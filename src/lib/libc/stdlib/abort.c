@@ -1,4 +1,4 @@
-/*	$OpenBSD: abort.c,v 1.14 2005/08/08 08:05:36 espie Exp $ */
+/*	$OpenBSD: abort.c,v 1.15 2007/09/03 14:40:16 millert Exp $ */
 /*
  * Copyright (c) 1985 Regents of the University of California.
  * All rights reserved.
@@ -34,6 +34,8 @@
 #include "thread_private.h"
 #include "atexit.h"
 
+int	_thread_sys_sigprocmask(int, const sigset_t *, sigset_t *);
+
 void
 abort(void)
 {
@@ -65,7 +67,7 @@ abort(void)
 		}
 	}
 
-	(void)kill(getpid(), SIGABRT);
+	(void)raise(SIGABRT);
 
 	/*
 	 * if SIGABRT ignored, or caught and the handler returns, do
@@ -73,6 +75,6 @@ abort(void)
 	 */
 	(void)signal(SIGABRT, SIG_DFL);
 	(void)_thread_sys_sigprocmask(SIG_SETMASK, &mask, (sigset_t *)NULL);
-	(void)kill(getpid(), SIGABRT);
+	(void)raise(SIGABRT);
 	_exit(1);
 }
