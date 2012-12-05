@@ -1,4 +1,4 @@
-/*	$OpenBSD: t_exhaust.c,v 1.1 2011/11/05 15:01:37 otto Exp $	*/
+/*	$OpenBSD: t_exhaust.c,v 1.2 2011/11/06 15:47:07 otto Exp $	*/
 /*	$NetBSD: t_exhaust.c,v 1.2 2011/10/21 00:41:34 christos Exp $	*/
 
 /*-
@@ -36,8 +36,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-#include <sys/cdefs.h>
 
 #include <stdio.h>
 #include <regex.h>
