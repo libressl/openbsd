@@ -1,4 +1,4 @@
-#	$OpenBSD: regress.sh,v 1.2 2012/07/29 19:51:36 eric Exp $
+#	$OpenBSD: regress.sh,v 1.3 2012/09/05 21:23:36 eric Exp $
 
 . regress.subr
 
@@ -99,6 +99,7 @@ for e in file bind local; do
 	test_gethostbyaddr $ADDRS
 	test_getaddrinfo NULL $WEIRD $BASIC $EXTRA
 	test_getnameinfo $ADDRS
+ 	test_gethostbyname $ADDRS
 done
 
 regress_digest
