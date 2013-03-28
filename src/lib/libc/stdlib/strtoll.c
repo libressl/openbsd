@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: strtoll.c,v 1.6 2005/11/10 10:00:17 espie Exp $ */
 /*-
  * Copyright (c) 1992 The Regents of the University of California.
  * All rights reserved.
@@ -141,13 +141,4 @@ strtoll(const char *nptr, char **endptr, int base)
 	return (acc);
 }
 
-#ifdef __weak_alias
-__weak_alias(strtoq, strtoll);
-#else
-quad_t
-strtoq(const char *nptr, char **endptr, int base)
-{
-
-        return ((quad_t)strtoll(nptr, endptr, base));
-}
-#endif
+__strong_alias(strtoq, strtoll);
