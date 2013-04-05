@@ -1,4 +1,4 @@
-/*	$OpenBSD: realpath.c,v 1.14 2011/07/24 21:03:00 miod Exp $ */
+/*	$OpenBSD: realpath.c,v 1.15 2012/09/13 15:39:05 deraadt Exp $ */
 /*
  * Copyright (c) 2003 Constantin S. Svintsoff <kostik@iclub.nsu.ru>
  *
@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+/* A slightly modified copy of this file exists in libexec/ld.so */
 
 /*
  * char *realpath(const char *path, char resolved[PATH_MAX]);
