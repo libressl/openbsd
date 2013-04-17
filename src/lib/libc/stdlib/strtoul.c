@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strtoul.c,v 1.7 2005/08/08 08:05:37 espie Exp $ */
 /*
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
@@ -84,7 +84,7 @@ strtoul(const char *nptr, char **endptr, int base)
 			break;
 		if (any < 0)
 			continue;
-		if (acc > cutoff || acc == cutoff && c > cutlim) {
+		if (acc > cutoff || (acc == cutoff && c > cutlim)) {
 			any = -1;
 			acc = ULONG_MAX;
 			errno = ERANGE;
