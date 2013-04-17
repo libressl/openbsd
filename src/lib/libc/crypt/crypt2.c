@@ -1,4 +1,4 @@
-/*	$OpenBSD: crypt2.c,v 1.2 2004/09/14 22:56:57 deraadt Exp $	*/
+/*	$OpenBSD: crypt2.c,v 1.3 2005/08/08 08:05:33 espie Exp $	*/
 
 /*
  * FreeSec: libcrypt
@@ -59,6 +59,9 @@
 extern const u_char _des_bits8[8];
 extern const u_int32_t _des_bits32[32];
 extern int	_des_initialised;
+void _des_init(void);
+void _des_setup_salt(int32_t salt);
+int _des_do_des(u_int32_t , u_int32_t , u_int32_t *, u_int32_t *, int);
 
 int
 setkey(const char *key)
