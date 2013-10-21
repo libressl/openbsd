@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.114 2013/08/20 21:04:40 jmc Exp $ */
+/* $OpenBSD: netcat.c,v 1.115 2013/10/21 08:59:49 phessler Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -133,6 +133,7 @@ main(int argc, char *argv[])
 	host = NULL;
 	uport = NULL;
 	sv = NULL;
+	rtableid = getrtable();
 
 	while ((ch = getopt(argc, argv,
 	    "46DdFhI:i:klNnO:P:p:rSs:tT:UuV:vw:X:x:z")) != -1) {
