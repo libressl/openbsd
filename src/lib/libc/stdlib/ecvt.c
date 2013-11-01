@@ -1,4 +1,4 @@
-/*	$OpenBSD: ecvt.c,v 1.6 2006/10/29 18:45:56 deraadt Exp $	*/
+/*	$OpenBSD: ecvt.c,v 1.7 2009/10/16 12:15:03 martynas Exp $	*/
 
 /*
  * Copyright (c) 2002, 2006 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -23,9 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "gdtoa.h"
 
-extern char *__dtoa(double, int, int, int *, int *, char **);
-extern void  __freedtoa(char *);
 static char *__cvt(double, int, int *, int *, int, int);
 
 static char *
