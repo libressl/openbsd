@@ -1,4 +1,4 @@
-/*	$OpenBSD: atexit.c,v 1.15 2011/03/02 18:34:05 matthew Exp $ */
+/*	$OpenBSD: atexit.c,v 1.16 2013/06/02 21:08:36 matthew Exp $ */
 /*
  * Copyright (c) 2002 Daniel Hartmeier
  * All rights reserved.
@@ -99,15 +99,6 @@ __cxa_atexit(void (*func)(void *), void *arg, void *dso)
 unlock:
 	_ATEXIT_UNLOCK();
 	return (ret);
-}
-
-/*
- * Register a function to be performed at exit.
- */
-int
-atexit(void (*func)(void))
-{
-	return (__cxa_atexit((void (*)(void *))func, NULL, NULL));
 }
 
 /*
