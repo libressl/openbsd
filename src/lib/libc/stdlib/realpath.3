@@ -28,9 +28,9 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: realpath.3,v 1.17 2011/07/24 22:29:05 jmc Exp $
+.\"	$OpenBSD: realpath.3,v 1.18 2013/06/05 03:39:23 tedu Exp $
 .\"
-.Dd $Mdocdate: July 24 2011 $
+.Dd $Mdocdate: June 5 2013 $
 .Dt REALPATH 3
 .Os
 .Sh NAME
@@ -84,7 +84,7 @@ If
 is
 .Dv NULL
 and no error occurred, then
-.Fa realpath
+.Fn realpath
 returns a NUL-terminated string in a newly allocated buffer.
 If an error occurs,
 .Fn realpath
