@@ -1,4 +1,4 @@
-/*	$OpenBSD: strsep.c,v 1.5 2003/06/11 21:08:16 deraadt Exp $	*/
+/*	$OpenBSD: strsep.c,v 1.6 2005/08/08 08:05:37 espie Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993
@@ -30,7 +30,6 @@
  */
 
 #include <string.h>
-#include <stdio.h>
 
 /*
  * Get next token from string *stringp, where tokens are possibly-empty
