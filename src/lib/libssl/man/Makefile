@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.19 2013/01/26 06:10:22 djm Exp $
+# $OpenBSD: Makefile,v 1.20 2013/12/23 00:09:22 jca Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -1122,7 +1122,7 @@ maninstall:
 .SUFFIXES: .pod .1 .3 .7
 .for sect in 1 3 7
 .pod.${sect}:
-	${POD2MAN} --section=${sect} --name=${*:U} ${.IMPSRC} > ${.TARGET}
+	${POD2MAN} --section=${sect} --name=${*:U} $< > $@.tmp && mv $@.tmp $@
 .endfor
 
 .include <bsd.obj.mk>
