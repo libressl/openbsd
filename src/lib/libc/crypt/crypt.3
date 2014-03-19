@@ -1,4 +1,4 @@
-.\" $OpenBSD: crypt.3,v 1.32 2013/06/05 03:39:22 tedu Exp $
+.\" $OpenBSD: crypt.3,v 1.33 2013/07/16 15:21:11 schwarze Exp $
 .\"
 .\" FreeSec: libcrypt
 .\"
@@ -31,7 +31,7 @@
 .\"
 .\" Manual page, using -mandoc macros
 .\"
-.Dd $Mdocdate: June 5 2013 $
+.Dd $Mdocdate: July 16 2013 $
 .Dt CRYPT 3
 .Os
 .Sh NAME
@@ -58,6 +58,7 @@
 .Fn des_setkey "const char *key"
 .Ft int
 .Fn des_cipher "const char *in" "char *out" "int32_t salt" "int count"
+.In pwd.h
 .Ft char *
 .Fn bcrypt_gensalt "u_int8_t log_rounds"
 .Ft char *
