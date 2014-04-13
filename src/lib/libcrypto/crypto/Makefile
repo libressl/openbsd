@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.2 2014/04/13 15:49:47 miod Exp $
+# $OpenBSD: Makefile,v 1.3 2014/04/13 16:03:30 miod Exp $
 
 LIB=	crypto
 
@@ -406,7 +406,6 @@ HDRS=\
 	crypto/stack/safestack.h \
 	crypto/stack/stack.h \
 	crypto/store/store.h \
-	crypto/symhacks.h \
 	crypto/ts/ts.h \
 	crypto/txt_db/txt_db.h \
 	crypto/ui/ui.h \
