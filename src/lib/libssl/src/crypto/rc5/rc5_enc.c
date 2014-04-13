@@ -1,4 +1,4 @@
-/* crypto/mdc2/mdc2dgst.c */
+/* crypto/rc5/rc5_enc.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,144 +57,159 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <openssl/crypto.h>
-#include <openssl/des.h>
-#include <openssl/mdc2.h>
+#include <openssl/rc5.h>
+#include "rc5_locl.h"
 
-#undef c2l
-#define c2l(c,l)	(l =((DES_LONG)(*((c)++)))    , \
-			 l|=((DES_LONG)(*((c)++)))<< 8L, \
-			 l|=((DES_LONG)(*((c)++)))<<16L, \
-			 l|=((DES_LONG)(*((c)++)))<<24L)
-
-#undef l2c
-#define l2c(l,c)	(*((c)++)=(unsigned char)(((l)     )&0xff), \
-			*((c)++)=(unsigned char)(((l)>> 8L)&0xff), \
-			*((c)++)=(unsigned char)(((l)>>16L)&0xff), \
-			*((c)++)=(unsigned char)(((l)>>24L)&0xff))
-
-static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len);
-fips_md_init(MDC2)
+void RC5_32_cbc_encrypt(const unsigned char *in, unsigned char *out,
+			long length, RC5_32_KEY *ks, unsigned char *iv,
+			int encrypt)
 	{
-	c->num=0;
-	c->pad_type=1;
-	memset(&(c->h[0]),0x52,MDC2_BLOCK);
-	memset(&(c->hh[0]),0x25,MDC2_BLOCK);
-	return 1;
-	}
+	register unsigned long tin0,tin1;
+	register unsigned long tout0,tout1,xor0,xor1;
+	register long l=length;
+	unsigned long tin[2];
 
-int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
-	{
-	size_t i,j;
-
-	i=c->num;
-	if (i != 0)
+	if (encrypt)
 		{
-		if (i+len < MDC2_BLOCK)
+		c2l(iv,tout0);
+		c2l(iv,tout1);
+		iv-=8;
+		for (l-=8; l>=0; l-=8)
 			{
-			/* partial block */
-			memcpy(&(c->data[i]),in,len);
-			c->num+=(int)len;
-			return 1;
+			c2l(in,tin0);
+			c2l(in,tin1);
+			tin0^=tout0;
+			tin1^=tout1;
+			tin[0]=tin0;
+			tin[1]=tin1;
+			RC5_32_encrypt(tin,ks);
+			tout0=tin[0]; l2c(tout0,out);
+			tout1=tin[1]; l2c(tout1,out);
 			}
-		else
+		if (l != -8)
 			{
-			/* filled one */
-			j=MDC2_BLOCK-i;
-			memcpy(&(c->data[i]),in,j);
-			len-=j;
-			in+=j;
-			c->num=0;
-			mdc2_body(c,&(c->data[0]),MDC2_BLOCK);
+			c2ln(in,tin0,tin1,l+8);
+			tin0^=tout0;
+			tin1^=tout1;
+			tin[0]=tin0;
+			tin[1]=tin1;
+			RC5_32_encrypt(tin,ks);
+			tout0=tin[0]; l2c(tout0,out);
+			tout1=tin[1]; l2c(tout1,out);
 			}
+		l2c(tout0,iv);
+		l2c(tout1,iv);
 		}
-	i=len&~((size_t)MDC2_BLOCK-1);
-	if (i > 0) mdc2_body(c,in,i);
-	j=len-i;
-	if (j > 0)
+	else
 		{
-		memcpy(&(c->data[0]),&(in[i]),j);
-		c->num=(int)j;
+		c2l(iv,xor0);
+		c2l(iv,xor1);
+		iv-=8;
+		for (l-=8; l>=0; l-=8)
+			{
+			c2l(in,tin0); tin[0]=tin0;
+			c2l(in,tin1); tin[1]=tin1;
+			RC5_32_decrypt(tin,ks);
+			tout0=tin[0]^xor0;
+			tout1=tin[1]^xor1;
+			l2c(tout0,out);
+			l2c(tout1,out);
+			xor0=tin0;
+			xor1=tin1;
+			}
+		if (l != -8)
+			{
+			c2l(in,tin0); tin[0]=tin0;
+			c2l(in,tin1); tin[1]=tin1;
+			RC5_32_decrypt(tin,ks);
+			tout0=tin[0]^xor0;
+			tout1=tin[1]^xor1;
+			l2cn(tout0,tout1,out,l+8);
+			xor0=tin0;
+			xor1=tin1;
+			}
+		l2c(xor0,iv);
+		l2c(xor1,iv);
 		}
-	return 1;
+	tin0=tin1=tout0=tout1=xor0=xor1=0;
+	tin[0]=tin[1]=0;
 	}
 
-static void mdc2_body(MDC2_CTX *c, const unsigned char *in, size_t len)
+void RC5_32_encrypt(unsigned long *d, RC5_32_KEY *key)
 	{
-	register DES_LONG tin0,tin1;
-	register DES_LONG ttin0,ttin1;
-	DES_LONG d[2],dd[2];
-	DES_key_schedule k;
-	unsigned char *p;
-	size_t i;
+	RC5_32_INT a,b,*s;
 
-	for (i=0; i<len; i+=8)
+	s=key->data;
+
+	a=d[0]+s[0];
+	b=d[1]+s[1];
+	E_RC5_32(a,b,s, 2);
+	E_RC5_32(a,b,s, 4);
+	E_RC5_32(a,b,s, 6);
+	E_RC5_32(a,b,s, 8);
+	E_RC5_32(a,b,s,10);
+	E_RC5_32(a,b,s,12);
+	E_RC5_32(a,b,s,14);
+	E_RC5_32(a,b,s,16);
+	if (key->rounds == 12)
 		{
-		c2l(in,tin0); d[0]=dd[0]=tin0;
-		c2l(in,tin1); d[1]=dd[1]=tin1;
-		c->h[0]=(c->h[0]&0x9f)|0x40;
-		c->hh[0]=(c->hh[0]&0x9f)|0x20;
-
-		DES_set_odd_parity(&c->h);
-		DES_set_key_unchecked(&c->h,&k);
-		DES_encrypt1(d,&k,1);
-
-		DES_set_odd_parity(&c->hh);
-		DES_set_key_unchecked(&c->hh,&k);
-		DES_encrypt1(dd,&k,1);
-
-		ttin0=tin0^dd[0];
-		ttin1=tin1^dd[1];
-		tin0^=d[0];
-		tin1^=d[1];
-
-		p=c->h;
-		l2c(tin0,p);
-		l2c(ttin1,p);
-		p=c->hh;
-		l2c(ttin0,p);
-		l2c(tin1,p);
+		E_RC5_32(a,b,s,18);
+		E_RC5_32(a,b,s,20);
+		E_RC5_32(a,b,s,22);
+		E_RC5_32(a,b,s,24);
 		}
-	}
-
-int MDC2_Final(unsigned char *md, MDC2_CTX *c)
-	{
-	unsigned int i;
-	int j;
-
-	i=c->num;
-	j=c->pad_type;
-	if ((i > 0) || (j == 2))
+	else if (key->rounds == 16)
 		{
-		if (j == 2)
-			c->data[i++]=0x80;
-		memset(&(c->data[i]),0,MDC2_BLOCK-i);
-		mdc2_body(c,c->data,MDC2_BLOCK);
+		/* Do a full expansion to avoid a jump */
+		E_RC5_32(a,b,s,18);
+		E_RC5_32(a,b,s,20);
+		E_RC5_32(a,b,s,22);
+		E_RC5_32(a,b,s,24);
+		E_RC5_32(a,b,s,26);
+		E_RC5_32(a,b,s,28);
+		E_RC5_32(a,b,s,30);
+		E_RC5_32(a,b,s,32);
 		}
-	memcpy(md,(char *)c->h,MDC2_BLOCK);
-	memcpy(&(md[MDC2_BLOCK]),(char *)c->hh,MDC2_BLOCK);
-	return 1;
+	d[0]=a;
+	d[1]=b;
 	}
 
-#undef TEST
-
-#ifdef TEST
-main()
+void RC5_32_decrypt(unsigned long *d, RC5_32_KEY *key)
 	{
-	unsigned char md[MDC2_DIGEST_LENGTH];
-	int i;
-	MDC2_CTX c;
-	static char *text="Now is the time for all ";
+	RC5_32_INT a,b,*s;
 
-	MDC2_Init(&c);
-	MDC2_Update(&c,text,strlen(text));
-	MDC2_Final(&(md[0]),&c);
+	s=key->data;
 
-	for (i=0; i<MDC2_DIGEST_LENGTH; i++)
-		printf("%02X",md[i]);
-	printf("\n");
+	a=d[0];
+	b=d[1];
+	if (key->rounds == 16) 
+		{
+		D_RC5_32(a,b,s,32);
+		D_RC5_32(a,b,s,30);
+		D_RC5_32(a,b,s,28);
+		D_RC5_32(a,b,s,26);
+		/* Do a full expansion to avoid a jump */
+		D_RC5_32(a,b,s,24);
+		D_RC5_32(a,b,s,22);
+		D_RC5_32(a,b,s,20);
+		D_RC5_32(a,b,s,18);
+		}
+	else if (key->rounds == 12)
+		{
+		D_RC5_32(a,b,s,24);
+		D_RC5_32(a,b,s,22);
+		D_RC5_32(a,b,s,20);
+		D_RC5_32(a,b,s,18);
+		}
+	D_RC5_32(a,b,s,16);
+	D_RC5_32(a,b,s,14);
+	D_RC5_32(a,b,s,12);
+	D_RC5_32(a,b,s,10);
+	D_RC5_32(a,b,s, 8);
+	D_RC5_32(a,b,s, 6);
+	D_RC5_32(a,b,s, 4);
+	D_RC5_32(a,b,s, 2);
+	d[0]=a-s[0];
+	d[1]=b-s[1];
 	}
 
-#endif
