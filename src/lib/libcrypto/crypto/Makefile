@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.4 2014/04/13 23:50:03 deraadt Exp $
+# $OpenBSD: Makefile,v 1.5 2014/04/14 04:27:50 miod Exp $
 
 LIB=	crypto
 
@@ -220,7 +220,7 @@ SRCS+= pk7_mime.c bio_pk7.c
 SRCS+= pqueue.c
 
 # rand/
-SRCS+= md_rand.c randfile.c rand_lib.c rand_err.c rand_egd.c
+SRCS+= rc4_rand.c randfile.c rand_lib.c rand_err.c rand_egd.c
 SRCS+= rand_unix.c
 
 # rc2/
