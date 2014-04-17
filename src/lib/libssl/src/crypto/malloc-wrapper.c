@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: malloc-wrapper.c,v 1.1 2014/04/16 03:24:53 beck Exp $ */
 /*
  * Copyright (c) 2014 Bob Beck
  *
@@ -118,8 +118,6 @@ CRYPTO_get_mem_debug_functions(void (**m)(void *, int, const char *, int, int),
 void *
 CRYPTO_malloc_locked(int num, const char *file, int line)
 {
-	void *ret = NULL;
-
 	if (num <= 0)
 		return NULL;
 	return malloc(num);
