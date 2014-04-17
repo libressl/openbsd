@@ -1,4 +1,4 @@
-#	$OpenBSD$
+#	$OpenBSD: Makefile,v 1.1.1.1 2014/04/15 18:01:15 miod Exp $
 
 SUBDIR= \
 	bf \
@@ -10,6 +10,7 @@ SUBDIR= \
 	ec \
 	ecdh \
 	ecdsa \
+	engine \
 	evp \
 	exp \
 	hmac \
