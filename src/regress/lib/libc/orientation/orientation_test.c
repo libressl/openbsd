@@ -1,4 +1,4 @@
-/*	$OpenBSD: orientation_test.c,v 1.3 2011/10/16 14:39:01 stsp Exp $ */
+/*	$OpenBSD: orientation_test.c,v 1.4 2013/04/03 03:11:53 guenther Exp $ */
 
 /*
  * Copyright (c) 2009 Philip Guenther
@@ -192,7 +192,6 @@ main(int argc, char *argv[])
 	/* input from stdin */
 	TEST_NARROW_STD(stdin, getchar());
 	TEST_NARROW_STD(stdin, getchar_unlocked());
-	TEST_NARROW_STD(stdin, gets(buffer));
 	TEST_NARROW_STD(stdin, scanf("%s\n", buffer));
 
 	/* output to stdout */
