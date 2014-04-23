@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.155 2014/04/22 14:26:26 tedu Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.156 2014/04/23 05:43:25 otto Exp $	*/
 /*
  * Copyright (c) 2008, 2010, 2011 Otto Moerbeek <otto@drijf.net>
  * Copyright (c) 2012 Matthew Dempsky <matthew@openbsd.org>
@@ -1388,6 +1388,9 @@ realloc(void *ptr, size_t size)
 }
 
 
+/* this is sqrt(SIZE_MAX+1), as s1*s2 <= SIZE_MAX
+ * if both s1 < MUL_NO_OVERFLOW and s2 < MUL_NO_OVERFLOW
+ */
 #define MUL_NO_OVERFLOW	(1UL << (sizeof(size_t) * 4))
 
 void *
