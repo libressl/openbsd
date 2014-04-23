@@ -1,11 +1,11 @@
-# $OpenBSD: Makefile,v 1.25 2014/04/18 17:32:31 miod Exp $
+# $OpenBSD: Makefile,v 1.26 2014/04/18 19:41:21 miod Exp $
 
 LIB=	crypto
 
 SSL_SRC=	${.CURDIR}/../../libssl/src
 LCRYPTO_SRC=	${SSL_SRC}/crypto
 
-CFLAGS+= -Wall
+CFLAGS+= -Wall -Werror
 
 .include <bsd.own.mk>		# for 'NOPIC' definition
 .if !defined(NOPIC)
