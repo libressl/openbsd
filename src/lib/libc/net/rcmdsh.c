@@ -1,4 +1,4 @@
-/*	$OpenBSD: rcmdsh.c,v 1.11 2005/08/06 20:30:03 espie Exp $	*/ 
+/*	$OpenBSD: rcmdsh.c,v 1.12 2007/09/02 15:19:17 deraadt Exp $	*/ 
 
 /*
  * Copyright (c) 2001, MagniComp
@@ -47,7 +47,7 @@
 #include      <unistd.h>
 
 /*
- * This is a replacement rcmd() function that uses the rsh(1)
+ * This is a replacement rcmd() function that uses the ssh(1)
  * program in place of a direct rcmd(3) function call so as to
  * avoid having to be root.  Note that rport is ignored.
  */
