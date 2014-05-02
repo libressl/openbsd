@@ -29,8 +29,8 @@ CFLAGS+= -DSHA1_ASM
 SSLASM+= sha sha1-parisc sha1-parisc
 CFLAGS+= -DSHA256_ASM
 SSLASM+= sha sha512-parisc sha256-parisc
-CFLAGS+= -DSHA512_ASM
-SSLASM+= sha sha512-parisc sha512-parisc
+#CFLAGS+= -DSHA512_ASM
+#SSLASM+= sha sha512-parisc sha512-parisc
 # whrlpool
 SRCS+= wp_block.c
 
