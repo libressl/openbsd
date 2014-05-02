@@ -11,6 +11,7 @@ SRCS+= bf_enc.c
 # bn
 SSLASM+= bn mips bn-mips
 SSLASM+= bn mips-mont mips-mont
+CFLAGS+= -DOPENSSL_BN_ASM_MONT -DBN_DIV3W
 # des
 SRCS+= des_enc.c fcrypt_b.c
 # rc4
