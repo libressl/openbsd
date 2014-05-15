@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.41 2014/05/05 15:03:22 tedu Exp $
+# $OpenBSD: Makefile,v 1.42 2014/05/12 19:14:14 miod Exp $
 
 LIB=	ssl
 
@@ -23,7 +23,7 @@ SRCS=\
 	pqueue.c
 SRCS+=	s3_cbc.c
 
-HDRS=	srtp.h ssl.h ssl2.h ssl3.h ssl23.h tls1.h dtls1.h kssl.h pqueue.h
+HDRS=	srtp.h ssl.h ssl2.h ssl3.h ssl23.h tls1.h dtls1.h kssl.h
 
 .PATH:	${LSSL_SRC}
 
