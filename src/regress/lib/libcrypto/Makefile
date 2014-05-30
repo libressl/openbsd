@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.9 2014/05/14 14:46:35 jsing Exp $
+#	$OpenBSD: Makefile,v 1.10 2014/05/18 22:04:14 guenther Exp $
 
 SUBDIR= \
 	aeswrap \
@@ -32,6 +32,8 @@ SUBDIR= \
 	sha \
 	sha1 \
 	sha2 \
+	sha256 \
+	sha512 \
 	utf8
 
 install:
