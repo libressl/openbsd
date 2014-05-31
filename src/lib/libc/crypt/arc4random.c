@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.29 2014/05/06 15:37:57 tedu Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.30 2014/05/06 16:06:33 tedu Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -165,7 +165,6 @@ _rs_random_u32(u_int32_t *val)
 	memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
 	memset(rs_buf + RSBUFSZ - rs_have, 0, sizeof(*val));
 	rs_have -= sizeof(*val);
-	return;
 }
 
 u_int32_t
