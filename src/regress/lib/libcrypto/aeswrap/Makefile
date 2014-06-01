@@ -1,7 +1,9 @@
-#	$OpenBSD: Makefile,v 1.1 2014/04/22 21:27:15 miod Exp $
+#	$OpenBSD: Makefile,v 1.2 2014/05/30 15:17:43 jsing Exp $
 
 PROG=	aes_wrap
 LDADD=	-lcrypto
 DPADD=	${LIBCRYPTO}
+WARNINGS=	Yes
+CFLAGS+=	-Werror
 
 .include <bsd.regress.mk>
