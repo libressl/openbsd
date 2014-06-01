@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.1 2014/04/17 18:33:22 miod Exp $
+#	$OpenBSD: Makefile,v 1.2 2014/05/31 14:39:06 jsing Exp $
 
 PROG=	gcm128test
 SRC=	${.CURDIR}/../../../../lib/libssl/src/crypto/modes
@@ -6,5 +6,7 @@ CFLAGS+=-I${SRC}
 
 LDADD=	-lcrypto
 DPADD=	${LIBCRYPTO}
+#WARNINGS=	Yes
+#CFLAGS+=	-Werror
 
 .include <bsd.regress.mk>
