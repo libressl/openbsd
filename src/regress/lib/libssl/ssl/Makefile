@@ -1,8 +1,10 @@
-#	$OpenBSD$
+#	$OpenBSD: Makefile,v 1.1 2014/05/24 14:56:32 jsing Exp $
 
 PROG=	ssltest
 LDADD=	-lcrypto -lssl
 DPADD=	${LIBCRYPTO} ${LIBSSL}
+WARNINGS=	Yes
+CFLAGS+=	-Werror
 
 REGRESS_TARGETS=regress-ssltest
 
