@@ -1,4 +1,4 @@
-/*	$OpenBSD: strcmp.c,v 1.6 2004/11/28 07:16:54 mickey Exp $	*/
+/*	$OpenBSD: strcmp.c,v 1.7 2005/08/08 08:05:37 espie Exp $	*/
 
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
@@ -32,11 +32,7 @@
  * SUCH DAMAGE.
  */
 
-#if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <string.h>
-#else
-#include <lib/libkern/libkern.h>
-#endif
 
 /*
  * Compare strings.

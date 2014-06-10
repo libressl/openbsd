@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcmp.c,v 1.8 2005/08/08 08:05:37 espie Exp $	*/
+/*	$OpenBSD: bcmp.c,v 1.9 2008/03/19 03:00:23 ray Exp $	*/
 
 /*
  * Copyright (c) 1987 Regents of the University of California.
@@ -29,11 +29,7 @@
  * SUCH DAMAGE.
  */
 
-#if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <string.h>
-#else
-#include <lib/libkern/libkern.h>
-#endif
 
 /*
  * bcmp -- vax cmpc3 instruction
