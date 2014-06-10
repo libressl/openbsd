@@ -1,4 +1,4 @@
-/*	$OpenBSD: strncpy.c,v 1.5 2004/11/28 07:16:54 mickey Exp $	*/
+/*	$OpenBSD: strncpy.c,v 1.6 2005/08/08 08:05:37 espie Exp $	*/
 
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
@@ -32,11 +32,7 @@
  * SUCH DAMAGE.
  */
 
-#if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <string.h>
-#else
-#include <lib/libkern/libkern.h>
-#endif
 
 /*
  * Copy src to dst, truncating or null-padding to always copy n bytes.
