@@ -1,4 +1,4 @@
-/*	$OpenBSD: b_print.c,v 1.22 2014/04/21 11:18:34 deraadt Exp $	*/
+/*	$OpenBSD: b_print.c,v 1.23 2014/06/11 15:08:43 deraadt Exp $	*/
 /* Theo de Raadt places this file in the public domain. */
 
 #include <openssl/bio.h>
@@ -49,7 +49,7 @@ BIO_vprintf(BIO *bio, const char *format, va_list args)
 
 	ret = vasprintf(&buf, format, args);
 	if (buf == NULL) {
-		ret = -1
+		ret = -1;
 		goto fail;
 	}
 	BIO_write(bio, buf, ret);
