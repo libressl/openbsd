@@ -1,4 +1,4 @@
-/* a_x509a.c */
+/* $OpenBSD$ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */

@@ -1,4 +1,4 @@
-/* crypto/camellia/camellia.h */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *

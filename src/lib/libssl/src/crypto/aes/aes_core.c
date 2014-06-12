@@ -1,4 +1,4 @@
-/* crypto/aes/aes_core.c */
+/* $OpenBSD$ */
 /**
  * rijndael-alg-fst.c
  *

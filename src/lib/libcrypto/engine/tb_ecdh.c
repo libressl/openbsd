@@ -1,4 +1,4 @@
-/* crypto/engine/tb_ecdh.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *

@@ -1,4 +1,4 @@
-/* crypto/engine/eng_int.h */
+/* $OpenBSD$ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */

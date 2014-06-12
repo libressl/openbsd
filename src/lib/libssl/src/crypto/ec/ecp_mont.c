@@ -1,4 +1,4 @@
-/* crypto/ec/ecp_mont.c */
+/* $OpenBSD$ */
 /*
  * Originally written by Bodo Moeller for the OpenSSL project.
  */

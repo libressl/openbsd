@@ -1,4 +1,4 @@
-/* crypto/ec/ecp_nistp521.c */
+/* $OpenBSD$ */
 /*
  * Written by Adam Langley (Google) for the OpenSSL project
  */

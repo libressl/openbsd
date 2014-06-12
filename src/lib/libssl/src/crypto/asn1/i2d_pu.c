@@ -1,4 +1,4 @@
-/* crypto/asn1/i2d_pu.c */
+/* $OpenBSD$ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *

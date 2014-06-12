@@ -1,3 +1,5 @@
+/* $OpenBSD$ */
+
 #ifndef HEADER_WHRLPOOL_H
 #define HEADER_WHRLPOOL_H
 

@@ -1,4 +1,4 @@
-/* crypto/engine/eng_rsax.c */
+/* $OpenBSD$ */
 /* Copyright (c) 2010-2010 Intel Corp.
  *   Author: Vinodh.Gopal@intel.com
  *           Jim Guilford

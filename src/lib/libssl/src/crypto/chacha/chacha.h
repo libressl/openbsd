@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /*
  * Copyright (c) Joel Sing <jsing@openbsd.org>
  *

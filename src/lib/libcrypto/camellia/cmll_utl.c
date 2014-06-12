@@ -1,4 +1,4 @@
-/* crypto/camellia/cmll_utl.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
  *

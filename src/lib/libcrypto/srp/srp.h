@@ -1,4 +1,4 @@
-/* crypto/srp/srp.h */
+/* $OpenBSD$ */
 /* Written by Christophe Renou (christophe.renou@edelweb.fr) with 
  * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr) 
  * for the EdelKey project and contributed to the OpenSSL project 2004.

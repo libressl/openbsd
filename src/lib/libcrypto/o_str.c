@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /*
  * Written by Theo de Raadt.  Public domain.
  */

@@ -1,5 +1,4 @@
-/* NOCW */
-/* used by apps/speed.c */
+/* $OpenBSD$ */
 
 DSA *get_dsa512(void);
 DSA *get_dsa1024(void);

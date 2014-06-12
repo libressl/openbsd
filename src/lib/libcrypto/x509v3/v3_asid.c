@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /*
  * Contributed to the OpenSSL Project by the American Registry for
  * Internet Numbers ("ARIN").

@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /*
  * Support for Intel AES-NI intruction set
  *   Author: Huang Ying <ying.huang@intel.com>
