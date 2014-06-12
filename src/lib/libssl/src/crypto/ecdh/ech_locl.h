@@ -1,4 +1,4 @@
-/* crypto/ecdh/ech_locl.h */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2000-2005 The OpenSSL Project.  All rights reserved.
  *

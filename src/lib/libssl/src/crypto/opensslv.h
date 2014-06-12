@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 #ifndef HEADER_OPENSSLV_H
 #define HEADER_OPENSSLV_H
 

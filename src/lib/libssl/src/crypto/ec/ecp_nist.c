@@ -1,4 +1,4 @@
-/* crypto/ec/ecp_nist.c */
+/* $OpenBSD$ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */

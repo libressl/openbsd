@@ -1,4 +1,4 @@
-/* crypto/bn/bn_sqrt.c */
+/* $OpenBSD$ */
 /* Written by Lenka Fibikova <fibikova@exp-math.uni-essen.de>
  * and Bodo Moeller for the OpenSSL project. */
 /* ====================================================================

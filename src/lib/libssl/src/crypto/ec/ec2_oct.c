@@ -1,4 +1,4 @@
-/* crypto/ec/ec2_oct.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *

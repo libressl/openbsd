@@ -1,4 +1,4 @@
-/* crypto/ec/ecp_nistputil.c */
+/* $OpenBSD$ */
 /*
  * Written by Bodo Moeller for the OpenSSL project.
  */

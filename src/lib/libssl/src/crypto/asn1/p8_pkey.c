@@ -1,4 +1,4 @@
-/* p8_pkey.c */
+/* $OpenBSD$ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */

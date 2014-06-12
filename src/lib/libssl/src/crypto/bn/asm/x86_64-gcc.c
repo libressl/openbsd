@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 #include "../bn_lcl.h"
 #if !(defined(__GNUC__) && __GNUC__>=2)
 # include "../bn_asm.c"	/* kind of dirty hack for Sun Studio */

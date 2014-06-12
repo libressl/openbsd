@@ -1,4 +1,4 @@
-/* crypto/ts/ts_conf.c */
+/* $OpenBSD$ */
 /* Written by Zoltan Glozik (zglozik@stones.com) for the OpenSSL
  * project 2002.
  */
