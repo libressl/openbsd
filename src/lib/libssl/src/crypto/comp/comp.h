@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 
 #ifndef HEADER_COMP_H
 #define HEADER_COMP_H

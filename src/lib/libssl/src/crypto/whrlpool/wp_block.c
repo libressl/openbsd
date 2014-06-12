@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /**
  * The Whirlpool hashing function.
  *

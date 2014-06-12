@@ -1,4 +1,4 @@
-/* crypto/ecdsa/ecs_lib.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1998-2005 The OpenSSL Project.  All rights reserved.
  *

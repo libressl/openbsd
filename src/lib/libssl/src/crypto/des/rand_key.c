@@ -1,4 +1,4 @@
-/* crypto/des/rand_key.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1998-2000 The OpenSSL Project.  All rights reserved.
  *

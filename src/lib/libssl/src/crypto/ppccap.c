@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 #include <unistd.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>

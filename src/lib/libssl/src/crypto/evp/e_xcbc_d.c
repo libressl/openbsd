@@ -1,4 +1,4 @@
-/* crypto/evp/e_xcbc_d.c */
+/* $OpenBSD$ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *

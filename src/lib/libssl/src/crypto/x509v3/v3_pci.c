@@ -1,4 +1,4 @@
-/* v3_pci.c */
+/* $OpenBSD$ */
 /* Contributed to the OpenSSL Project 2004
  * by Richard Levitte (richard@levitte.org)
  */

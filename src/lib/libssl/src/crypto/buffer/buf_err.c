@@ -1,4 +1,4 @@
-/* crypto/buffer/buf_err.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1999-2006 The OpenSSL Project.  All rights reserved.
  *
