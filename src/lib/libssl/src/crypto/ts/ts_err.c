@@ -1,4 +1,4 @@
-/* crypto/ts/ts_err.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1999-2007 The OpenSSL Project.  All rights reserved.
  *

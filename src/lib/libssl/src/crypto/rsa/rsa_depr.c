@@ -1,4 +1,4 @@
-/* crypto/rsa/rsa_depr.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *

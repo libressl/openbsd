@@ -1,4 +1,4 @@
-/* crypto/bn/bn_kron.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1998-2000 The OpenSSL Project.  All rights reserved.
  *

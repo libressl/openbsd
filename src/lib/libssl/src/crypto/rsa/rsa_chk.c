@@ -1,4 +1,4 @@
-/* crypto/rsa/rsa_chk.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1999 The OpenSSL Project.  All rights reserved.
  *

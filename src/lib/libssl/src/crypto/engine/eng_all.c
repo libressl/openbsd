@@ -1,4 +1,4 @@
-/* crypto/engine/eng_all.c */
+/* $OpenBSD$ */
 /* Written by Richard Levitte <richard@levitte.org> for the OpenSSL
  * project 2000.
  */

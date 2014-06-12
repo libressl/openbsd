@@ -1,4 +1,4 @@
-/* crypto/srp/srp_lcl.h */
+/* $OpenBSD$ */
 /* Written by Peter Sylvester (peter.sylvester@edelweb.fr)  
  * for the EdelKey project and contributed to the OpenSSL project 2004.
  */

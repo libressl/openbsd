@@ -1,4 +1,4 @@
-/* crypto/ecdsa/ecs_ossl.c */
+/* $OpenBSD$ */
 /*
  * Written by Nils Larsch for the OpenSSL project
  */

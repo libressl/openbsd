@@ -1,4 +1,5 @@
-/* crypto/pqueue/pqueue.h */
+/* $OpenBSD$ */
+
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.

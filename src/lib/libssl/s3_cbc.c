@@ -1,4 +1,4 @@
-/* ssl/s3_cbc.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2012 The OpenSSL Project.  All rights reserved.
  *

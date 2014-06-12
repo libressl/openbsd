@@ -1,4 +1,4 @@
-/* crypto/ecdh/ech_ossl.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *

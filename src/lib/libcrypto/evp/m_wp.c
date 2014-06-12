@@ -1,4 +1,4 @@
-/* crypto/evp/m_wp.c */
+/* $OpenBSD$ */
 
 #include <stdio.h>
 #include "cryptlib.h"

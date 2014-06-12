@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /* start of generated data */
 
 static BN_ULONG bn_group_1024_value[] = {

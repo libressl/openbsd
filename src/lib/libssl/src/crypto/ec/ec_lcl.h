@@ -1,4 +1,4 @@
-/* crypto/ec/ec_lcl.h */
+/* $OpenBSD$ */
 /*
  * Originally written by Bodo Moeller for the OpenSSL project.
  */

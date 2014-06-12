@@ -1,4 +1,4 @@
-/* ocsp_lib.c */
+/* $OpenBSD$ */
 /* Written by Tom Titchener <Tom_Titchener@groove.net> for the OpenSSL
  * project. */
 

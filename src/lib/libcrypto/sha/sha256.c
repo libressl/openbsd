@@ -1,4 +1,4 @@
-/* crypto/sha/sha256.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved
  * according to the OpenSSL license [found in ../../LICENSE].

@@ -1,4 +1,4 @@
-/* crypto/ec/ecp_smpl.c */
+/* $OpenBSD$ */
 /* Includes code written by Lenka Fibikova <fibikova@exp-math.uni-essen.de>
  * for the OpenSSL project.
  * Includes code written by Bodo Moeller for the OpenSSL project.

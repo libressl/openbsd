@@ -1,4 +1,4 @@
-/* crypto/ex_data.c */
+/* $OpenBSD$ */
 
 /*
  * Overhaul notes;

@@ -1,4 +1,5 @@
-/* NOCW */
+/* $OpenBSD$ */
+
 #include <stdio.h>
 
 /* This version of crypt has been developed from my MIT compatible

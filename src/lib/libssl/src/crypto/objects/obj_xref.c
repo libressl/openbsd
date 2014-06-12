@@ -1,4 +1,4 @@
-/* crypto/objects/obj_xref.c */
+/* $OpenBSD$ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */

@@ -1,4 +1,4 @@
-/* crypto/ec/ec_key.c */
+/* $OpenBSD$ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */

@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 #ifndef __ARM_ARCH_H__
 #define __ARM_ARCH_H__
 
