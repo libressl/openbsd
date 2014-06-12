@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /*
 chacha-merged.c version 20080118
 D. J. Bernstein

@@ -1,4 +1,4 @@
-/* crypto/bn/bn_mod.c */
+/* $OpenBSD$ */
 /* Includes code written by Lenka Fibikova <fibikova@exp-math.uni-essen.de>
  * for the OpenSSL project. */
 /* ====================================================================

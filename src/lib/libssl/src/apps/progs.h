@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /* Public domain */
 
 extern int asn1parse_main(int argc, char *argv[]);

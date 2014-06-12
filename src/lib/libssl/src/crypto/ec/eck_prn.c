@@ -1,4 +1,4 @@
-/* crypto/ec/eck_prn.c */
+/* $OpenBSD$ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */

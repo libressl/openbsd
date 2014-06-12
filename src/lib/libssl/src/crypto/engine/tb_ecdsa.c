@@ -1,3 +1,4 @@
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 2000-2002 The OpenSSL Project.  All rights reserved.
  *

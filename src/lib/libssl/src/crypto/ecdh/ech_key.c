@@ -1,4 +1,4 @@
-/* crypto/ecdh/ecdh_key.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *

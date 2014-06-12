@@ -1,4 +1,4 @@
-/* crypto/ec/ec_mult.c */
+/* $OpenBSD$ */
 /*
  * Originally written by Bodo Moeller and Nils Larsch for the OpenSSL project.
  */

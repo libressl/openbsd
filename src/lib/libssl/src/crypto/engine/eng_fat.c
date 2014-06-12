@@ -1,4 +1,4 @@
-/* crypto/engine/eng_fat.c */
+/* $OpenBSD$ */
 /* ====================================================================
  * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
  *

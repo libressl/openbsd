@@ -1,4 +1,4 @@
-/* crypto/des/ncbc_enc.c */
+/* $OpenBSD$ */
 /*
  * #included by:
  *    cbc_enc.c  (DES_cbc_encrypt)
