@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: s_cb.c,v 1.21 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -696,11 +696,6 @@ tlsext_cb(SSL * s, int client_server, int type, unsigned char *data, int len,
 		extname = "renegotiation info";
 		break;
 
-#ifdef TLSEXT_TYPE_opaque_prf_input
-	case TLSEXT_TYPE_opaque_prf_input:
-		extname = "opaque PRF input";
-		break;
-#endif
 #ifdef TLSEXT_TYPE_next_proto_neg
 	case TLSEXT_TYPE_next_proto_neg:
 		extname = "next protocol";
