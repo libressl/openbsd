@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ssl_lib.c,v 1.65 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -536,7 +536,6 @@ SSL_free(SSL *s)
 		SSL_CTX_free(s->initial_ctx);
 	free(s->tlsext_ecpointformatlist);
 	free(s->tlsext_ellipticcurvelist);
-	free(s->tlsext_opaque_prf_input);
 	if (s->tlsext_ocsp_exts)
 		sk_X509_EXTENSION_pop_free(s->tlsext_ocsp_exts,
 		    X509_EXTENSION_free);
