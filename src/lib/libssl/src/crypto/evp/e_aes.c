@@ -1323,6 +1323,7 @@ aead_aes_gcm_cleanup(EVP_AEAD_CTX *ctx)
 {
 	struct aead_aes_gcm_ctx *gcm_ctx = ctx->aead_state;
 
+	OPENSSL_cleanse(gcm_ctx, sizeof(*gcm_ctx));
 	free(gcm_ctx);
 }
 
