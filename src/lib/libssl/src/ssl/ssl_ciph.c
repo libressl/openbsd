@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_ciph.c,v 1.52 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: ssl_ciph.c,v 1.53 2014/06/13 13:28:53 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2029,7 +2029,7 @@ SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
 	if (id < 193 || id > 255) {
 		SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD,
 		    SSL_R_COMPRESSION_ID_NOT_WITHIN_PRIVATE_RANGE);
-		return 0;
+		return 1;
 	}
 
 	comp = malloc(sizeof(SSL_COMP));
