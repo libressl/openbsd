@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_linux.c,v 1.1 2014/06/20 19:08:11 beck Exp $	*/
+/*	$OpenBSD: getentropy_linux.c,v 1.2 2014/06/20 19:53:36 otto Exp $	*/
 
 /*
  * Copyright (c) 2014 Theo de Raadt <deraadt@openbsd.org>
@@ -179,7 +179,7 @@ start:
 	if (fd == -1) {
 		if (errno == EINTR)
 			goto start;
-			goto nodevrandom;
+		goto nodevrandom;
 	}
 	fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
