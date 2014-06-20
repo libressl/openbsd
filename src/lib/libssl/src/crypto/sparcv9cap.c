@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: sparcv9cap.c,v 1.6 2014/06/12 15:49:27 deraadt Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,11 +52,6 @@ OPENSSL_cpuid_setup(void)
 	if (trigger)
 		return;
 	trigger = 1;
-
-	if ((e = getenv("OPENSSL_sparcv9cap"))) {
-		OPENSSL_sparcv9cap_P = strtoul(e, NULL, 0);
-		return;
-	}
 
 	/* Initial value, fits UltraSPARC-I&II... */
 	OPENSSL_sparcv9cap_P = SPARCV9_PREFER_FPU;
