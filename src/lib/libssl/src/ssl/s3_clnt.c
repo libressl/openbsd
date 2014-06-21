@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_clnt.c,v 1.70 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: s3_clnt.c,v 1.71 2014/06/19 21:29:51 tedu Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -886,7 +886,7 @@ ssl3_get_server_hello(SSL *s)
 	    timingsafe_memcmp(p, s->session->session_id, j) == 0) {
 		if (s->sid_ctx_length != s->session->sid_ctx_length ||
 		    timingsafe_memcmp(s->session->sid_ctx,
-		    s->sid_ctx, s->sid_ctx_length)) {
+		    s->sid_ctx, s->sid_ctx_length) != 0) {
 			/* actually a client application bug */
 			al = SSL_AD_ILLEGAL_PARAMETER;
 			SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,
