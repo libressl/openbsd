@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ssl_cert.c,v 1.38 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -308,7 +308,7 @@ err:
 			X509_free(ret->pkeys[i].x509);
 		EVP_PKEY_free(ret->pkeys[i].privatekey);
 	}
-
+	free (ret);
 	return NULL;
 }
 
