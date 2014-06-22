@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: eng_cnf.c,v 1.10 2014/06/12 15:49:29 deraadt Exp $ */
 /* Written by Stephen Henson (steve@openssl.org) for the OpenSSL
  * project 2001.
  */
@@ -195,8 +195,8 @@ err:
 		ENGINEerr(ENGINE_F_INT_ENGINE_CONFIGURE,
 		    ENGINE_R_ENGINE_CONFIGURATION_ERROR);
 		if (ecmd)
-			ERR_asprintf_error_data
-			("section=%s, name=%s, value=%s",
+			ERR_asprintf_error_data(
+			    "section=%s, name=%s, value=%s",
 			    ecmd->section, ecmd->name, ecmd->value);
 	}
 	if (e)
