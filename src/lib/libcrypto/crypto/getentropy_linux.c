@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_linux.c,v 1.5 2014/06/21 02:08:34 deraadt Exp $	*/
+/*	$OpenBSD: getentropy_linux.c,v 1.6 2014/06/21 21:44:36 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2014 Theo de Raadt <deraadt@openbsd.org>
@@ -61,6 +61,7 @@
 
 int	getentropy(void *buf, size_t len);
 
+extern int main(int, char *argv[]);
 static int gotdata(char *buf, size_t len);
 static int getentropy_urandom(void *buf, size_t len);
 static int getentropy_sysctl(void *buf, size_t len);
