@@ -1,4 +1,4 @@
-/* $OpenBSD: buffer.h,v 1.9 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: buffer.h,v 1.10 2014/06/14 10:28:31 avsm Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -66,10 +66,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
-
-#if !defined(NO_SYS_TYPES_H)
 #include <sys/types.h>
-#endif
 
 /* Already declared in ossl_typ.h */
 /* typedef struct buf_mem_st BUF_MEM; */
