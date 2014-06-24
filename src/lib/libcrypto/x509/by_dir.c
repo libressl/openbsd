@@ -1,4 +1,4 @@
-/* $OpenBSD: by_dir.c,v 1.27 2014/06/19 21:23:48 tedu Exp $ */
+/* $OpenBSD: by_dir.c,v 1.28 2014/06/23 22:19:02 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -62,9 +62,7 @@
 
 #include "cryptlib.h"
 
-#ifndef NO_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 #ifndef OPENSSL_NO_POSIX_IO
 # include <sys/stat.h>
 #endif
