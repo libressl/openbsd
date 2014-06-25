@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_linux.c,v 1.10 2014/06/25 16:29:30 beck Exp $	*/
+/*	$OpenBSD: getentropy_linux.c,v 1.9 2014/06/25 15:53:56 beck Exp $	*/
 
 /*
  * Copyright (c) 2014 Theo de Raadt <deraadt@openbsd.org>
@@ -460,7 +460,7 @@ getentropy_fallback(void *buf, size_t len)
 #ifdef AT_SYSINFO_EHDR
 		p = (char *) getauxval(AT_SYSINFO_EHDR);
 		if (p)
-			HR(p, sizeof(p));
+			HR(p, pgs);
 #endif
 #ifdef AT_BASE
 		p = (char *) getauxval(AT_BASE);
