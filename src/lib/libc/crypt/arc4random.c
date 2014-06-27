@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.37 2014/06/25 04:22:08 deraadt Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.38 2014/06/26 19:23:15 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -120,7 +120,8 @@ _rs_stir_if_needed(size_t len)
 	/* If a system lacks MAP_INHERIT_ZERO, resort to getpid() */
 	if (_rs_pid == 0 || _rs_pid != pid) {
 		_rs_pid = pid;
-		rs->rs_count = 0;
+		if (rs)
+			rs->rs_count = 0;
 	}
 #endif
 	if (!rs || rs->rs_count <= len)
