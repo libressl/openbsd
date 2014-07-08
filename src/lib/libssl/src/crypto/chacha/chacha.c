@@ -1,4 +1,4 @@
-/* $OpenBSD: chacha.c,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: chacha.c,v 1.5 2014/06/24 18:12:09 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -15,7 +15,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdint.h>
+
 #include <openssl/chacha.h>
+
 #include "chacha-merged.c"
 
 void
