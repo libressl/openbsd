@@ -1,4 +1,4 @@
-/* $OpenBSD: aes_misc.c,v 1.8 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: aes_misc.c,v 1.9 2014/07/09 09:10:07 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -53,8 +53,6 @@
 #include <openssl/crypto.h>
 #include <openssl/aes.h>
 #include "aes_locl.h"
-
-const char AES_version[]="AES" OPENSSL_VERSION_PTEXT;
 
 const char *
 AES_options(void)

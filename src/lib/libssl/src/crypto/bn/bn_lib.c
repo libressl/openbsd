@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bn_lib.c,v 1.28 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -66,8 +66,6 @@
 #include <stdio.h>
 #include "cryptlib.h"
 #include "bn_lcl.h"
-
-const char BN_version[] = "Big Number" OPENSSL_VERSION_PTEXT;
 
 /* This stuff appears to be completely unused, so is deprecated */
 #ifndef OPENSSL_NO_DEPRECATED
