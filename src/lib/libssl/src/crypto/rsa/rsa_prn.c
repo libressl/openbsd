@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_prn.c,v 1.3 2014/06/12 15:49:30 deraadt Exp $ */
+/* $OpenBSD: rsa_prn.c,v 1.4 2014/07/09 08:20:08 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
