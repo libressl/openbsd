@@ -1,4 +1,4 @@
-/* $OpenBSD: apps.c,v 1.60 2014/06/28 04:39:41 deraadt Exp $ */
+/* $OpenBSD: apps.c,v 1.61 2014/07/09 09:06:58 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2229,8 +2229,8 @@ next_protos_parse(unsigned short *outlen, const char *in)
 	*outlen = len + 1;
 	return out;
 }
-#endif				/* !OPENSSL_NO_TLSEXT &&
-				 * !OPENSSL_NO_NEXTPROTONEG */
+#endif
+/* !OPENSSL_NO_TLSEXT && !OPENSSL_NO_NEXTPROTONEG */
 
 double
 app_tminterval(int stop, int usertime)
