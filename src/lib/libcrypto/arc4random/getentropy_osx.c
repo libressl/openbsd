@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_linux.c,v 1.14 2014/06/26 13:48:11 deraadt Exp $	*/
+/*	$OpenBSD: getentropy_osx.c,v 1.1 2014/07/08 10:45:35 beck Exp $	*/
 
 /*
  * Copyright (c) 2014 Theo de Raadt <deraadt@openbsd.org>
@@ -153,7 +153,7 @@ getentropy_urandom(void *buf, size_t len)
 {
 	struct stat st;
 	size_t i;
-	int fd, cnt, flags;
+	int fd, flags;
 	int save_errno = errno;
 
 start:
@@ -227,7 +227,7 @@ getentropy_fallback(void *buf, size_t len)
 	static pid_t lastpid;
 	void * addr;
 	pid_t pid;
-	size_t i, ii;
+	size_t i;
 	char *p;
 
 	pid = getpid();
