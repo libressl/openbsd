@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_lib.c,v 1.16 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: dsa_lib.c,v 1.17 2014/07/09 10:16:24 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -69,8 +69,6 @@
 #ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
 #endif
-
-const char DSA_version[] = "DSA" OPENSSL_VERSION_PTEXT;
 
 static const DSA_METHOD *default_DSA_method = NULL;
 
