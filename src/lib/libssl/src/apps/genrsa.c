@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: genrsa.c,v 1.33 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -252,7 +252,7 @@ bad:
 		cb_data.password = passout;
 		cb_data.prompt_info = outfile;
 		if (!PEM_write_bio_RSAPrivateKey(out, rsa, enc, NULL, 0,
-			(pem_password_cb *) password_callback, &cb_data))
+			password_callback, &cb_data))
 			goto err;
 	}
 
