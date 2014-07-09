@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: md4_dgst.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,8 +60,6 @@
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include "md4_locl.h"
-
-const char MD4_version[]="MD4" OPENSSL_VERSION_PTEXT;
 
 /* Implemented from RFC1186 The MD4 Message-Digest Algorithm
  */

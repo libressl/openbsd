@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: pem_lib.c,v 1.28 2014/06/12 15:49:30 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -73,8 +73,6 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-
-const char PEM_version[] = "PEM" OPENSSL_VERSION_PTEXT;
 
 #define MIN_LENGTH	4
 
