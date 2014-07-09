@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: conf_lib.c,v 1.11 2014/06/12 15:49:28 deraadt Exp $ */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2000.
  */
@@ -62,8 +62,6 @@
 #include <openssl/conf.h>
 #include <openssl/conf_api.h>
 #include <openssl/lhash.h>
-
-const char CONF_version[]="CONF" OPENSSL_VERSION_PTEXT;
 
 static CONF_METHOD *default_CONF_method = NULL;
 

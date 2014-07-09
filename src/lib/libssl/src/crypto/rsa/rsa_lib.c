@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_lib.c,v 1.22 2014/07/09 08:44:53 miod Exp $ */
+/* $OpenBSD: rsa_lib.c,v 1.23 2014/07/09 08:55:32 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -66,8 +66,6 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-
-const char RSA_version[] = "RSA" OPENSSL_VERSION_PTEXT;
 
 static const RSA_METHOD *default_RSA_meth = NULL;
 
