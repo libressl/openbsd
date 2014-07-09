@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: txt_db.c,v 1.16 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -65,8 +65,6 @@
 
 #undef BUFSIZE
 #define BUFSIZE	512
-
-const char TXT_DB_version[] = "TXT_DB" OPENSSL_VERSION_PTEXT;
 
 TXT_DB *
 TXT_DB_read(BIO *in, int num)

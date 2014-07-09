@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ecs_lib.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2005 The OpenSSL Project.  All rights reserved.
  *
@@ -60,8 +60,6 @@
 #endif
 #include <openssl/err.h>
 #include <openssl/bn.h>
-
-const char ECDSA_version[]="ECDSA" OPENSSL_VERSION_PTEXT;
 
 static const ECDSA_METHOD *default_ECDSA_method = NULL;
 

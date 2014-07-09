@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: dh_lib.c,v 1.15 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,8 +63,6 @@
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
-
-const char DH_version[]="Diffie-Hellman" OPENSSL_VERSION_PTEXT;
 
 static const DH_METHOD *default_DH_method = NULL;
 
