@@ -1,4 +1,4 @@
-/* $OpenBSD: dsaparam.c,v 1.30 2014/06/28 04:39:41 deraadt Exp $ */
+/* $OpenBSD: dsaparam.c,v 1.31 2014/06/29 18:26:26 logan Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -64,7 +64,6 @@
 #undef OPENSSL_NO_DEPRECATED
 #endif
 
-#ifndef OPENSSL_NO_DSA
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -417,4 +416,3 @@ dsa_cb(int p, int n, BN_GENCB * cb)
 #endif
 	return 1;
 }
-#endif

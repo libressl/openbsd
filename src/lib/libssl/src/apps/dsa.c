@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: dsa.c,v 1.25 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -58,7 +58,6 @@
 
 #include <openssl/opensslconf.h>	/* for OPENSSL_NO_DSA */
 
-#ifndef OPENSSL_NO_DSA
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -335,4 +334,3 @@ end:
 	
 	return (ret);
 }
-#endif
