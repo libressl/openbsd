@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_x931.c,v 1.2 2014/06/12 15:49:30 deraadt Exp $ */
+/* $OpenBSD: rsa_x931.c,v 1.3 2014/07/09 08:20:08 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2005.
  */
@@ -135,7 +135,7 @@ RSA_padding_check_X931(unsigned char *to, int tlen, const unsigned char *from,
 	} else
 		j = flen - 2;
 
-	if (p[j] != 0xCC) {
+	if (j < 0 || p[j] != 0xCC) {
 		RSAerr(RSA_F_RSA_PADDING_CHECK_X931, RSA_R_INVALID_TRAILER);
 		return -1;
 	}
