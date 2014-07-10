@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_fat.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: eng_fat.c,v 1.12 2014/06/22 11:33:47 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
  *
@@ -57,6 +57,8 @@
  * ECDH support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
+
+#include <string.h>
 
 #include "eng_int.h"
 #include <openssl/conf.h>

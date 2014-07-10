@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_pmeth.c,v 1.6 2014/06/12 20:40:57 deraadt Exp $ */
+/* $OpenBSD: dh_pmeth.c,v 1.7 2014/07/09 13:26:47 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -56,8 +56,10 @@
  *
  */
 
-#include <stdio.h>
 #include <limits.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>

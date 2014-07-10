@@ -1,4 +1,4 @@
-/* $OpenBSD: p12_key.c,v 1.17 2014/07/10 10:01:23 miod Exp $ */
+/* $OpenBSD: p12_key.c,v 1.18 2014/07/10 12:09:43 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/pkcs12.h>
 #include <openssl/bn.h>

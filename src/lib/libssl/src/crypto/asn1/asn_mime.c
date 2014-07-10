@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: asn_mime.c,v 1.18 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -52,8 +52,10 @@
  *
  */
 
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/rand.h>
 #include <openssl/x509.h>
