@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: a_strex.c,v 1.22 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -131,7 +131,7 @@ do_esc_char(unsigned long c, unsigned char flags, char *do_quotes,
     char_io *io_ch, void *arg)
 {
 	unsigned char chflgs, chtmp;
-	char tmphex[HEX_SIZE(long) + 3];
+	char tmphex[sizeof(long) * 2 + 3];
 
 	if (c > 0xffffffffL)
 		return -1;
