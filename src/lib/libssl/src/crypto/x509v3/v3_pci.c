@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: v3_pci.c,v 1.5 2014/06/12 15:49:31 deraadt Exp $ */
 /* Contributed to the OpenSSL Project 2004
  * by Richard Levitte (richard@levitte.org)
  */
@@ -35,6 +35,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>

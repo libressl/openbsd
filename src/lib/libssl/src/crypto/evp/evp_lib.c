@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: evp_lib.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/evp.h>
 #include <openssl/objects.h>
