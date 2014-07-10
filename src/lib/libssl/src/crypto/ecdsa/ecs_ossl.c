@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ecs_ossl.c,v 1.3 2014/06/12 15:49:29 deraadt Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project
  */
@@ -55,6 +55,8 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
+#include <openssl/opensslconf.h>
 
 #include "ecs_locl.h"
 #include <openssl/err.h>

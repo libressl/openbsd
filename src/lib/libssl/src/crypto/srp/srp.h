@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: srp.h,v 1.2 2014/06/12 15:49:30 deraadt Exp $ */
 /* Written by Christophe Renou (christophe.renou@edelweb.fr) with 
  * the precious help of Peter Sylvester (peter.sylvester@edelweb.fr) 
  * for the EdelKey project and contributed to the OpenSSL project 2004.
@@ -58,6 +58,8 @@
  */
 #ifndef __SRP_H__
 #define __SRP_H__
+
+#include <openssl/opensslconf.h>
 
 #ifndef OPENSSL_NO_SRP
 

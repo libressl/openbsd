@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: str_lib.c,v 1.9 2014/06/12 15:49:30 deraadt Exp $ */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2003.
  */
@@ -57,6 +57,9 @@
  */
 
 #include <string.h>
+
+#include <openssl/opensslconf.h>
+
 #include <openssl/bn.h>
 #include <openssl/err.h>
 #ifndef OPENSSL_NO_ENGINE

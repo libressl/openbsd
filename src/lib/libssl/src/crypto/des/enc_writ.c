@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: enc_writ.c,v 1.10 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,8 +57,11 @@
  */
 
 #include <errno.h>
-#include <time.h>
 #include <stdio.h>
+#include <time.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include "des_locl.h"
 #include <openssl/rand.h>
