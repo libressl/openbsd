@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x509_vpm.c,v 1.7 2014/06/12 15:49:31 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2004.
  */
@@ -57,6 +57,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "cryptlib.h"
 #include <openssl/crypto.h>

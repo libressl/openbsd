@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: dso_dlfcn.c,v 1.25 2014/06/12 15:49:29 deraadt Exp $ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/dso.h>
 

@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_openssl.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: eng_openssl.c,v 1.6 2014/06/22 12:05:09 jsing Exp $ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -61,8 +61,9 @@
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
-
 #include <stdio.h>
+#include <string.h>
+
 #include <openssl/crypto.h>
 #include "cryptlib.h"
 #include <openssl/engine.h>

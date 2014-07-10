@@ -1,4 +1,4 @@
-/* $OpenBSD: by_file.c,v 1.12 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: by_file.c,v 1.13 2014/06/23 22:19:02 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,9 +56,10 @@
  * [including the GNU Public Licence.]
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include "cryptlib.h"
 #include <openssl/lhash.h>

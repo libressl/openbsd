@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_list.c,v 1.11 2014/06/23 22:19:02 deraadt Exp $ */
+/* $OpenBSD: eng_list.c,v 1.12 2014/06/29 00:52:18 deraadt Exp $ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -60,6 +60,9 @@
  * ECDH support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
+
+#include <string.h>
+#include <unistd.h>
 
 #include "eng_int.h"
 

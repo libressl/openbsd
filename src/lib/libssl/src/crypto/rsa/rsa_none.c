@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_none.c,v 1.6 2014/07/09 19:51:38 jsing Exp $ */
+/* $OpenBSD: rsa_none.c,v 1.7 2014/07/10 11:25:13 tedu Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/bn.h>
 #include <openssl/rsa.h>

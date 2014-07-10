@@ -1,4 +1,4 @@
-/* $OpenBSD: ts_rsp_verify.c,v 1.9 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: ts_rsp_verify.c,v 1.10 2014/07/09 11:12:13 bcook Exp $ */
 /* Written by Zoltan Glozik (zglozik@stones.com) for the OpenSSL
  * project 2002.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/objects.h>
 #include <openssl/ts.h>
