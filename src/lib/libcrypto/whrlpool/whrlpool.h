@@ -1,9 +1,9 @@
-/* $OpenBSD$ */
+/* $OpenBSD: whrlpool.h,v 1.4 2014/06/12 15:49:31 deraadt Exp $ */
+
+#include <stddef.h>
 
 #ifndef HEADER_WHRLPOOL_H
 #define HEADER_WHRLPOOL_H
-
-#include <stddef.h>
 
 #include <openssl/opensslconf.h>
 

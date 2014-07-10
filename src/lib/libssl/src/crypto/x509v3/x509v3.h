@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x509v3.h,v 1.14 2014/06/12 15:49:31 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -57,6 +57,8 @@
  */
 #ifndef HEADER_X509V3_H
 #define HEADER_X509V3_H
+
+#include <openssl/opensslconf.h>
 
 #include <openssl/bio.h>
 #include <openssl/x509.h>

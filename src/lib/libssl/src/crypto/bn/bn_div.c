@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_div.c,v 1.19 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: bn_div.c,v 1.20 2014/06/27 22:02:07 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -58,6 +58,9 @@
 
 #include <stdio.h>
 #include <openssl/bn.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include "bn_lcl.h"
 

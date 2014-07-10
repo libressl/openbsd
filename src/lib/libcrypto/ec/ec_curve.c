@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ec_curve.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -69,10 +69,11 @@
  *
  */
 
+#include <openssl/opensslconf.h>
+
 #include "ec_lcl.h"
 #include <openssl/err.h>
 #include <openssl/obj_mac.h>
-#include <openssl/opensslconf.h>
 
 typedef struct {
 	int field_type,		/* either NID_X9_62_prime_field or

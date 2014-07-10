@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: e_chacha.c,v 1.3 2014/06/12 15:49:29 deraadt Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -14,6 +14,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+#include <openssl/opensslconf.h>
 
 #ifndef OPENSSL_NO_CHACHA
 

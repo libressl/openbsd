@@ -1,10 +1,17 @@
-/* $OpenBSD: sha512.c,v 1.10 2014/07/09 11:10:51 bcook Exp $ */
+/* $OpenBSD: sha512.c,v 1.11 2014/07/09 16:06:13 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved
  * according to the OpenSSL license [found in ../../LICENSE].
  * ====================================================================
  */
+
+#include <machine/endian.h>
+
+#include <stdlib.h>
+#include <string.h>
+
 #include <openssl/opensslconf.h>
+
 #if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA512)
 /*
  * IMPLEMENTATION NOTES.
@@ -41,9 +48,6 @@
  * 16-bit platforms.
  *					<appro@fy.chalmers.se>
  */
-#include <stdlib.h>
-#include <string.h>
-#include <machine/endian.h>
 
 #include <openssl/crypto.h>
 #include <openssl/sha.h>

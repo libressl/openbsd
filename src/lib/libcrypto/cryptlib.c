@@ -1,4 +1,4 @@
-/* $OpenBSD: cryptlib.c,v 1.29 2014/07/10 20:02:58 jsing Exp $ */
+/* $OpenBSD: cryptlib.c,v 1.30 2014/07/10 22:13:39 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2006 The OpenSSL Project.  All rights reserved.
  *
@@ -116,6 +116,8 @@
 
 #include <string.h>
 #include <unistd.h>
+
+#include <openssl/opensslconf.h>
 
 #include "cryptlib.h"
 #include <openssl/safestack.h>

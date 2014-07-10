@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: e_old.c,v 1.6 2014/06/12 15:49:29 deraadt Exp $ */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2004.
  */
@@ -55,6 +55,8 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
+#include <openssl/opensslconf.h>
 
 #ifndef OPENSSL_NO_DEPRECATED
 

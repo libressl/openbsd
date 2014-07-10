@@ -1,6 +1,9 @@
-/* $OpenBSD$ */
+/* $OpenBSD: m_wp.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 
 #ifndef OPENSSL_NO_WHIRLPOOL

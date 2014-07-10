@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_depr.c,v 1.3 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: dh_depr.c,v 1.4 2014/07/09 13:26:47 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -53,10 +53,12 @@
  *
  */
 
-
 /* This file contains deprecated functions as wrappers to the new ones */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include <openssl/bn.h>
 #include <openssl/dh.h>
