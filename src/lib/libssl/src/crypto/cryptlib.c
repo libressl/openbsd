@@ -1,4 +1,4 @@
-/* $OpenBSD: cryptlib.c,v 1.27 2014/06/20 21:00:46 deraadt Exp $ */
+/* $OpenBSD: cryptlib.c,v 1.28 2014/07/10 13:58:21 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2006 The OpenSSL Project.  All rights reserved.
  *
@@ -680,7 +680,6 @@ OPENSSL_ia32cap_loc(void)
 	return NULL;
 }
 #endif
-int OPENSSL_NONPIC_relocated = 0;
 
 #if !defined(OPENSSL_CPUID_SETUP) && !defined(OPENSSL_CPUID_OBJ)
 void
