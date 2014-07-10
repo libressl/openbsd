@@ -187,18 +187,17 @@ struct rsa_st {
 #define RSA_FLAG_SIGN_VER		0x0040
 
 /*
- * New with 0.9.6j and 0.9.7b; the built-in RSA implementation now uses
- * blinding by default (ignoring RSA_FLAG_BLINDING), but other engines might
- * not need it.
+ * The built-in RSA implementation uses blinding by default, but other engines
+ * might not need it.
  */
 #define RSA_FLAG_NO_BLINDING		0x0080
 
 /*
- * New with 0.9.8f; the built-in RSA implementation now uses constant time
- * operations by default in private key operations, e.g., constant time modular
- * exponentiation, modular inverse without leaking branches, division without
- * leaking branches. This flag disables these constant time operations and
- * results in faster RSA private key operations.
+ * The built-in RSA implementation uses constant time operations by default
+ * in private key operations, e.g., constant time modular exponentiation,
+ * modular inverse without leaking branches, division without leaking branches.
+ * This flag disables these constant time operations and results in faster RSA
+ * private key operations.
  */
 #define RSA_FLAG_NO_CONSTTIME		0x0100
 
