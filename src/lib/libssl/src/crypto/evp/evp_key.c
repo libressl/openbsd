@@ -1,4 +1,4 @@
-/* $OpenBSD: evp_key.c,v 1.15 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: evp_key.c,v 1.16 2014/07/10 13:58:22 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -87,9 +87,6 @@ EVP_get_pw_prompt(void)
 		return (prompt_string);
 }
 
-/* For historical reasons, the standard function for reading passwords is
- * in the DES library -- if someone ever wants to disable DES,
- * this function will fail */
 int
 EVP_read_pw_string(char *buf, int len, const char *prompt, int verify)
 {
