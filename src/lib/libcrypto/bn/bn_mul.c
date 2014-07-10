@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bn_mul.c,v 1.16 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,8 +61,10 @@
 # define NDEBUG
 #endif
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include "bn_lcl.h"
 

@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x509name.c,v 1.10 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include <openssl/stack.h>
 #include "cryptlib.h"
 #include <openssl/asn1.h>

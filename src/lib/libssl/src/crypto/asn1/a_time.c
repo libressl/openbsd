@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: a_time.c,v 1.19 2014/06/12 15:49:27 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 1999 The OpenSSL Project.  All rights reserved.
  *
@@ -62,7 +62,9 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
+
 #include "cryptlib.h"
 #include "o_time.h"
 #include <openssl/asn1t.h>

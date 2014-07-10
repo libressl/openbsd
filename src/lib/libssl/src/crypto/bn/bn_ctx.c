@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_ctx.c,v 1.9 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: bn_ctx.c,v 1.10 2014/06/27 06:07:35 deraadt Exp $ */
 /* Written by Ulf Moeller for the OpenSSL project. */
 /* ====================================================================
  * Copyright (c) 1998-2004 The OpenSSL Project.  All rights reserved.
@@ -60,8 +60,9 @@
 #endif
 #endif
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "cryptlib.h"
 #include "bn_lcl.h"

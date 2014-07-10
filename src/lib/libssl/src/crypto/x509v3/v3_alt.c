@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: v3_alt.c,v 1.19 2014/06/12 15:49:31 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
