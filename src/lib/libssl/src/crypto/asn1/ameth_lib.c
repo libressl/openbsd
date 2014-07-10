@@ -1,4 +1,4 @@
-/* $OpenBSD: ameth_lib.c,v 1.8 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: ameth_lib.c,v 1.9 2014/06/22 13:17:08 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>

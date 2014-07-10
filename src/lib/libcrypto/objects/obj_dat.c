@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: obj_dat.c,v 1.27 2014/06/12 15:49:30 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,9 +56,11 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <ctype.h>
 #include <limits.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/lhash.h>
 #include <openssl/asn1.h>

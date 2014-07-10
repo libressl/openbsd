@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_pk1.c,v 1.10 2014/07/10 07:41:54 jsing Exp $ */
+/* $OpenBSD: rsa_pk1.c,v 1.11 2014/07/10 11:25:13 tedu Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/bn.h>
 #include <openssl/rsa.h>

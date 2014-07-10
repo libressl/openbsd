@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: asn1_gen.c,v 1.10 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2002.
  */
@@ -55,6 +55,8 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
+#include <string.h>
 
 #include "cryptlib.h"
 #include <openssl/asn1.h>

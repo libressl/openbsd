@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ts_lib.c,v 1.6 2014/06/12 15:49:31 deraadt Exp $ */
 /* Written by Zoltan Glozik (zglozik@stones.com) for the OpenSSL
  * project 2002.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #include <openssl/objects.h>
 #include <openssl/bn.h>

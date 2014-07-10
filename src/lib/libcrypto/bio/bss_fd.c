@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bss_fd.c,v 1.14 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,9 +56,11 @@
  * [including the GNU Public Licence.]
  */
 
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
+
 #include "cryptlib.h"
 
 #if defined(OPENSSL_NO_POSIX_IO)

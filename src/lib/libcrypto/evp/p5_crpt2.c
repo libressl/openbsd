@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: p5_crpt2.c,v 1.14 2014/06/12 15:49:29 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -55,8 +55,11 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "cryptlib.h"
 #if !defined(OPENSSL_NO_HMAC) && !defined(OPENSSL_NO_SHA)
 #include <openssl/x509.h>
