@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: e_aes_cbc_hmac_sha1.c,v 1.6 2014/06/12 15:49:29 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 2011-2013 The OpenSSL Project.  All rights reserved.
  *
@@ -48,10 +48,10 @@
  * ====================================================================
  */
 
-#include <openssl/opensslconf.h>
-
 #include <stdio.h>
 #include <string.h>
+
+#include <openssl/opensslconf.h>
 
 #if !defined(OPENSSL_NO_AES) && !defined(OPENSSL_NO_SHA1)
 

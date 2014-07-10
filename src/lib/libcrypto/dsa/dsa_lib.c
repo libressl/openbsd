@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_lib.c,v 1.17 2014/07/09 10:16:24 miod Exp $ */
+/* $OpenBSD: dsa_lib.c,v 1.18 2014/07/09 11:10:50 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -59,6 +59,9 @@
 /* Original version from Steven Schoch <schoch@sheba.arc.nasa.gov> */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include <openssl/bn.h>
 #include <openssl/dsa.h>

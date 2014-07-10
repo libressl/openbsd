@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_fat.c,v 1.12 2014/06/22 11:33:47 jsing Exp $ */
+/* $OpenBSD: eng_fat.c,v 1.13 2014/07/10 13:58:22 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
  *
@@ -59,6 +59,8 @@
  */
 
 #include <string.h>
+
+#include <openssl/opensslconf.h>
 
 #include "eng_int.h"
 #include <openssl/conf.h>

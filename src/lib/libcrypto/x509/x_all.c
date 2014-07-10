@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x_all.c,v 1.16 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,9 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include <openssl/stack.h>
 #include "cryptlib.h"
 #include <openssl/buffer.h>

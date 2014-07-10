@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x_crl.c,v 1.15 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,9 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include "asn1_locl.h"
 #include <openssl/asn1t.h>

@@ -1,4 +1,4 @@
-/* $OpenBSD: ocsp_lib.c,v 1.11 2014/07/09 20:34:29 tedu Exp $ */
+/* $OpenBSD: ocsp_lib.c,v 1.12 2014/07/10 13:58:23 jsing Exp $ */
 /* Written by Tom Titchener <Tom_Titchener@groove.net> for the OpenSSL
  * project. */
 
@@ -64,6 +64,8 @@
 #include <cryptlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <openssl/opensslconf.h>
 
 #include <openssl/objects.h>
 #include <openssl/rand.h>

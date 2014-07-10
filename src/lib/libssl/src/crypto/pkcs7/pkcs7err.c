@@ -1,4 +1,4 @@
-/* $OpenBSD: pkcs7err.c,v 1.9 2014/06/12 15:49:30 deraadt Exp $ */
+/* $OpenBSD: pkcs7err.c,v 1.10 2014/06/29 17:05:36 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1999-2007 The OpenSSL Project.  All rights reserved.
  *
@@ -59,6 +59,9 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include <openssl/err.h>
 #include <openssl/pkcs7.h>
 

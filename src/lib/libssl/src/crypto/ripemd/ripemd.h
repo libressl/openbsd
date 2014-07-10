@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ripemd.h,v 1.13 2014/06/12 15:49:30 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,10 +56,10 @@
  * [including the GNU Public Licence.]
  */
 
+#include <stddef.h>
+
 #ifndef HEADER_RIPEMD_H
 #define HEADER_RIPEMD_H
-
-#include <stddef.h>
 
 #include <openssl/opensslconf.h>
 

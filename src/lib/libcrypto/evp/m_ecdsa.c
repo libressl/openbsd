@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: m_ecdsa.c,v 1.6 2014/06/12 15:49:29 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -110,6 +110,9 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include <openssl/evp.h>
 #include <openssl/objects.h>
