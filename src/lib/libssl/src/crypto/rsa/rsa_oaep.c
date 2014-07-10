@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_oaep.c,v 1.20 2014/07/10 11:25:13 tedu Exp $ */
+/* $OpenBSD: rsa_oaep.c,v 1.21 2014/07/10 13:58:23 jsing Exp $ */
 /* Written by Ulf Moeller. This software is distributed on an "AS IS"
    basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. */
 
@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#include <openssl/opensslconf.h>
 
 #if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
 #include "cryptlib.h"

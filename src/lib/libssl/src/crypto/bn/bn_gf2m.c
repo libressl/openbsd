@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bn_gf2m.c,v 1.13 2014/06/12 15:49:28 deraadt Exp $ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
@@ -91,6 +91,9 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include "bn_lcl.h"
 

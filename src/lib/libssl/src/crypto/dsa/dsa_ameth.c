@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_ameth.c,v 1.9 2014/07/09 10:16:24 miod Exp $ */
+/* $OpenBSD: dsa_ameth.c,v 1.10 2014/07/09 22:55:17 tedu Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -57,6 +57,9 @@
  */
 
 #include <stdio.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include <openssl/x509.h>
 #include <openssl/asn1.h>

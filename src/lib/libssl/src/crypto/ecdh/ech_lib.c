@@ -1,4 +1,4 @@
-/* $OpenBSD: ech_lib.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: ech_lib.c,v 1.6 2014/07/09 11:10:50 bcook Exp $ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
@@ -67,8 +67,11 @@
  *
  */
 
-#include "ech_locl.h"
 #include <string.h>
+
+#include <openssl/opensslconf.h>
+
+#include "ech_locl.h"
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
