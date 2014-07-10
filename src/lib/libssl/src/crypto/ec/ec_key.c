@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ec_key.c,v 1.7 2014/06/12 15:49:29 deraadt Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -62,6 +62,9 @@
  */
 
 #include <string.h>
+
+#include <openssl/opensslconf.h>
+
 #include "ec_lcl.h"
 #include <openssl/err.h>
 

@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bn_depr.c,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -58,6 +58,9 @@
 
 #include <stdio.h>
 #include <time.h>
+
+#include <openssl/opensslconf.h>
+
 #include "cryptlib.h"
 #include "bn_lcl.h"
 #include <openssl/rand.h>
