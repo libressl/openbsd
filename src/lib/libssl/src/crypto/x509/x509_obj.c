@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x509_obj.c,v 1.13 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -142,7 +142,7 @@ X509_NAME_oneline(X509_NAME *a, char *buf, int len)
 		} else
 			p = &(buf[lold]);
 		*(p++) = '/';
-		memcpy(p, s, (unsigned int)l1);
+		memcpy(p, s, l1);
 		p += l1;
 		*(p++) = '=';
 		q = ne->value->data;
