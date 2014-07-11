@@ -1,4 +1,4 @@
-/* $OpenBSD: conf_def.c,v 1.26 2014/07/09 11:10:50 bcook Exp $ */
+/* $OpenBSD: conf_def.c,v 1.27 2014/07/11 08:44:48 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -313,7 +313,7 @@ again:
 			end = eat_alpha_numeric(conf, ss);
 			p = eat_ws(conf, end);
 			if (*p != ']') {
-				if (*p != '\0') {
+				if (*p != '\0' && ss != p) {
 					ss = p;
 					goto again;
 				}
