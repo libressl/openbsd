@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: tasn_enc.c,v 1.13 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -58,7 +58,7 @@
 
 #include <stddef.h>
 #include <string.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
 #include <openssl/objects.h>

@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: cms_pwri.c,v 1.5 2014/06/12 15:49:28 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -51,16 +51,16 @@
  * ====================================================================
  */
 
-#include "cryptlib.h"
-#include <openssl/asn1t.h>
-#include <openssl/pem.h>
-#include <openssl/x509v3.h>
-#include <openssl/err.h>
-#include <openssl/cms.h>
-#include <openssl/rand.h>
 #include <openssl/aes.h>
-#include "cms_lcl.h"
+#include <openssl/asn1t.h>
+#include <openssl/cms.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
+#include <openssl/x509v3.h>
+
 #include "asn1_locl.h"
+#include "cms_lcl.h"
 
 int
 CMS_RecipientInfo_set0_password(CMS_RecipientInfo *ri, unsigned char *pass,

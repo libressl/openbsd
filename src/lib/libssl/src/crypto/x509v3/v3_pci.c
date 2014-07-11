@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_pci.c,v 1.6 2014/07/10 13:58:23 jsing Exp $ */
+/* $OpenBSD: v3_pci.c,v 1.7 2014/07/10 21:57:20 miod Exp $ */
 /* Contributed to the OpenSSL Project 2004
  * by Richard Levitte (richard@levitte.org)
  */
@@ -37,8 +37,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cryptlib.h"
 #include <openssl/conf.h>
+#include <openssl/err.h>
 #include <openssl/x509v3.h>
 
 static int i2r_pci(X509V3_EXT_METHOD *method, PROXY_CERT_INFO_EXTENSION *ext,

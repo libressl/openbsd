@@ -1,4 +1,4 @@
-/* $OpenBSD: c_allc.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: c_allc.c,v 1.12 2014/07/10 22:45:57 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,10 +60,9 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
 #include <openssl/evp.h>
-#include <openssl/pkcs12.h>
 #include <openssl/objects.h>
+#include <openssl/pkcs12.h>
 
 void
 OpenSSL_add_all_ciphers(void)
