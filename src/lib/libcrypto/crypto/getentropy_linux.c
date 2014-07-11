@@ -24,7 +24,9 @@
 #include <sys/ioctl.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
+#ifdef __GLIBC__
 #include <sys/sysctl.h>
+#endif
 #include <sys/statvfs.h>
 #include <sys/socket.h>
 #include <sys/mount.h>
