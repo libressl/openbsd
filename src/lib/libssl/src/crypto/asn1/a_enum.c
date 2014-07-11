@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: a_enum.c,v 1.14 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,9 +57,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
+#include <openssl/err.h>
 
 /*
  * Code for ENUMERATED type: identical to INTEGER apart from a different tag.

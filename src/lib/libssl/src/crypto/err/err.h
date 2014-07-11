@@ -1,4 +1,4 @@
-/* $OpenBSD: err.h,v 1.18 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: err.h,v 1.19 2014/07/08 11:11:57 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -114,8 +114,10 @@
 
 #include <openssl/opensslconf.h>
 
+#ifndef LIBRESSL_INTERNAL
 #include <stdio.h>
 #include <stdlib.h>
+#endif
 
 #include <openssl/ossl_typ.h>
 #ifndef OPENSSL_NO_BIO

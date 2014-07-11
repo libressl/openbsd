@@ -1,4 +1,4 @@
-/* $OpenBSD: evp_pbe.c,v 1.18 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: evp_pbe.c,v 1.19 2014/07/10 22:45:57 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -61,10 +61,11 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/pkcs12.h>
 #include <openssl/x509.h>
+
 #include "evp_locl.h"
 
 /* Password based encryption (PBE) functions */

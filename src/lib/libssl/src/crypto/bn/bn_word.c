@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: bn_word.c,v 1.11 2014/06/12 15:49:28 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,7 +57,7 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include "bn_lcl.h"
 
 BN_ULONG

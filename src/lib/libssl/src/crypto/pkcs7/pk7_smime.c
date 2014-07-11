@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_smime.c,v 1.16 2014/07/10 21:40:59 miod Exp $ */
+/* $OpenBSD: pk7_smime.c,v 1.17 2014/07/10 21:42:43 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -59,7 +59,8 @@
 /* Simple PKCS#7 processing functions */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 

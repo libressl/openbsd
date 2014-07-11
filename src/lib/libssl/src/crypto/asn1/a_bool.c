@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: a_bool.c,v 1.6 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,8 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1t.h>
+#include <openssl/err.h>
 
 int
 i2d_ASN1_BOOLEAN(int a, unsigned char **pp)

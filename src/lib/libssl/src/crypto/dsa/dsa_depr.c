@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_depr.c,v 1.4 2014/07/09 10:16:24 miod Exp $ */
+/* $OpenBSD: dsa_depr.c,v 1.5 2014/07/10 22:45:56 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -63,10 +63,9 @@
 
 #ifndef OPENSSL_NO_SHA
 
-#include "cryptlib.h"
-#include <openssl/evp.h>
 #include <openssl/bn.h>
 #include <openssl/dsa.h>
+#include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/sha.h>
 
