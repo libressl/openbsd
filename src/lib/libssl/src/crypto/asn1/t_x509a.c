@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: t_x509a.c,v 1.7 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -57,9 +57,9 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/evp.h>
+
 #include <openssl/asn1.h>
+#include <openssl/evp.h>
 #include <openssl/x509.h>
 
 /* X509_CERT_AUX and string set routines

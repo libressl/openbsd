@@ -1,4 +1,4 @@
-/* $OpenBSD: p5_crpt2.c,v 1.15 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: p5_crpt2.c,v 1.16 2014/07/10 22:45:57 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -62,11 +62,13 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
 #if !defined(OPENSSL_NO_HMAC) && !defined(OPENSSL_NO_SHA)
-#include <openssl/x509.h>
+
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
+#include <openssl/x509.h>
+
 #include "evp_locl.h"
 
 /* set this to print out info about the keygen algorithm */
