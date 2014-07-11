@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: i2d_pr.c,v 1.9 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,9 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/x509.h>
+
 #include "asn1_locl.h"
 
 int

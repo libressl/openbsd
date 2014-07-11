@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x509_ext.c,v 1.7 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,14 +57,13 @@
  */
 
 #include <stdio.h>
-#include <openssl/stack.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1.h>
-#include <openssl/objects.h>
 #include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/stack.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
-
 
 int
 X509_CRL_get_ext_count(X509_CRL *x)

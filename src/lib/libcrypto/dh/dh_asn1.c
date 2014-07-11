@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_asn1.c,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: dh_asn1.c,v 1.5 2014/07/09 13:26:47 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -57,11 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/asn1t.h>
 #include <openssl/bn.h>
 #include <openssl/dh.h>
 #include <openssl/objects.h>
-#include <openssl/asn1t.h>
 
 /* Override the default free and new methods */
 static int

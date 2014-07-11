@@ -1,4 +1,4 @@
-/* $OpenBSD: cm_ameth.c,v 1.4 2014/06/21 12:07:02 miod Exp $ */
+/* $OpenBSD: cm_ameth.c,v 1.5 2014/06/21 13:42:14 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2010.
  */
@@ -52,9 +52,10 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/evp.h>
+
 #include <openssl/cmac.h>
+#include <openssl/evp.h>
+
 #include "asn1_locl.h"
 
 /* CMAC "ASN1" method. This is just here to indicate the

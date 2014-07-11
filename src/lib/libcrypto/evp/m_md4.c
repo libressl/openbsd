@@ -1,4 +1,4 @@
-/* $OpenBSD: m_md4.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: m_md4.c,v 1.12 2014/07/10 22:45:57 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,14 +60,13 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
-
 #ifndef OPENSSL_NO_MD4
 
 #include <openssl/evp.h>
+#include <openssl/md4.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>
-#include <openssl/md4.h>
+
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif

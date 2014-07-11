@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: a_octet.c,v 1.8 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,7 +57,7 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1.h>
 
 ASN1_OCTET_STRING *

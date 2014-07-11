@@ -1,4 +1,4 @@
-/* $OpenBSD: ts_rsp_verify.c,v 1.10 2014/07/09 11:12:13 bcook Exp $ */
+/* $OpenBSD: ts_rsp_verify.c,v 1.11 2014/07/10 13:58:23 jsing Exp $ */
 /* Written by Zoltan Glozik (zglozik@stones.com) for the OpenSSL
  * project 2002.
  */
@@ -59,10 +59,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cryptlib.h"
+#include <openssl/err.h>
 #include <openssl/objects.h>
-#include <openssl/ts.h>
 #include <openssl/pkcs7.h>
+#include <openssl/ts.h>
 
 /* Private function declarations. */
 

@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: aes_ige.c,v 1.5 2014/06/12 15:49:27 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
@@ -49,9 +49,9 @@
  *
  */
 
-#include "cryptlib.h"
-
 #include <openssl/aes.h>
+#include <openssl/crypto.h>
+
 #include "aes_locl.h"
 
 #define N_WORDS (AES_BLOCK_SIZE / sizeof(unsigned long))

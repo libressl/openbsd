@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: x_spki.c,v 1.7 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,7 +61,7 @@
   */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/x509.h>
 #include <openssl/asn1t.h>
 

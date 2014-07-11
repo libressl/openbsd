@@ -1,4 +1,4 @@
-/* $OpenBSD: bss_dgram.c,v 1.29 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: bss_dgram.c,v 1.30 2014/07/10 22:45:56 jsing Exp $ */
 /* 
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
@@ -69,7 +69,6 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
 #include <openssl/bio.h>
 
 #ifndef OPENSSL_NO_DGRAM

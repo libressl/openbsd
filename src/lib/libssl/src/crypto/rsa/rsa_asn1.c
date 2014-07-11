@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_asn1.c,v 1.7 2014/07/09 08:20:08 miod Exp $ */
+/* $OpenBSD: rsa_asn1.c,v 1.8 2014/07/09 19:51:38 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -57,11 +57,11 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/asn1t.h>
 #include <openssl/bn.h>
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
-#include <openssl/asn1t.h>
 
 /* Override the default free and new methods */
 static int

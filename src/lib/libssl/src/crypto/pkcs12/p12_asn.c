@@ -1,4 +1,4 @@
-/* $OpenBSD: p12_asn.c,v 1.4 2014/06/12 15:49:30 deraadt Exp $ */
+/* $OpenBSD: p12_asn.c,v 1.5 2014/07/08 09:24:53 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -57,7 +57,7 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1t.h>
 #include <openssl/pkcs12.h>
 

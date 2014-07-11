@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ex_data.c,v 1.16 2014/06/12 15:49:27 deraadt Exp $ */
 
 /*
  * Overhaul notes;
@@ -138,7 +138,7 @@
  *
  */
 
-#include "cryptlib.h"
+#include <openssl/err.h>
 #include <openssl/lhash.h>
 
 /* What an "implementation of ex_data functionality" looks like */
