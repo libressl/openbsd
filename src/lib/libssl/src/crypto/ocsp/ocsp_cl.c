@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ocsp_cl.c,v 1.6 2014/06/12 15:49:30 deraadt Exp $ */
 /* Written by Tom Titchener <Tom_Titchener@groove.net> for the OpenSSL
  * project. */
 
@@ -63,13 +63,14 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <cryptlib.h>
+
+#include <openssl/err.h>
+#include <openssl/ocsp.h>
 #include <openssl/objects.h>
+#include <openssl/pem.h>
 #include <openssl/rand.h>
 #include <openssl/x509.h>
-#include <openssl/pem.h>
 #include <openssl/x509v3.h>
-#include <openssl/ocsp.h>
 
 /* Utility functions related to sending OCSP requests and extracting
  * relevant information from the response.

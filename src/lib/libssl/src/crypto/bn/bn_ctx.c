@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_ctx.c,v 1.11 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: bn_ctx.c,v 1.12 2014/07/10 22:45:56 jsing Exp $ */
 /* Written by Ulf Moeller for the OpenSSL project. */
 /* ====================================================================
  * Copyright (c) 1998-2004 The OpenSSL Project.  All rights reserved.
@@ -66,7 +66,8 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
+#include <openssl/err.h>
+
 #include "bn_lcl.h"
 
 /* TODO list

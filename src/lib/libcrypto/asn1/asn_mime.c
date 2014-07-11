@@ -1,4 +1,4 @@
-/* $OpenBSD: asn_mime.c,v 1.18 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: asn_mime.c,v 1.19 2014/07/10 13:58:22 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -56,11 +56,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cryptlib.h"
-#include <openssl/rand.h>
-#include <openssl/x509.h>
 #include <openssl/asn1.h>
 #include <openssl/asn1t.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <openssl/x509.h>
+
 #include "asn1_locl.h"
 
 /* Generalised MIME like utilities for streaming ASN1. Although many

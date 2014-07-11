@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: p_verify.c,v 1.11 2014/06/12 15:49:29 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,7 +57,8 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>

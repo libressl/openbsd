@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: pcy_cache.c,v 1.4 2014/06/12 15:49:31 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2004.
  */
@@ -56,7 +56,6 @@
  *
  */
 
-#include "cryptlib.h"
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 

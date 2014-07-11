@@ -1,4 +1,4 @@
-/* $OpenBSD: p12_p8e.c,v 1.3 2014/06/12 15:49:30 deraadt Exp $ */
+/* $OpenBSD: p12_p8e.c,v 1.4 2014/07/08 09:24:53 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2001.
  */
@@ -57,7 +57,8 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
+#include <openssl/err.h>
 #include <openssl/pkcs12.h>
 
 X509_SIG *

@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_check.c,v 1.11 2014/07/09 13:26:47 miod Exp $ */
+/* $OpenBSD: dh_check.c,v 1.12 2014/07/09 13:30:00 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,7 +57,7 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
+
 #include <openssl/bn.h>
 #include <openssl/dh.h>
 

@@ -1,4 +1,4 @@
-/* $OpenBSD: ec_ameth.c,v 1.9 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: ec_ameth.c,v 1.10 2014/07/10 22:45:57 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -60,13 +60,15 @@
 
 #include <openssl/opensslconf.h>
 
-#include "cryptlib.h"
-#include <openssl/x509.h>
-#include <openssl/ec.h>
 #include <openssl/bn.h>
+#include <openssl/ec.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+
 #ifndef OPENSSL_NO_CMS
 #include <openssl/cms.h>
 #endif
+
 #include "asn1_locl.h"
 
 static int 

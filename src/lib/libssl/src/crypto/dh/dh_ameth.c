@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_ameth.c,v 1.9 2014/07/09 13:26:47 miod Exp $ */
+/* $OpenBSD: dh_ameth.c,v 1.10 2014/07/09 22:55:17 tedu Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -57,11 +57,13 @@
  */
 
 #include <stdio.h>
-#include "cryptlib.h"
-#include <openssl/x509.h>
+
 #include <openssl/asn1.h>
-#include <openssl/dh.h>
 #include <openssl/bn.h>
+#include <openssl/dh.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+
 #include "asn1_locl.h"
 
 static void

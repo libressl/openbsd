@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_saos.c,v 1.13 2014/07/09 19:51:38 jsing Exp $ */
+/* $OpenBSD: rsa_saos.c,v 1.14 2014/07/10 13:58:23 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -59,10 +59,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cryptlib.h"
 #include <openssl/bn.h>
-#include <openssl/rsa.h>
+#include <openssl/err.h>
 #include <openssl/objects.h>
+#include <openssl/rsa.h>
 #include <openssl/x509.h>
 
 int

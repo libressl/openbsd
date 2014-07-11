@@ -1,4 +1,4 @@
-/* $OpenBSD: a_strex.c,v 1.22 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: a_strex.c,v 1.23 2014/07/10 20:42:45 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -58,10 +58,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "cryptlib.h"
+
+#include <openssl/asn1.h>
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
-#include <openssl/asn1.h>
+
 #include "asn1_locl.h"
 
 #include "charmap.h"

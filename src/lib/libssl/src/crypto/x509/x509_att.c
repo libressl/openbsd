@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_att.c,v 1.9 2014/06/28 18:25:24 logan Exp $ */
+/* $OpenBSD: x509_att.c,v 1.10 2014/07/03 21:21:11 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,11 +57,12 @@
  */
 
 #include <stdio.h>
-#include <openssl/stack.h>
-#include "cryptlib.h"
+
 #include <openssl/asn1.h>
-#include <openssl/objects.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/stack.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 

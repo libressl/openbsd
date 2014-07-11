@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: cms_enc.c,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -51,13 +51,13 @@
  * ====================================================================
  */
 
-#include "cryptlib.h"
 #include <openssl/asn1t.h>
-#include <openssl/pem.h>
-#include <openssl/x509v3.h>
-#include <openssl/err.h>
 #include <openssl/cms.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
 #include <openssl/rand.h>
+#include <openssl/x509v3.h>
+
 #include "cms_lcl.h"
 
 /* CMS EncryptedData Utilities */
