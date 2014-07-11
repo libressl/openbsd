@@ -1,7 +1,8 @@
-/* $OpenBSD: opensslv.h,v 1.25 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: opensslv.h,v 1.26 2014/07/11 11:43:49 jsing Exp $ */
 #ifndef HEADER_OPENSSLV_H
 #define HEADER_OPENSSLV_H
 
+#define LIBRESSL_VERSION_NUMBER	0x20000000L
 #define OPENSSL_VERSION_NUMBER	0x20000000L
 #define OPENSSL_VERSION_TEXT	"LibreSSL 2.0"
 #define OPENSSL_VERSION_PTEXT	" part of " OPENSSL_VERSION_TEXT
