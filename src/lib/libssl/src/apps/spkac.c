@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: spkac.c,v 1.19 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999. Based on an original idea by Massimiliano Pala
  * (madwolf@openca.org).
@@ -96,9 +96,6 @@ spkac_main(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
 	char *engine = NULL;
 #endif
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	prog = argv[0];
 	argc--;
