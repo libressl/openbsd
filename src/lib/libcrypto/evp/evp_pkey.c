@@ -1,4 +1,4 @@
-/* $OpenBSD: evp_pkey.c,v 1.15 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: evp_pkey.c,v 1.16 2014/07/11 08:44:48 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -104,7 +104,7 @@ EVP_PKCS82PKEY(PKCS8_PRIV_KEY_INFO *p8)
 	return pkey;
 
 error:
-	EVP_PKEY_free (pkey);
+	EVP_PKEY_free(pkey);
 	return NULL;
 }
 
