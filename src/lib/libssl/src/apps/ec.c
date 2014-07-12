@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ec.c,v 1.14 2014/06/12 15:49:27 deraadt Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -102,9 +102,6 @@ ec_main(int argc, char **argv)
 	int new_form = 0;
 	int asn1_flag = OPENSSL_EC_NAMED_CURVE;
 	int new_asn1_flag = 0;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	engine = NULL;
 	infile = NULL;

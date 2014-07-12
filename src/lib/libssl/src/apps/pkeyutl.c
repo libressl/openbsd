@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: pkeyutl.c,v 1.12 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -105,9 +105,6 @@ pkeyutl_main(int argc, char **argv)
 
 	argc--;
 	argv++;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	ERR_load_crypto_strings();
 	OpenSSL_add_all_algorithms();
