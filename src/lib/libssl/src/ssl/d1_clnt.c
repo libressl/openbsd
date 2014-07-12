@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_clnt.c,v 1.28 2014/07/11 09:24:44 beck Exp $ */
+/* $OpenBSD: d1_clnt.c,v 1.29 2014/07/11 22:57:25 miod Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -395,9 +395,9 @@ dtls1_connect(SSL *s)
 				s->init_num = 0;
 				break;
 			}
-			/* Check if it is anon DH or PSK */
-			if (!(s->s3->tmp.new_cipher->algorithm_auth & SSL_aNULL) &&
-			    !(s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
+			/* Check if it is anon DH. */
+			if (!(s->s3->tmp.new_cipher->algorithm_auth &
+			    SSL_aNULL)) {
 				ret = ssl3_get_server_certificate(s);
 				if (ret <= 0)
 					goto end;
