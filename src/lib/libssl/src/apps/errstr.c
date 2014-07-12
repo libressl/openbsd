@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: errstr.c,v 1.17 2014/06/12 15:49:27 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -75,8 +75,6 @@ errstr_main(int argc, char **argv)
 	int i, ret = 0;
 	char buf[256];
 	unsigned long l;
-
-	SSL_load_error_strings();
 
 	if ((argc > 1) && (strcmp(argv[1], "-stats") == 0)) {
 		BIO *out = NULL;
