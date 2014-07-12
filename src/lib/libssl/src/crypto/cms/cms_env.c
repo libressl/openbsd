@@ -1,4 +1,4 @@
-/* $OpenBSD: cms_env.c,v 1.5 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: cms_env.c,v 1.6 2014/07/11 08:44:48 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -346,8 +346,7 @@ cms_RecipientInfo_ktri_encrypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri)
 	ret = 1;
 
 err:
-	if (pctx)
-		EVP_PKEY_CTX_free(pctx);
+	EVP_PKEY_CTX_free(pctx);
 	free(ek);
 	return ret;
 }
@@ -416,8 +415,7 @@ cms_RecipientInfo_ktri_decrypt(CMS_ContentInfo *cms, CMS_RecipientInfo *ri)
 	ec->keylen = eklen;
 
 err:
-	if (pctx)
-		EVP_PKEY_CTX_free(pctx);
+	EVP_PKEY_CTX_free(pctx);
 	if (!ret && ek)
 		free(ek);
 
