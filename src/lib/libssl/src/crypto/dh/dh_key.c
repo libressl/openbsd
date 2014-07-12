@@ -1,4 +1,4 @@
-/* $OpenBSD: dh_key.c,v 1.19 2014/07/09 13:26:47 miod Exp $ */
+/* $OpenBSD: dh_key.c,v 1.20 2014/07/11 08:44:48 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -260,7 +260,6 @@ dh_init(DH *dh)
 static int
 dh_finish(DH *dh)
 {
-	if (dh->method_mont_p)
-		BN_MONT_CTX_free(dh->method_mont_p);
+	BN_MONT_CTX_free(dh->method_mont_p);
 	return 1;
 }
