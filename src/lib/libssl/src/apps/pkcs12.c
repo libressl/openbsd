@@ -1,4 +1,4 @@
-/* $OpenBSD: pkcs12.c,v 1.35 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: pkcs12.c,v 1.36 2014/07/09 21:10:06 tedu Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -133,9 +133,6 @@ pkcs12_main(int argc, char **argv)
 	cert_pbe = NID_pbe_WithSHA1And40BitRC2_CBC;
 
 	enc = EVP_des_ede3_cbc();
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	args = argv + 1;
 

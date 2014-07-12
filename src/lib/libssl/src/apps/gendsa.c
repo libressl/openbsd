@@ -1,4 +1,4 @@
-/* $OpenBSD: gendsa.c,v 1.27 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: gendsa.c,v 1.28 2014/07/09 21:02:35 tedu Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -91,9 +91,6 @@ gendsa_main(int argc, char **argv)
 #ifndef OPENSSL_NO_ENGINE
 	char *engine = NULL;
 #endif
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	argv++;
 	argc--;

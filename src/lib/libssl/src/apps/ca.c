@@ -1,4 +1,4 @@
-/* $OpenBSD: ca.c,v 1.60 2014/06/28 04:39:41 deraadt Exp $ */
+/* $OpenBSD: ca.c,v 1.61 2014/07/09 21:13:34 tedu Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -543,9 +543,6 @@ bad:
 	}
 	free(tofree);
 	tofree = NULL;
-
-	if (!load_config(bio_err, conf))
-		goto err;
 
 #ifndef OPENSSL_NO_ENGINE
 	e = setup_engine(bio_err, engine, 0);

@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: cms.c,v 1.18 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -143,9 +143,6 @@ cms_main(int argc, char **argv)
 
 	args = argv + 1;
 	ret = 1;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	while (!badarg && *args && *args[0] == '-') {
 		if (!strcmp(*args, "-encrypt"))

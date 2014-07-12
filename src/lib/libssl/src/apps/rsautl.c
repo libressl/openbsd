@@ -1,4 +1,4 @@
-/* $OpenBSD: rsautl.c,v 1.21 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: rsautl.c,v 1.22 2014/07/09 21:02:35 tedu Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -106,9 +106,6 @@ rsautl_main(int argc, char **argv)
 
 	argc--;
 	argv++;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	ERR_load_crypto_strings();
 	OpenSSL_add_all_algorithms();

@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.20 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: ecparam.c,v 1.21 2014/06/24 05:39:29 logan Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -134,9 +134,6 @@ ecparam_main(int argc, char **argv)
 	BIGNUM *ec_p = NULL, *ec_a = NULL, *ec_b = NULL, *ec_gen = NULL,
 	*ec_order = NULL, *ec_cofactor = NULL;
 	unsigned char *buffer = NULL;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	informat = FORMAT_PEM;
 	outformat = FORMAT_PEM;
