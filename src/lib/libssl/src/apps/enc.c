@@ -1,4 +1,4 @@
-/* $OpenBSD: enc.c,v 1.35 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: enc.c,v 1.36 2014/06/29 18:22:10 logan Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -129,9 +129,6 @@ enc_main(int argc, char **argv)
 	char *engine = NULL;
 #endif
 	const EVP_MD *dgst = NULL;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	/* first check the program name */
 	program_name(argv[0], pname, sizeof pname);
