@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.26 2014/07/10 13:58:23 jsing Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.27 2014/07/11 08:44:49 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -184,10 +184,8 @@ pkcs7_encode_rinfo(PKCS7_RECIP_INFO *ri, unsigned char *key, int keylen)
 	ret = 1;
 
 err:
-	if (pkey)
-		EVP_PKEY_free(pkey);
-	if (pctx)
-		EVP_PKEY_CTX_free(pctx);
+	EVP_PKEY_free(pkey);
+	EVP_PKEY_CTX_free(pctx);
 	free(ek);
 	return ret;
 }
@@ -244,8 +242,7 @@ pkcs7_decrypt_rinfo(unsigned char **pek, int *peklen, PKCS7_RECIP_INFO *ri,
 	*peklen = eklen;
 
 err:
-	if (pctx)
-		EVP_PKEY_CTX_free(pctx);
+	EVP_PKEY_CTX_free(pctx);
 	if (!ret && ek)
 		free(ek);
 

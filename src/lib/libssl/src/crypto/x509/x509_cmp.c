@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_cmp.c,v 1.21 2014/07/10 22:45:58 jsing Exp $ */
+/* $OpenBSD: x509_cmp.c,v 1.22 2014/07/11 08:44:49 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -358,8 +358,7 @@ X509_check_private_key(X509 *x, EVP_PKEY *k)
 		X509err(X509_F_X509_CHECK_PRIVATE_KEY,
 		    X509_R_UNKNOWN_KEY_TYPE);
 	}
-	if (xk)
-		EVP_PKEY_free(xk);
+	EVP_PKEY_free(xk);
 	if (ret > 0)
 		return 1;
 	return 0;
