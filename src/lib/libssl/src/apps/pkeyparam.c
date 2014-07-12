@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: pkeyparam.c,v 1.7 2014/06/12 15:49:27 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006
  */
@@ -79,9 +79,6 @@ pkeyparam_main(int argc, char **argv)
 	char *engine = NULL;
 #endif
 	int ret = 1;
-
-	if (!load_config(bio_err, NULL))
-		goto end;
 
 	ERR_load_crypto_strings();
 	OpenSSL_add_all_algorithms();
