@@ -1,4 +1,4 @@
-/* $OpenBSD: m_wp.c,v 1.6 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: m_wp.c,v 1.7 2014/07/11 08:44:48 jsing Exp $ */
 
 #include <stdio.h>
 
@@ -10,8 +10,6 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 #include <openssl/whrlpool.h>
-
-#include "evp_locl.h"
 
 static int
 init(EVP_MD_CTX *ctx)
