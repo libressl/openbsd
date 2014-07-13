@@ -1,4 +1,4 @@
-/* $OpenBSD: sha.h,v 1.16 2014/07/10 09:01:04 miod Exp $ */
+/* $OpenBSD: sha.h,v 1.17 2014/07/10 22:45:58 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,6 +60,9 @@
 
 #ifndef HEADER_SHA_H
 #define HEADER_SHA_H
+#if !defined(HAVE_ATTRIBUTE__BOUNDED__) || !defined(__OpenBSD__)
+#define __bounded__(x, y, z)
+#endif
 
 #include <openssl/opensslconf.h>
 
