@@ -1,4 +1,4 @@
-/* $OpenBSD: buffer.h,v 1.10 2014/06/14 10:28:31 avsm Exp $ */
+/* $OpenBSD: buffer.h,v 1.11 2014/06/24 19:37:58 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -58,6 +58,9 @@
 
 #ifndef HEADER_BUFFER_H
 #define HEADER_BUFFER_H
+#if !defined(HAVE_ATTRIBUTE__BOUNDED__) || !defined(__OpenBSD__)
+#define __bounded__(x, y, z)
+#endif
 
 #include <openssl/ossl_typ.h>
 
