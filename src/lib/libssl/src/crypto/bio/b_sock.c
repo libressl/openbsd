@@ -1,4 +1,4 @@
-/* $OpenBSD: b_sock.c,v 1.53 2014/07/10 21:57:40 miod Exp $ */
+/* $OpenBSD: b_sock.c,v 1.54 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -235,7 +235,7 @@ BIO_get_accept_socket(char *host, int bind_mode)
 	unsigned long l;
 	int err_num;
 
-	if ((str = BUF_strdup(host)) == NULL)
+	if (host == NULL || (str = strdup(host)) == NULL)
 		return (-1);
 
 	h = p = NULL;
