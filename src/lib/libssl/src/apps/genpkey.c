@@ -1,4 +1,4 @@
-/* $OpenBSD: genpkey.c,v 1.11 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: genpkey.c,v 1.12 2014/07/12 17:54:31 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006
  */
@@ -69,7 +69,7 @@
 #include <openssl/engine.h>
 #endif
 
-static int 
+static int
 init_keygen_file(BIO * err, EVP_PKEY_CTX ** pctx, const char *file,
     ENGINE * e);
 static int genpkey_cb(EVP_PKEY_CTX * ctx);

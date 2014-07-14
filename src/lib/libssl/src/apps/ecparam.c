@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.21 2014/06/24 05:39:29 logan Exp $ */
+/* $OpenBSD: ecparam.c,v 1.22 2014/07/12 17:54:31 jsing Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -115,7 +115,7 @@ static int ecparam_print_var(BIO *, BIGNUM *, const char *, int, unsigned char *
 
 int ecparam_main(int, char **);
 
-int 
+int
 ecparam_main(int argc, char **argv)
 {
 	EC_GROUP *group = NULL;
@@ -584,11 +584,11 @@ end:
 		BIO_free_all(out);
 	if (group != NULL)
 		EC_GROUP_free(group);
-	
+
 	return (ret);
 }
 
-static int 
+static int
 ecparam_print_var(BIO * out, BIGNUM * in, const char *var,
     int len, unsigned char *buffer)
 {

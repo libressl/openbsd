@@ -1,4 +1,4 @@
-/* $OpenBSD: dh.c,v 1.23 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: dh.c,v 1.24 2014/07/12 17:54:31 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -303,7 +303,7 @@ end:
 		BIO_free_all(out);
 	if (dh != NULL)
 		DH_free(dh);
-	
+
 	return (ret);
 }
 #endif

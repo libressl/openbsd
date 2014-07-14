@@ -1,4 +1,4 @@
-/* $OpenBSD: smime.c,v 1.26 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: smime.c,v 1.27 2014/07/12 17:54:31 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -84,7 +84,7 @@ static int smime_cb(int ok, X509_STORE_CTX * ctx);
 
 int smime_main(int, char **);
 
-int 
+int
 smime_main(int argc, char **argv)
 {
 	ENGINE *e = NULL;
@@ -660,7 +660,7 @@ end:
 	return (ret);
 }
 
-static int 
+static int
 save_certs(char *signerfile, STACK_OF(X509) * signers)
 {
 	int i;
@@ -679,7 +679,7 @@ save_certs(char *signerfile, STACK_OF(X509) * signers)
 
 /* Minimal callback just to output policy info (if any) */
 
-static int 
+static int
 smime_cb(int ok, X509_STORE_CTX * ctx)
 {
 	int error;

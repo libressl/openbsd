@@ -1,4 +1,4 @@
-/* $OpenBSD: crl.c,v 1.23 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: crl.c,v 1.24 2014/07/12 17:54:31 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -371,7 +371,7 @@ end:
 		X509_STORE_CTX_cleanup(&ctx);
 		X509_STORE_free(store);
 	}
-	
+
 	return (ret);
 }
 

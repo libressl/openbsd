@@ -1,4 +1,4 @@
-/* $OpenBSD: gendh.c,v 1.26 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: gendh.c,v 1.27 2014/07/12 17:54:31 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -180,7 +180,7 @@ end:
 		BIO_free_all(out);
 	if (dh != NULL)
 		DH_free(dh);
-	
+
 	return (ret);
 }
 
