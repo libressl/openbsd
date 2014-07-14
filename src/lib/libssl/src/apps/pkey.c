@@ -1,4 +1,4 @@
-/* $OpenBSD: pkey.c,v 1.9 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: pkey.c,v 1.10 2014/07/12 17:54:31 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006
  */
@@ -67,7 +67,7 @@
 
 int pkey_main(int, char **);
 
-int 
+int
 pkey_main(int argc, char **argv)
 {
 	ENGINE *e = NULL;
