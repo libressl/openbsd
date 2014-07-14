@@ -1,4 +1,4 @@
-/* $OpenBSD: ec.c,v 1.14 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: ec.c,v 1.15 2014/07/12 17:54:31 jsing Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -336,7 +336,7 @@ end:
 		EC_KEY_free(eckey);
 	free(passin);
 	free(passout);
-	
+
 	return (ret);
 }
 #endif
