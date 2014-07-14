@@ -1,4 +1,3 @@
-# define OPENSSL_NO_CAMELLIA
 # define OPENSSL_NO_EC_NISTP_64_GCC_128
 # define OPENSSL_NO_CMS
 # define OPENSSL_NO_COMP
@@ -8,7 +7,6 @@
 # define OPENSSL_NO_KRB5
 # define OPENSSL_NO_MD2
 # define OPENSSL_NO_PSK
-# define OPENSSL_NO_RC5
 # define OPENSSL_NO_RFC3779
 # define OPENSSL_NO_SCTP
 # define OPENSSL_NO_SEED
