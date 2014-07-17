@@ -1,4 +1,4 @@
-/* $OpenBSD: openssl.c,v 1.40 2014/07/12 17:54:31 jsing Exp $ */
+/* $OpenBSD: openssl.c,v 1.41 2014/07/12 19:31:21 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -256,8 +256,10 @@ main(int argc, char **argv)
 	arg.count = 0;
 
 	bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
-	if (bio_err == NULL)
-		errx(1, "failed to initialise bio_err");
+	if (bio_err == NULL) {
+		fprintf(stderr, "openssl: failed to initialise bio_err");
+		exit(1);
+	}
 
 	CRYPTO_set_locking_callback(lock_dbg_cb);
 
