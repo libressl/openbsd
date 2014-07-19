@@ -1,4 +1,4 @@
-/* $OpenBSD: apps.c,v 1.66 2014/07/13 16:03:09 beck Exp $ */
+/* $OpenBSD: apps.c,v 1.67 2014/07/14 00:35:10 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -493,7 +493,7 @@ app_get_pass(BIO *err, char *arg, int keepbio)
 			}
 		} else if (!strncmp(arg, "fd:", 3)) {
 			BIO *btmp;
-			i = strtonum(arg + 3, 1, INT_MAX, &errstr);
+			i = strtonum(arg + 3, 0, INT_MAX, &errstr);
 			if (errstr) {
 				BIO_printf(err,
 				    "Invalid file descriptor %s: %s\n",
