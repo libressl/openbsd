@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.120 2014/06/10 16:23:07 tedu Exp $ */
+/* $OpenBSD: netcat.c,v 1.121 2014/06/10 16:35:42 tedu Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -753,8 +753,9 @@ readwrite(int nfd)
 			sleep(iflag);
 
 		if ((n = poll(pfd, 2 - dflag, timeout)) < 0) {
+			int saved_errno = errno;
 			close(nfd);
-			err(1, "Polling Error");
+			errc(1, saved_errno, "Polling Error");
 		}
 
 		if (n == 0)
