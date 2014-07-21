@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: mconf.h,v 1.1 2011/07/02 18:11:01 martynas Exp $	*/
 
 /*
  * Copyright (c) 2008 Stephen L. Moshier <steve@moshier.net>
@@ -76,7 +76,7 @@
  */
 
 #include <sys/types.h>
-#include <sys/endian.h>
+#include <endian.h>
 
 /* Constant definitions for math error conditions
  */
