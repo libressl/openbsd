@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.48 2014/07/19 00:08:41 deraadt Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.49 2014/07/20 20:51:13 bcook Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -165,6 +165,7 @@ static inline void
 _rs_random_u32(uint32_t *val)
 {
 	u_char *keystream;
+
 	_rs_stir_if_needed(sizeof(*val));
 	if (rs->rs_have < sizeof(*val))
 		_rs_rekey(NULL, 0);
