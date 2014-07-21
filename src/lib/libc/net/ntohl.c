@@ -1,11 +1,11 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: ntohl.c,v 1.6 2005/08/06 20:30:03 espie Exp $ */
 /*
  * Written by J.T. Conklin <jtc@netbsd.org>.
  * Public domain.
  */
 
 #include <sys/types.h>
-#include <machine/endian.h>
+#include <endian.h>
 
 #undef ntohl
 
