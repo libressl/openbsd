@@ -1,4 +1,4 @@
-/* $OpenBSD: dsaparam.c,v 1.33 2014/07/12 17:54:31 jsing Exp $ */
+/* $OpenBSD: dsaparam.c,v 1.34 2014/07/14 00:35:10 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -382,8 +382,7 @@ bad:
 	ret = 0;
 
 end:
-	if (in != NULL)
-		BIO_free(in);
+	BIO_free(in);
 	if (out != NULL)
 		BIO_free_all(out);
 	if (dsa != NULL)
