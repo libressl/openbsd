@@ -1,4 +1,4 @@
-/* $OpenBSD: s_server.c,v 1.60 2014/07/12 19:31:21 jsing Exp $ */
+/* $OpenBSD: s_server.c,v 1.61 2014/07/14 00:35:10 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1773,8 +1773,7 @@ load_dh_param(const char *dhfile)
 		goto err;
 	ret = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
 err:
-	if (bio != NULL)
-		BIO_free(bio);
+	BIO_free(bio);
 	return (ret);
 }
 #endif
