@@ -1,6 +1,6 @@
-/* $OpenBSD: chacha.h,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: chacha.h,v 1.5 2014/06/24 18:12:09 jsing Exp $ */
 /*
- * Copyright (c) Joel Sing <jsing@openbsd.org>
+ * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
