@@ -1,4 +1,4 @@
-/* $OpenBSD: e_chacha.c,v 1.3 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: e_chacha.c,v 1.4 2014/07/10 22:45:57 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -53,7 +53,8 @@ chacha_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 {
 	ChaCha_set_key((ChaCha_ctx *)ctx->cipher_data, key,
 	    EVP_CIPHER_CTX_key_length(ctx) * 8);
-	ChaCha_set_iv((ChaCha_ctx *)ctx->cipher_data, iv, NULL);
+	if (iv != NULL)
+		ChaCha_set_iv((ChaCha_ctx *)ctx->cipher_data, iv, NULL);
 	return 1;
 }
 
