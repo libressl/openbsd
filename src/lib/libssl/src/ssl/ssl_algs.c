@@ -96,6 +96,10 @@ SSL_library_init(void)
 	EVP_add_cipher(EVP_camellia_128_cbc());
 	EVP_add_cipher(EVP_camellia_256_cbc());
 #endif
+#ifndef OPENSSL_NO_GOST
+	EVP_add_cipher(EVP_gost2814789_cfb64());
+	EVP_add_cipher(EVP_gost2814789_cnt());
+#endif
 
 	EVP_add_digest(EVP_md5());
 	EVP_add_digest_alias(SN_md5, "ssl2-md5");
@@ -112,6 +116,10 @@ SSL_library_init(void)
 	EVP_add_digest_alias(SN_dsaWithSHA1, "DSS1");
 	EVP_add_digest_alias(SN_dsaWithSHA1, "dss1");
 	EVP_add_digest(EVP_ecdsa());
+#ifndef OPENSSL_NO_GOST
+	EVP_add_digest(EVP_gostr341194());
+	EVP_add_digest(EVP_gost2814789imit());
+#endif
 	/* initialize cipher/digest methods table */
 	ssl_load_ciphers();
 	return (1);
