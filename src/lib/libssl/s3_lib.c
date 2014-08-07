@@ -2333,7 +2333,7 @@ ssl3_new(SSL *s)
 	SSL3_STATE	*s3;
 
 	if ((s3 = calloc(1, sizeof *s3)) == NULL)
-		return 0;
+		goto err;
 	memset(s3->rrec.seq_num, 0, sizeof(s3->rrec.seq_num));
 	memset(s3->wrec.seq_num, 0, sizeof(s3->wrec.seq_num));
 
@@ -2341,6 +2341,8 @@ ssl3_new(SSL *s)
 
 	s->method->ssl_clear(s);
 	return (1);
+err:
+	return (0);
 }
 
 void

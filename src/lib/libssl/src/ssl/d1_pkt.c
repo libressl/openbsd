@@ -414,12 +414,10 @@ dtls1_process_record(SSL *s)
 		}
 
 		i = s->method->ssl3_enc->mac(s, md, 0 /* not send */);
-		if (i < 0 || mac == NULL ||
-		    timingsafe_memcmp(md, mac, (size_t)mac_size) != 0)
+		if (i < 0 || mac == NULL || timingsafe_memcmp(md, mac, (size_t)mac_size) != 0)
 			enc_err = -1;
 		if (rr->length > SSL3_RT_MAX_COMPRESSED_LENGTH + mac_size)
 			enc_err = -1;
-		OPENSSL_cleanse(&md, sizeof md);
 	}
 
 	if (enc_err < 0) {
