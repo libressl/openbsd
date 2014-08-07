@@ -607,7 +607,7 @@ ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len,
 	if (!EVP_MD_CTX_copy_ex(&ctx, d))
 		return 0;
 	n = EVP_MD_CTX_size(&ctx);
-	if (n <= 0)
+	if (n < 0)
 		return 0;
 
 	npad = (48 / n) * n;
@@ -655,7 +655,7 @@ n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
 	}
 
 	t = EVP_MD_CTX_size(hash);
-	if (t <= 0)
+	if (t < 0)
 		return -1;
 	md_size = t;
 	npad = (48 / md_size) * md_size;
