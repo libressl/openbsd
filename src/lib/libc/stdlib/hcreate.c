@@ -1,4 +1,4 @@
-/*	$OpenBSD: hcreate.c,v 1.3 2005/10/10 17:37:44 espie Exp $	*/
+/*	$OpenBSD: hcreate.c,v 1.4 2007/09/02 15:19:17 deraadt Exp $	*/
 /*	$NetBSD: hcreate.c,v 1.5 2004/04/23 02:48:12 simonb Exp $	*/
 
 /*
@@ -50,7 +50,7 @@
 #include "namespace.h"
 #include <assert.h>
 #include <errno.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <search.h>
 #include <stdlib.h>
 #include <string.h>
