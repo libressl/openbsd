@@ -1,4 +1,4 @@
-/* $OpenBSD: sha256.c,v 1.6 2014/07/09 16:06:13 miod Exp $ */
+/* $OpenBSD: sha256.c,v 1.7 2014/07/10 22:45:58 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved
  * according to the OpenSSL license [found in ../../LICENSE].
@@ -90,17 +90,17 @@ int SHA224_Final (unsigned char *md, SHA256_CTX *c)
 	switch ((c)->md_len)		\
 	{   case SHA224_DIGEST_LENGTH:	\
 		for (nn=0;nn<SHA224_DIGEST_LENGTH/4;nn++)	\
-		{   ll=(c)->h[nn]; (void)HOST_l2c(ll,(s));   }	\
+		{   ll=(c)->h[nn]; HOST_l2c(ll,(s));   }	\
 		break;			\
 	    case SHA256_DIGEST_LENGTH:	\
 		for (nn=0;nn<SHA256_DIGEST_LENGTH/4;nn++)	\
-		{   ll=(c)->h[nn]; (void)HOST_l2c(ll,(s));   }	\
+		{   ll=(c)->h[nn]; HOST_l2c(ll,(s));   }	\
 		break;			\
 	    default:			\
 		if ((c)->md_len > SHA256_DIGEST_LENGTH)	\
 		    return 0;				\
 		for (nn=0;nn<(c)->md_len/4;nn++)		\
-		{   ll=(c)->h[nn]; (void)HOST_l2c(ll,(s));   }	\
+		{   ll=(c)->h[nn]; HOST_l2c(ll,(s));   }	\
 		break;			\
 	}				\
 	} while (0)
