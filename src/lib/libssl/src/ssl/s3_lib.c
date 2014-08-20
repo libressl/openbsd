@@ -1759,6 +1759,40 @@ SSL_CIPHER ssl3_ciphers[] = {
 	},
 #endif
 
+	/* Cipher FF85 FIXME IANA */
+	{
+		.valid = 1,
+		.name = "GOST2012256-GOST89-GOST89",
+		.id = 0x300ff85, /* FIXME IANA */
+		.algorithm_mkey = SSL_kGOST,
+		.algorithm_auth = SSL_aGOST01,
+		.algorithm_enc = SSL_eGOST2814789CNT,
+		.algorithm_mac = SSL_GOST89MAC,
+		.algorithm_ssl = SSL_TLSV1,
+		.algo_strength = SSL_HIGH,
+		.algorithm2 = SSL_HANDSHAKE_MAC_STREEBOG256|TLS1_PRF_STREEBOG256|
+		    TLS1_STREAM_MAC,
+		.strength_bits = 256,
+		.alg_bits = 256
+	},
+
+	/* Cipher FF 87 FIXME IANA */
+	{
+		.valid = 1,
+		.name = "GOST2012256-NULL-STREEBOG256",
+		.id = 0x300FF87, /* FIXME IANA */
+		.algorithm_mkey = SSL_kGOST,
+		.algorithm_auth = SSL_aGOST01,
+		.algorithm_enc = SSL_eNULL,
+		.algorithm_mac = SSL_STREEBOG256,
+		.algorithm_ssl = SSL_TLSV1,
+		.algo_strength = SSL_STRONG_NONE,
+		.algorithm2 = SSL_HANDSHAKE_MAC_STREEBOG256|TLS1_PRF_STREEBOG256,
+		.strength_bits = 0,
+		.alg_bits = 0
+	},
+
+
 	/* end of list */
 };
 
