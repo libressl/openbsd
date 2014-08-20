@@ -447,7 +447,11 @@ tls1_change_cipher_state_cipher(SSL *s, char is_read, char use_client_keys,
 	}
 
 	if (s->s3->tmp.new_cipher->algorithm_enc == SSL_eGOST2814789CNT) {
-		int nid = NID_id_Gost28147_89_CryptoPro_A_ParamSet;
+		int nid;
+		if (s->s3->tmp.new_cipher->algorithm2 & SSL_HANDSHAKE_MAC_GOST94)
+			nid = NID_id_Gost28147_89_CryptoPro_A_ParamSet;
+		else
+			nid = NID_id_tc26_gost_28147_param_Z;
 
 		EVP_CIPHER_CTX_ctrl(cipher_ctx, EVP_CTRL_GOST_SET_SBOX, nid, 0);
 		if (s->s3->tmp.new_cipher->algorithm_mac == SSL_GOST89MAC)

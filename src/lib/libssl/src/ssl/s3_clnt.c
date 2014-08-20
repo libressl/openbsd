@@ -1940,7 +1940,6 @@ ssl3_get_server_done(SSL *s)
 	return (ret);
 }
 
-
 int
 ssl3_send_client_key_exchange(SSL *s)
 {
@@ -2280,6 +2279,7 @@ ssl3_send_client_key_exchange(SSL *s)
 			    tmp[256];
 			EVP_MD_CTX *ukm_hash;
 			EVP_PKEY *pub_key;
+			int nid;
 
 			/* Get server sertificate PKEY and create ctx from it */
 			peer_cert = s->session->sess_cert->peer_pkeys[SSL_PKEY_GOST01].x509;
@@ -2330,7 +2330,11 @@ ssl3_send_client_key_exchange(SSL *s)
 				goto err;
 			}
 
-			EVP_DigestInit(ukm_hash, EVP_get_digestbynid(NID_id_GostR3411_94));
+			if (ssl_get_algorithm2(s) & SSL_HANDSHAKE_MAC_GOST94)
+				nid = NID_id_GostR3411_94;
+			else
+				nid = NID_id_tc26_gost3411_2012_256;
+			EVP_DigestInit(ukm_hash, EVP_get_digestbynid(nid));
 			EVP_DigestUpdate(ukm_hash,
 			    s->s3->client_random, SSL3_RANDOM_SIZE);
 			EVP_DigestUpdate(ukm_hash,

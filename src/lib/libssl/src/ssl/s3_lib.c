@@ -2452,6 +2452,8 @@ ssl3_get_req_cert_type(SSL *s, unsigned char *p)
 	if ((alg_k & SSL_kGOST) && (s->version >= TLS1_VERSION)) {
 		p[ret++] = TLS_CT_GOST94_SIGN;
 		p[ret++] = TLS_CT_GOST01_SIGN;
+		p[ret++] = TLS_CT_GOST12_256_SIGN;
+		p[ret++] = TLS_CT_GOST12_512_SIGN;
 	}
 #endif
 

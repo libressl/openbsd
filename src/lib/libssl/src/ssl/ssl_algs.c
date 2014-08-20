@@ -119,6 +119,8 @@ SSL_library_init(void)
 #ifndef OPENSSL_NO_GOST
 	EVP_add_digest(EVP_gostr341194());
 	EVP_add_digest(EVP_gost2814789imit());
+	EVP_add_digest(EVP_streebog256());
+	EVP_add_digest(EVP_streebog512());
 #endif
 	/* initialize cipher/digest methods table */
 	ssl_load_ciphers();
