@@ -1,4 +1,4 @@
-/* $OpenBSD: ocsp.c,v 1.29 2014/07/12 19:31:21 jsing Exp $ */
+/* $OpenBSD: ocsp.c,v 1.30 2014/07/13 16:03:09 beck Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -56,6 +56,8 @@
  *
  */
 #ifndef OPENSSL_NO_OCSP
+
+#include <sys/select.h>
 
 #include <stdio.h>
 #include <stdlib.h>
