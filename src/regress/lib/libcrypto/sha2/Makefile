@@ -1,7 +1,7 @@
-#	$OpenBSD$
+#	$OpenBSD: Makefile,v 1.1 2014/05/02 19:27:06 miod Exp $
 
 REGRESS_TARGETS=regress-sha2
-OPENSSL=/usr/sbin/openssl
+OPENSSL=/usr/bin/openssl
 
 HASHES= \
 	sha224 \
