@@ -1,4 +1,4 @@
-/* $OpenBSD: apps.h,v 1.35 2014/07/11 09:24:44 beck Exp $ */
+/* $OpenBSD: apps.h,v 1.1 2014/08/26 17:47:24 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -281,5 +281,25 @@ int app_isdir(const char *);
 double app_tminterval (int stop, int usertime);
 
 #define OPENSSL_NO_SSL_INTERN
+
+struct option {
+	const char *name;
+	const char *argname;
+	const char *desc;
+	enum {
+		OPTION_ARG,
+		OPTION_FLAG,
+		OPTION_VALUE,
+	} type;
+	union {
+		char **arg;
+		int *flag;
+		int *value;
+	} opt;
+	const int value;
+};
+
+void options_usage(struct option *opts);
+int options_parse(int argc, char **argv, struct option *opts, char **unnamed);
 
 #endif
