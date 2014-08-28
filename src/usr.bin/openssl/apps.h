@@ -291,6 +291,7 @@ struct option {
 		OPTION_ARG_FORMAT,
 		OPTION_ARG_INT,
 		OPTION_FLAG,
+		OPTION_FLAG_ORD,
 		OPTION_VALUE,
 	} type;
 	union {
