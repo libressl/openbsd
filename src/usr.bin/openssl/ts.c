@@ -1,4 +1,4 @@
-/* $OpenBSD: ts.c,v 1.18 2014/07/12 17:54:31 jsing Exp $ */
+/* $OpenBSD: ts.c,v 1.1 2014/08/26 17:47:25 jsing Exp $ */
 /* Written by Zoltan Glozik (zglozik@stones.com) for the OpenSSL
  * project 2002.
  */
@@ -153,8 +153,6 @@ ts_main(int argc, char **argv)
 	int token_in = 0;
 	/* Output is ContentInfo instead of TimeStampResp. */
 	int token_out = 0;
-
-	ERR_load_crypto_strings();
 
 	for (argc--, argv++; argc > 0; argc--, argv++) {
 		if (strcmp(*argv, "-config") == 0) {

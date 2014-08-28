@@ -1,4 +1,4 @@
-/* $OpenBSD: rsautl.c,v 1.24 2014/07/14 00:35:10 deraadt Exp $ */
+/* $OpenBSD: rsautl.c,v 1.1 2014/08/26 17:47:25 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -107,7 +107,6 @@ rsautl_main(int argc, char **argv)
 	argc--;
 	argv++;
 
-	ERR_load_crypto_strings();
 	OpenSSL_add_all_algorithms();
 	pad = RSA_PKCS1_PADDING;
 
