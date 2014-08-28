@@ -1,4 +1,4 @@
-/* $OpenBSD: pkcs12.c,v 1.38 2014/07/14 00:35:10 deraadt Exp $ */
+/* $OpenBSD: pkcs12.c,v 1.1 2014/08/26 17:47:25 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -385,9 +385,6 @@ pkcs12_main(int argc, char **argv)
 		cpass = pass;
 		mpass = macpass;
 	}
-
-	ERR_load_crypto_strings();
-
 
 	if (!infile)
 		in = BIO_new_fp(stdin, BIO_NOCLOSE);
