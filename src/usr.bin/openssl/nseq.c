@@ -1,4 +1,4 @@
-/* $OpenBSD: nseq.c,v 1.16 2014/07/14 00:35:10 deraadt Exp $ */
+/* $OpenBSD: nseq.c,v 1.1 2014/08/26 17:47:24 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -76,8 +76,6 @@ nseq_main(int argc, char **argv)
 	NETSCAPE_CERT_SEQUENCE *seq = NULL;
 	int i, ret = 1;
 	int badarg = 0;
-
-	ERR_load_crypto_strings();
 
 	args = argv + 1;
 	while (!badarg && *args && *args[0] == '-') {

@@ -1,4 +1,4 @@
-/* $OpenBSD: dsaparam.c,v 1.35 2014/07/25 06:05:31 doug Exp $ */
+/* $OpenBSD: dsaparam.c,v 1.1 2014/08/26 17:47:24 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -209,7 +209,6 @@ bad:
 		BIO_printf(bio_err, " number        number of bits to use for generating private key\n");
 		goto end;
 	}
-	ERR_load_crypto_strings();
 
 	in = BIO_new(BIO_s_file());
 	out = BIO_new(BIO_s_file());
