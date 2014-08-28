@@ -2257,6 +2257,7 @@ options_parse(int argc, char **argv, struct option *opts, char **unnamed)
 	struct option *opt;
 	long long val;
 	char *arg, *p;
+	int ord = 0;
 	int i, j;
 
 	for (i = 1; i < argc; i++) {
@@ -2309,6 +2310,10 @@ options_parse(int argc, char **argv, struct option *opts, char **unnamed)
 
 			case OPTION_FLAG:
 				*opt->opt.flag = 1;
+				break;
+
+			case OPTION_FLAG_ORD:
+				*opt->opt.flag = ++ord;
 				break;
 
 			case OPTION_VALUE:
