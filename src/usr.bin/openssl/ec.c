@@ -1,4 +1,4 @@
-/* $OpenBSD: ec.c,v 1.17 2014/07/25 06:05:32 doug Exp $ */
+/* $OpenBSD: ec.c,v 1.1 2014/08/26 17:47:24 jsing Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -226,7 +226,6 @@ bad:
 		    "explicit\n");
 		goto end;
 	}
-	ERR_load_crypto_strings();
 
 #ifndef OPENSSL_NO_ENGINE
 	setup_engine(bio_err, engine, 0);
