@@ -184,7 +184,7 @@ static const EVP_MD *ssl_digest_methods[SSL_MD_NUM_IDX] = {
  * corresponding EVP_PKEY_METHOD is found 
  */
 static int  ssl_mac_pkey_id[SSL_MD_NUM_IDX] = {
-	EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, NID_undef,
+	EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_GOSTIMIT,
 	EVP_PKEY_HMAC, EVP_PKEY_HMAC
 };
 
@@ -563,7 +563,6 @@ ssl_load_ciphers(void)
 	}
 	ssl_digest_methods[SSL_MD_GOST89MAC_IDX]=
 	EVP_get_digestbyname(SN_id_Gost28147_89_MAC);
-	ssl_mac_pkey_id[SSL_MD_GOST89MAC_IDX] = get_optional_pkey_id("gost-mac");
 	if (ssl_mac_pkey_id[SSL_MD_GOST89MAC_IDX]) {
 		ssl_mac_secret_size[SSL_MD_GOST89MAC_IDX] = 32;
 	}
@@ -850,7 +849,7 @@ ssl_cipher_get_disabled(unsigned long *mkey, unsigned long *auth,
 	*mac |= (ssl_digest_methods[SSL_MD_SHA256_IDX] == NULL) ? SSL_SHA256 : 0;
 	*mac |= (ssl_digest_methods[SSL_MD_SHA384_IDX] == NULL) ? SSL_SHA384 : 0;
 	*mac |= (ssl_digest_methods[SSL_MD_GOST94_IDX] == NULL) ? SSL_GOST94 : 0;
-	*mac |= (ssl_digest_methods[SSL_MD_GOST89MAC_IDX] == NULL || ssl_mac_pkey_id[SSL_MD_GOST89MAC_IDX]==NID_undef) ? SSL_GOST89MAC : 0;
+	*mac |= (ssl_digest_methods[SSL_MD_GOST89MAC_IDX] == NULL) ? SSL_GOST89MAC : 0;
 
 }
 
@@ -1578,6 +1577,9 @@ SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 	case SSL_kECDHE:
 		kx = "ECDH";
 		break;
+	case SSL_kGOST:
+		kx = "GOST";
+		break;
 	default:
 		kx = "unknown";
 	}
@@ -1597,6 +1599,12 @@ SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 		break;
 	case SSL_aECDSA:
 		au = "ECDSA";
+		break;
+	case SSL_aGOST94:
+		au = "GOST94";
+		break;
+	case SSL_aGOST01:
+		au = "GOST01";
 		break;
 	default:
 		au = "unknown";
@@ -1640,6 +1648,9 @@ SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 	case SSL_CHACHA20POLY1305:
 		enc = "ChaCha20-Poly1305";
 		break;
+	case SSL_eGOST2814789CNT:
+		enc = "GOST-28178-89-CNT";
+		break;
 	default:
 		enc = "unknown";
 		break;
@@ -1660,6 +1671,12 @@ SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 		break;
 	case SSL_AEAD:
 		mac = "AEAD";
+		break;
+	case SSL_GOST94:
+		mac = "GOST94";
+		break;
+	case SSL_GOST89MAC:
+		mac = "GOST89IMIT";
 		break;
 	default:
 		mac = "unknown";

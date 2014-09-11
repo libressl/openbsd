@@ -2415,12 +2415,9 @@ ssl3_get_req_cert_type(SSL *s, unsigned char *p)
 	alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
 #ifndef OPENSSL_NO_GOST
-	if (s->version >= TLS1_VERSION) {
-		if (alg_k & SSL_kGOST) {
-			p[ret++] = TLS_CT_GOST94_SIGN;
-			p[ret++] = TLS_CT_GOST01_SIGN;
-			return (ret);
-		}
+	if ((alg_k & SSL_kGOST) && (s->version >= TLS1_VERSION)) {
+		p[ret++] = TLS_CT_GOST94_SIGN;
+		p[ret++] = TLS_CT_GOST01_SIGN;
 	}
 #endif
 
