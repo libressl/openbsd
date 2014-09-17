@@ -1,4 +1,4 @@
-/* $OpenBSD: crl.c,v 1.2 2014/08/28 14:01:32 jsing Exp $ */
+/* $OpenBSD: crl.c,v 1.3 2014/08/28 14:23:52 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -67,8 +67,6 @@
 #include <openssl/pem.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
-
-#define	POSTFIX	".rvk"
 
 static struct {
 	char *cafile;
