@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_v3.c,v 1.9 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: x509_v3.c,v 1.10 2014/07/11 08:44:49 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -185,7 +185,7 @@ err:
 err2:
 	if (new_ex != NULL)
 		X509_EXTENSION_free(new_ex);
-	if (sk != NULL)
+	if (sk != NULL && (x != NULL && sk != *x))
 		sk_X509_EXTENSION_free(sk);
 	return (NULL);
 }
