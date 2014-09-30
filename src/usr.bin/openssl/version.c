@@ -200,7 +200,7 @@ static struct option version_options[] = {
 		.type = OPTION_FLAG,
 		.opt.flag = &version_config.version,
 	},
-	{},
+	{0},
 };
 
 static void

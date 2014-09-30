@@ -96,7 +96,7 @@ struct option prime_options[] = {
 		.type = OPTION_FLAG,
 		.opt.flag = &prime_config.safe,
 	},
-	{},
+	{0},
 };
 
 static void

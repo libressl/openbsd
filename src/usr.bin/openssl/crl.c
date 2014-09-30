@@ -198,7 +198,7 @@ static struct option crl_options[] = {
 		.type = OPTION_FLAG,
 		.opt.flag = &crl_config.verify,
 	},
-	{},
+	{0},
 };
 
 static void
