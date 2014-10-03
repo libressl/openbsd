@@ -2128,6 +2128,11 @@ ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
 		ret = 1;
 		break;
 
+	case SSL_CTRL_SET_ECDH_AUTO:
+		s->cert->ecdh_tmp_auto = larg;
+		ret = 1;
+		break;
+
 	default:
 		break;
 	}
@@ -2322,6 +2327,9 @@ ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 		return 1;
 		break;
 
+	case SSL_CTRL_SET_ECDH_AUTO:
+		ctx->cert->ecdh_tmp_auto = larg;
+		return 1;
 
 		/* A Thawte special :-) */
 	case SSL_CTRL_EXTRA_CHAIN_CERT:
