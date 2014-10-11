@@ -1,4 +1,4 @@
-/*	$OpenBSD: getservent.c,v 1.12 2007/09/02 15:19:17 deraadt Exp $ */
+/*	$OpenBSD: getservent.c,v 1.13 2014/09/15 06:15:48 guenther Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -122,8 +122,8 @@ again:
 			continue;
 		}
 		if (q == &se->s_aliases[sd->maxaliases - 1]) {
-			p = realloc(se->s_aliases,
-			    2 * sd->maxaliases * sizeof(char *));
+			p = reallocarray(se->s_aliases, sd->maxaliases,
+			    2 * sizeof(char *));
 			if (p == NULL) {
 				serrno = errno;
 				endservent_r(sd);
