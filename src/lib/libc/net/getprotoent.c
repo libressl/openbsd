@@ -1,4 +1,4 @@
-/*	$OpenBSD: getprotoent.c,v 1.10 2007/09/02 15:19:17 deraadt Exp $ */
+/*	$OpenBSD: getprotoent.c,v 1.11 2014/09/15 06:15:48 guenther Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -119,8 +119,8 @@ again:
 				continue;
 			}
 			if (q == &pe->p_aliases[pd->maxaliases - 1]) {
-				p = realloc(pe->p_aliases,
-				    2 * pd->maxaliases * sizeof(char *));
+				p = reallocarray(pe->p_aliases,
+				    pd->maxaliases, 2 * sizeof(char *));
 				if (p == NULL) {
 					serrno = errno;
 					endprotoent_r(pd);
