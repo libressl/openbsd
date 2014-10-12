@@ -99,7 +99,7 @@ struct option rand_options[] = {
 		.type = OPTION_ARG,
 		.opt.arg = &rand_config.outfile,
 	},
-	{},
+	{0},
 };
 
 static void

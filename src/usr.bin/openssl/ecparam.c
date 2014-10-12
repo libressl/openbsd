@@ -245,7 +245,7 @@ struct option ecparam_options[] = {
 		.type = OPTION_FLAG,
 		.opt.flag = &ecparam_config.text,
 	},
-	{},
+	{0},
 };
 
 static void
