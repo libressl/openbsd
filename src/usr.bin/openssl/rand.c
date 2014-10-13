@@ -1,4 +1,4 @@
-/* $OpenBSD: rand.c,v 1.2 2014/08/27 14:59:44 jsing Exp $ */
+/* $OpenBSD: rand.c,v 1.3 2014/08/27 15:54:02 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2001 The OpenSSL Project.  All rights reserved.
  *
@@ -99,7 +99,7 @@ struct option rand_options[] = {
 		.type = OPTION_ARG,
 		.opt.arg = &rand_config.outfile,
 	},
-	{},
+	{NULL},
 };
 
 static void
