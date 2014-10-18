@@ -1,4 +1,4 @@
-/* $OpenBSD: p_dec.c,v 1.8 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: p_dec.c,v 1.9 2014/07/11 08:44:48 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,7 +63,6 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/objects.h>
-#include <openssl/rand.h>
 #include <openssl/x509.h>
 
 #ifndef OPENSSL_NO_RSA

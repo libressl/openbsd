@@ -1,4 +1,4 @@
-/* $OpenBSD: cms_env.c,v 1.6 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: cms_env.c,v 1.7 2014/07/12 16:03:37 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -56,7 +56,6 @@
 #include <openssl/cms.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
-#include <openssl/rand.h>
 #include <openssl/x509v3.h>
 
 #include "cms_lcl.h"

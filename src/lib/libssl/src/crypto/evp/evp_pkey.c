@@ -1,4 +1,4 @@
-/* $OpenBSD: evp_pkey.c,v 1.16 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: evp_pkey.c,v 1.17 2014/07/12 16:03:37 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -60,7 +60,6 @@
 #include <stdlib.h>
 
 #include <openssl/err.h>
-#include <openssl/rand.h>
 #include <openssl/x509.h>
 
 #include "asn1_locl.h"
