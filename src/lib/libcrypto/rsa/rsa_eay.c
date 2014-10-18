@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_eay.c,v 1.34 2014/07/11 08:44:49 jsing Exp $ */
+/* $OpenBSD: rsa_eay.c,v 1.35 2014/07/11 15:21:51 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -115,7 +115,6 @@
 
 #include <openssl/bn.h>
 #include <openssl/err.h>
-#include <openssl/rand.h>
 #include <openssl/rsa.h>
 
 static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
