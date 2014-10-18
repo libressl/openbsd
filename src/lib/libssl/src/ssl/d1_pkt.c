@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_pkt.c,v 1.32 2014/07/10 08:51:14 tedu Exp $ */
+/* $OpenBSD: d1_pkt.c,v 1.34 2014/08/07 20:02:23 miod Exp $ */
 /* 
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
@@ -119,7 +119,6 @@
 #include "ssl_locl.h"
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
-#include <openssl/rand.h>
 
 #include "pqueue.h"
 
@@ -1380,7 +1379,7 @@ do_dtls1_write(SSL *s, int type, const unsigned char *buf, unsigned int len)
 	/* ssl3_enc can only have an error on read */
 	if (bs)	/* bs != 0 in case of CBC */
 	{
-		RAND_pseudo_bytes(p, bs);
+		arc4random_buf(p, bs);
 		/* master IV and last CBC residue stand for
 		 * the rest of randomness */
 		wr->length += bs;
