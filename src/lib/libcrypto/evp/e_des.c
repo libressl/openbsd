@@ -1,4 +1,4 @@
-/* $OpenBSD: e_des.c,v 1.11 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: e_des.c,v 1.12 2014/07/22 18:10:48 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -65,7 +65,6 @@
 #include <openssl/evp.h>
 #include <openssl/des.h>
 #include <openssl/objects.h>
-#include <openssl/rand.h>
 
 #include "evp_locl.h"
 

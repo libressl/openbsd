@@ -1,4 +1,4 @@
-/* $OpenBSD: pem_seal.c,v 1.19 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: pem_seal.c,v 1.20 2014/07/11 08:44:49 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -65,7 +65,6 @@
 
 #include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/rand.h>
 #include <openssl/objects.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>

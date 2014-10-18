@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_depr.c,v 1.5 2014/07/10 22:45:56 jsing Exp $ */
+/* $OpenBSD: bn_depr.c,v 1.6 2014/07/11 08:44:47 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -60,8 +60,6 @@
 #include <time.h>
 
 #include <openssl/opensslconf.h>
-
-#include <openssl/rand.h>
 
 #include "bn_lcl.h"
 
