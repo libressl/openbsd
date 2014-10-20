@@ -1,4 +1,4 @@
-/* $OpenBSD: sha.h,v 1.18 2014/07/13 10:27:22 beck Exp $ */
+/* $OpenBSD: sha.h,v 1.19 2014/07/13 14:13:27 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -76,8 +76,7 @@ extern "C" {
 
 /*
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * ! SHA_LONG has to be at least 32 bits wide. If it's wider, then !
- * ! SHA_LONG_LOG2 has to be defined along.                        !
+ * ! SHA_LONG has to be at least 32 bits wide.                    !
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
 
