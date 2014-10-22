@@ -1,4 +1,4 @@
-/* $OpenBSD: s_client.c,v 1.3 2014/10/13 02:39:09 bcook Exp $ */
+/* $OpenBSD: s_client.c,v 1.4 2014/10/20 01:58:10 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -158,7 +158,6 @@
 #include <openssl/err.h>
 #include <openssl/ocsp.h>
 #include <openssl/pem.h>
-#include <openssl/rand.h>
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 
