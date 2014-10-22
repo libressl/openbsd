@@ -1,4 +1,4 @@
-/* $OpenBSD: rand_lib.c,v 1.18 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: rand_lib.c,v 1.19 2014/07/11 08:44:49 jsing Exp $ */
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
  *
@@ -15,11 +15,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdlib.h>
+
 #include <openssl/opensslconf.h>
 
 #include <openssl/rand.h>
-
-#include <stdlib.h>
 
 /*
  * The useful functions in this file are at the bottom.
