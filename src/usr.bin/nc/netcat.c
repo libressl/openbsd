@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.121 2014/06/10 16:35:42 tedu Exp $ */
+/* $OpenBSD: netcat.c,v 1.122 2014/07/20 01:38:40 guenther Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  *
@@ -38,7 +38,6 @@
 #include <sys/un.h>
 
 #include <netinet/in.h>
-#include <netinet/in_systm.h>
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
 #include <arpa/telnet.h>
