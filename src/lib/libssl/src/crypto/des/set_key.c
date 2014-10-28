@@ -1,4 +1,4 @@
-/* $OpenBSD: set_key.c,v 1.17 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: set_key.c,v 1.18 2014/10/12 20:48:58 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -334,10 +334,10 @@ int DES_set_key_checked(const_DES_cblock *key, DES_key_schedule *schedule)
 void DES_set_key_unchecked(const_DES_cblock *key, DES_key_schedule *schedule)
 	{
 	static const int shifts2[16]={0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0};
-	register DES_LONG c,d,t,s,t2;
-	register const unsigned char *in;
-	register DES_LONG *k;
-	register int i;
+	DES_LONG c,d,t,s,t2;
+	const unsigned char *in;
+	DES_LONG *k;
+	int i;
 
 	k = &schedule->ks->deslong[0];
 	in = &(*key)[0];
