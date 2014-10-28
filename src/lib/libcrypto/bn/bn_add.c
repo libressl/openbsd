@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_add.c,v 1.8 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: bn_add.c,v 1.9 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -170,7 +170,7 @@ int
 BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 {
 	int max, min, dif;
-	register BN_ULONG t1, t2, *ap, *bp, *rp;
+	BN_ULONG t1, t2, *ap, *bp, *rp;
 	int i, carry;
 
 	bn_check_top(a);
