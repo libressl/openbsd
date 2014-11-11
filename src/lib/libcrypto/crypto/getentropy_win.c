@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_win.c,v 1.1 2014/07/12 20:54:49 wouter Exp $	*/
+/*	$OpenBSD: getentropy_win.c,v 1.2 2014/07/13 13:03:09 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2014, Theo de Raadt <deraadt@openbsd.org> 
@@ -44,9 +44,9 @@ getentropy(void *buf, size_t len)
 	}
 
 	if (CryptAcquireContext(&provider, NULL, NULL, PROV_RSA_FULL,
-	    CRYPT_VERIFYCONTEXT) != 0)
+	    CRYPT_VERIFYCONTEXT) == 0)
 		goto fail;
-	if (CryptGenRandom(provider, len, buf) != 0) {
+	if (CryptGenRandom(provider, len, buf) == 0) {
 		CryptReleaseContext(provider, 0);
 		goto fail;
 	}
