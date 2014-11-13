@@ -1,4 +1,4 @@
-/* $OpenBSD: cmll_misc.c,v 1.4 2014/07/09 11:10:50 bcook Exp $ */
+/* $OpenBSD: cmll_misc.c,v 1.5 2014/07/12 20:11:45 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
@@ -48,7 +48,7 @@
  * ====================================================================
  *
  */
- 
+
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include <openssl/camellia.h>
