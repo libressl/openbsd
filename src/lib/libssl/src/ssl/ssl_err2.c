@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ssl_err2.c,v 1.5 2014/06/12 15:49:31 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,6 +57,7 @@
  */
 
 #include <stdio.h>
+
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
