@@ -1,4 +1,4 @@
-/* $OpenBSD: t1_enc.c,v 1.70 2014/10/18 03:04:28 doug Exp $ */
+/* $OpenBSD: t1_enc.c,v 1.71 2014/10/18 16:13:16 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -136,7 +136,9 @@
  */
 
 #include <stdio.h>
+
 #include "ssl_locl.h"
+
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/md5.h>
