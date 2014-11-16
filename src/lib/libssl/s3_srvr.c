@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_srvr.c,v 1.88 2014/10/31 14:51:01 jsing Exp $ */
+/* $OpenBSD: s3_srvr.c,v 1.89 2014/10/31 15:25:55 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -152,15 +152,17 @@
 #define NETSCAPE_HANG_BUG
 
 #include <stdio.h>
+
 #include "ssl_locl.h"
-#include <openssl/buffer.h>
-#include <openssl/objects.h>
-#include <openssl/evp.h>
-#include <openssl/hmac.h>
-#include <openssl/x509.h>
-#include <openssl/dh.h>
+
 #include <openssl/bn.h>
+#include <openssl/buffer.h>
+#include <openssl/evp.h>
+#include <openssl/dh.h>
+#include <openssl/hmac.h>
 #include <openssl/md5.h>
+#include <openssl/objects.h>
+#include <openssl/x509.h>
 
 static const SSL_METHOD *ssl3_get_server_method(int ver);
 

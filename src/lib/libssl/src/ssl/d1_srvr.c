@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_srvr.c,v 1.40 2014/10/18 16:13:16 jsing Exp $ */
+/* $OpenBSD: d1_srvr.c,v 1.41 2014/10/31 14:51:01 jsing Exp $ */
 /* 
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
@@ -114,14 +114,16 @@
  */
 
 #include <stdio.h>
+
 #include "ssl_locl.h"
-#include <openssl/buffer.h>
-#include <openssl/objects.h>
-#include <openssl/evp.h>
-#include <openssl/x509.h>
-#include <openssl/md5.h>
+
 #include <openssl/bn.h>
+#include <openssl/buffer.h>
 #include <openssl/dh.h>
+#include <openssl/evp.h>
+#include <openssl/md5.h>
+#include <openssl/objects.h>
+#include <openssl/x509.h>
 
 static const SSL_METHOD *dtls1_get_server_method(int ver);
 static int dtls1_send_hello_verify_request(SSL *s);

@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_txt.c,v 1.23 2014/07/11 09:24:44 beck Exp $ */
+/* $OpenBSD: ssl_txt.c,v 1.24 2014/07/12 19:45:53 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -83,7 +83,9 @@
  */
 
 #include <stdio.h>
+
 #include <openssl/buffer.h>
+
 #include "ssl_locl.h"
 
 int
