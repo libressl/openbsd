@@ -1,4 +1,4 @@
-/* $OpenBSD: s23_lib.c,v 1.16 2014/07/11 08:17:36 miod Exp $ */
+/* $OpenBSD: s23_lib.c,v 1.17 2014/08/10 14:42:56 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -57,7 +57,9 @@
  */
 
 #include <stdio.h>
+
 #include <openssl/objects.h>
+
 #include "ssl_locl.h"
 
 long
