@@ -1,4 +1,4 @@
-/* $OpenBSD: dtls1.h,v 1.13 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: dtls1.h,v 1.14 2014/07/10 08:51:14 tedu Exp $ */
 /* 
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
@@ -60,11 +60,13 @@
 #ifndef HEADER_DTLS1_H
 #define HEADER_DTLS1_H
 
-#include <openssl/buffer.h>
+#include <sys/time.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
+
+#include <openssl/buffer.h>
 
 #ifdef  __cplusplus
 extern "C" {
