@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.46 2014/07/28 17:57:18 tedu Exp $
+# $OpenBSD: Makefile,v 1.47 2014/11/09 19:17:11 miod Exp $
 
 LIB=	crypto
 
@@ -72,7 +72,7 @@ SRCS+= bn_depr.c bn_const.c bn_x931p.c
 SRCS+= buffer.c buf_err.c buf_str.c
 
 # camellia/
-#SRCS+= cmll_ecb.c cmll_ofb.c cmll_cfb.c cmll_ctr.c cmll_utl.c
+SRCS+= cmll_cfb.c cmll_ctr.c cmll_ecb.c cmll_ofb.c
 
 # cast/
 SRCS+= c_skey.c c_ecb.c c_enc.c c_cfb64.c c_ofb64.c
