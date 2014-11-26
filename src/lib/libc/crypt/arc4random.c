@@ -86,7 +86,7 @@ _rs_stir(void)
 {
 	u_char rnd[KEYSZ + IVSZ];
 
-	if (getentropy(rnd, sizeof rnd) == -1)
+	if (getentropy(rnd, sizeof(rnd)) == -1)
 		_getentropy_fail();
 
 	if (!rs)
