@@ -416,7 +416,7 @@ GOST2814789IMIT_Init(GOST2814789IMIT_CTX *c, int nid)
 }
 
 static void
-GOST2814789IMIT_block_data_order(GOST2814789IMIT_CTX *ctx, const void *p,
+GOST2814789IMIT_block_data_order(GOST2814789IMIT_CTX *ctx, const unsigned char *p,
     size_t num)
 {
 	int i;
