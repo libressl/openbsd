@@ -31,7 +31,7 @@
 #include <string.h>
 
 char *
-rindex(const char *p, int ch)
+strrchr(const char *p, int ch)
 {
 	char *save;
 
