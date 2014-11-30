@@ -45,8 +45,8 @@ typedef	long word;		/* "word" used for optimal copy speed */
 /*
  * Copy a block of memory, handling overlap.
  */
-void
-bcopy(const void *src0, void *dst0, size_t length)
+void *
+memmove(void *dst0, const void *src0, size_t length)
 {
 	char *dst = dst0;
 	const char *src = src0;
@@ -108,5 +108,5 @@ bcopy(const void *src0, void *dst0, size_t length)
 		TLOOP(*--dst = *--src);
 	}
 done:
-	return;
+	return (dst0);
 }
