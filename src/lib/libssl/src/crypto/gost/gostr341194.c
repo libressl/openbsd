@@ -207,7 +207,7 @@ GOSTR341194_Init(GOSTR341194_CTX *c, int nid)
 }
 
 static void
-GOSTR341194_block_data_order(GOSTR341194_CTX *ctx, const void *p, size_t num)
+GOSTR341194_block_data_order(GOSTR341194_CTX *ctx, const unsigned char *p, size_t num)
 {
 	int i;
 
