@@ -155,7 +155,7 @@ tls_check_subject_altname(X509 *cert, const char *host)
 		}
 	}
 
-	sk_GENERAL_NAME_free(altname_stack);
+	sk_GENERAL_NAME_pop_free(altname_stack, GENERAL_NAME_free);
 	return rv;
 }
 
