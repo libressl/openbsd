@@ -1,4 +1,4 @@
-/*	$OpenBSD: drand48.c,v 1.3 2005/08/08 08:05:36 espie Exp $ */
+/*	$OpenBSD: drand48.c,v 1.4 2014/12/08 21:45:20 deraadt Exp $ */
 /*
  * Copyright (c) 1993 Martin Birgmeier
  * All rights reserved.
@@ -20,7 +20,7 @@ double
 drand48(void)
 {
 	if (__rand48_deterministic == 0) {
-		short rseed[3];
+		unsigned short rseed[3];
 
 		arc4random_buf(rseed, sizeof rseed);
 		return ldexp((double) rseed[0], -48) +
