@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_cert.c,v 1.46 2014/11/18 05:33:43 miod Exp $ */
+/* $OpenBSD: ssl_cert.c,v 1.47 2014/12/06 14:24:26 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -167,7 +167,6 @@ ssl_cert_set_default_md(CERT *cert)
 	cert->pkeys[SSL_PKEY_RSA_ENC].digest = EVP_sha1();
 	cert->pkeys[SSL_PKEY_ECC].digest = EVP_sha1();
 #ifndef OPENSSL_NO_GOST
-	cert->pkeys[SSL_PKEY_GOST94].digest = EVP_gostr341194();
 	cert->pkeys[SSL_PKEY_GOST01].digest = EVP_gostr341194();
 #endif
 }
