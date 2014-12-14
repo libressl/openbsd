@@ -1,4 +1,4 @@
-/* $OpenBSD: t1_meth.c,v 1.13 2014/08/10 14:42:56 jsing Exp $ */
+/* $OpenBSD: t1_meth.c,v 1.14 2014/11/16 14:12:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -155,21 +155,21 @@ const SSL_METHOD TLSv1_2_method_data = {
 };
 
 const SSL_METHOD *
-TLSv1_method(void) 
+TLSv1_method(void)
 {
-	return &TLSv1_method_data; 
+	return &TLSv1_method_data;
 }
 
 const SSL_METHOD *
-TLSv1_1_method(void) 
+TLSv1_1_method(void)
 {
-	return &TLSv1_1_method_data; 
+	return &TLSv1_1_method_data;
 }
 
 const SSL_METHOD *
-TLSv1_2_method(void) 
+TLSv1_2_method(void)
 {
-	return &TLSv1_2_method_data; 
+	return &TLSv1_2_method_data;
 }
 
 static const SSL_METHOD *
