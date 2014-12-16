@@ -1,4 +1,4 @@
-/*	$OpenBSD: random.c,v 1.25 2014/12/08 21:45:20 deraadt Exp $ */
+/*	$OpenBSD: random.c,v 1.26 2014/12/09 08:00:53 deraadt Exp $ */
 /*
  * Copyright (c) 1983 Regents of the University of California.
  * All rights reserved.
@@ -417,6 +417,6 @@ random(void)
 }
 
 #if defined(APIWARN)
-__warn_references(rand,
+__warn_references(random,
     "warning: random() may return determinstic values, is that what you want?");
 #endif
