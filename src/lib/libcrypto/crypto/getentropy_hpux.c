@@ -20,6 +20,7 @@
  * http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man2/getentropy.2
  */
 
+#include <sys/random.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/ioctl.h>
@@ -65,8 +66,8 @@
 int	getentropy(void *buf, size_t len);
 
 static int gotdata(char *buf, size_t len);
-static int getentropy_urandom(void *buf, size_t len, const char *path,
-    int devfscheck);
+static int getentropy_random(void *buf, size_t len, const char *path);
+static int getentropy_urandom(void *buf, size_t len, const char *path);
 static int getentropy_fallback(void *buf, size_t len);
 
 int
@@ -80,9 +81,16 @@ getentropy(void *buf, size_t len)
 	}
 
 	/*
+	 * Try to get entropy with /dev/random
+	 */
+	ret = getentropy_random(buf, len, "/dev/random");
+	if (ret != -1)
+		return (ret);
+
+	/*
 	 * Try to get entropy with /dev/urandom
 	 */
-	ret = getentropy_urandom(buf, len, "/dev/urandom", 0);
+	ret = getentropy_urandom(buf, len, "/dev/urandom");
 	if (ret != -1)
 		return (ret);
 
@@ -139,7 +147,57 @@ gotdata(char *buf, size_t len)
 }
 
 static int
-getentropy_urandom(void *buf, size_t len, const char *path, int devfscheck)
+getentropy_random(void *buf, size_t len, const char *path)
+{
+	struct stat st;
+	size_t i;
+	int fd, flags;
+	int save_errno = errno;
+
+start:
+
+	flags = O_RDONLY | O_NONBLOCK;
+#ifdef O_NOFOLLOW
+	flags |= O_NOFOLLOW;
+#endif
+#ifdef O_CLOEXEC
+	flags |= O_CLOEXEC;
+#endif
+	fd = open(path, flags, 0);
+	if (fd == -1) {
+		if (errno == EINTR)
+			goto start;
+		goto nodevrandom;
+	}
+#ifndef O_CLOEXEC
+	fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
+
+	/* Lightly verify that the device node looks sane */
+	if (fstat(fd, &st) == -1 || !S_ISCHR(st.st_mode)) {
+		close(fd);
+		goto nodevrandom;
+	}
+
+	ssize_t ret;
+	ret = read(fd, (char *)buf, len);
+	if (ret == -1 || ret < len) {
+		close(fd);
+		goto nodevrandom;
+	}
+
+	close(fd);
+	if (gotdata(buf, len) == 0) {
+		errno = save_errno;
+		return 0;		/* satisfied */
+	}
+nodevrandom:
+	errno = EIO;
+	return -1;
+}
+
+static int
+getentropy_urandom(void *buf, size_t len, const char *path)
 {
 	struct stat st;
 	size_t i;
