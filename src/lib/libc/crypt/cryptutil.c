@@ -1,4 +1,4 @@
-/* $OpenBSD: cryptutil.c,v 1.4 2014/11/21 12:32:38 schwarze Exp $ */
+/* $OpenBSD: cryptutil.c,v 1.5 2014/11/24 21:36:35 tedu Exp $ */
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
  *
@@ -29,8 +29,7 @@ crypt_checkpass(const char *pass, const char *goodhash)
 
 	if (goodhash == NULL) {
 		/* fake it */
-		bcrypt_newhash(pass, 8, dummy, sizeof(dummy));
-		goto fail;
+		goto fake;
 	}
 
 	/* empty password */
@@ -43,14 +42,9 @@ crypt_checkpass(const char *pass, const char *goodhash)
 		return 0;
 	}
 
-	/* have to do it the hard way */
-	res = crypt(pass, goodhash);
-	if (res == NULL || strlen(res) != strlen(goodhash) ||
-	    timingsafe_bcmp(res, goodhash, strlen(goodhash)) != 0) {
-		goto fail;
-	}
-
-	return 0;
+	/* unsupported. fake it. */
+fake:
+	bcrypt_newhash(pass, 8, dummy, sizeof(dummy));
 fail:
 	errno = EACCES;
 	return -1;
