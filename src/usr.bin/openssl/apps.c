@@ -2288,11 +2288,11 @@ options_parse(int argc, char **argv, struct option *opts, char **unnamed,
 
 		/* See if there is a matching option... */
 		for (j = 0; opts[j].name != NULL; j++) {
-			opt = &opts[j];
-			if (strcmp(p, opt->name) == 0)
+			if (strcmp(p, opts[j].name) == 0)
 				break;
 		}
-		if (opts[j].name == NULL)
+		opt = &opts[j];
+		if (opts->name == NULL && opts->type == 0)
 			goto unknown;
 
 		if (opt->type == OPTION_ARG ||
