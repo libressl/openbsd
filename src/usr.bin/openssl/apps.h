@@ -305,6 +305,7 @@ struct option {
 };
 
 void options_usage(struct option *opts);
-int options_parse(int argc, char **argv, struct option *opts, char **unnamed);
+int options_parse(int argc, char **argv, struct option *opts, char **unnamed,
+    int *argsused);
 
 #endif
