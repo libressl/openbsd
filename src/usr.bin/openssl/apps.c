@@ -2271,8 +2271,20 @@ options_parse(int argc, char **argv, struct option *opts, char **unnamed,
 			continue;
 		}
 
-		if (*p == '\0') /* XXX - end of named options. */
+		/* End of named options (single hyphen). */
+		if (*p == '\0') {
+			if (++i >= argc)
+				goto done;
+			if (argsused != NULL)
+				goto done;
+			if (unnamed != NULL && i == argc - 1) {
+				if (*unnamed != NULL)
+					goto toomany;
+				*unnamed = argv[i];
+				continue;
+			}
 			goto unknown;
+		}
 
 		for (j = 0; opts[j].name != NULL; j++) {
 			opt = &opts[j];
