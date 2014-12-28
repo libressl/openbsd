@@ -286,6 +286,7 @@ struct option {
 	const char *desc;
 	enum {
 		OPTION_ARG,
+		OPTION_ARGV_FUNC,
 		OPTION_ARG_FORMAT,
 		OPTION_ARG_FUNC,
 		OPTION_ARG_INT,
@@ -297,6 +298,7 @@ struct option {
 	union {
 		char **arg;
 		int (*argfunc)(char *arg);
+		int (*argvfunc)(int argc, char **argv, int *argsused);
 		int *flag;
 		int (*func)(void);
 		int *value;
