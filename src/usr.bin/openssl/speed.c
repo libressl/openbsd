@@ -1,4 +1,4 @@
-/* $OpenBSD: speed.c,v 1.2 2014/10/22 13:54:03 jsing Exp $ */
+/* $OpenBSD: speed.c,v 1.3 2015/01/02 04:00:21 lteo Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1998,6 +1998,10 @@ do_multi(int multi)
 	const char *errstr = NULL;
 
 	fds = reallocarray(NULL, multi, sizeof *fds);
+	if (fds == NULL) {
+		fprintf(stderr, "reallocarray failure\n");
+		exit(1);
+	}
 	for (n = 0; n < multi; ++n) {
 		if (pipe(fd) == -1) {
 			fprintf(stderr, "pipe failure\n");
