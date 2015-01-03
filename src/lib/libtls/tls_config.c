@@ -199,3 +199,8 @@ tls_config_verify(struct tls_config *config)
 	config->verify_host = 1;
 	config->verify_cert = 1;
 }
+
+int
+tls_config_is_dtls(struct tls_config *config) {
+	return !!(config->protocols & TLS_PROTOCOL_DTLS);
+}

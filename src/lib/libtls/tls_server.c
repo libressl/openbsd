@@ -15,6 +15,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <netinet/in.h>
+
 #include <openssl/ec.h>
 #include <openssl/ssl.h>
 
@@ -52,7 +54,14 @@ tls_configure_server(struct tls *ctx)
 {
 	EC_KEY *ecdh_key;
 
-	if ((ctx->ssl_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
+	if (tls_config_is_dtls(ctx->config)) {
+		ctx->ssl_ctx = SSL_CTX_new(DTLSv1_server_method());
+	}
+	else {
+		ctx->ssl_ctx = SSL_CTX_new(SSLv23_server_method());
+	}
+
+	if (ctx->ssl_ctx == NULL) {
 		tls_set_error(ctx, "ssl context failure");
 		goto err;
 	}
@@ -106,14 +115,31 @@ tls_accept_socket(struct tls *ctx, struct tls **cctx, int socket)
 			goto err;
 		}
 
-		if (SSL_set_fd(conn_ctx->ssl_conn, socket) != 1) {
-			tls_set_error(ctx, "ssl set fd failure");
-			goto err;
+		if (tls_config_is_dtls(ctx->config)) {
+			BIO *bio = BIO_new_dgram(socket, BIO_NOCLOSE);
+			SSL_set_bio(conn_ctx->ssl_conn, bio, bio);
+		} else {
+			if (SSL_set_fd(conn_ctx->ssl_conn, socket) != 1) {
+				tls_set_error(ctx, "ssl set fd failure");
+				goto err;
+			}
 		}
+		
 		SSL_set_app_data(conn_ctx->ssl_conn, conn_ctx);
 	}
 
-	if ((ret = SSL_accept(conn_ctx->ssl_conn)) != 1) {
+	if (tls_config_is_dtls(ctx->config)) {
+		union {
+			struct sockaddr_in s4;
+			struct sockaddr_in6 s6;
+		} client_addr = { .s6 = {} };
+		ret = DTLSv1_listen(conn_ctx->ssl_conn, &client_addr);
+	}
+	else {
+		ret = SSL_accept(conn_ctx->ssl_conn);
+	}
+
+	if (ret != 1) {
 		ssl_err = SSL_get_error(conn_ctx->ssl_conn, ret);
 		switch (ssl_err) {
 		case SSL_ERROR_WANT_READ:

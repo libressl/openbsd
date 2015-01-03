@@ -21,6 +21,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <netinet/in.h>
 
 #include <openssl/bio.h>
 #include <openssl/evp.h>
@@ -196,6 +197,16 @@ tls_configure_ssl(struct tls *ctx)
 	if ((ctx->config->protocols & TLS_PROTOCOL_TLSv1_2) == 0)
 		SSL_CTX_set_options(ctx->ssl_ctx, SSL_OP_NO_TLSv1_2);
 
+	SSL_CTX_clear_options(ctx->ssl_ctx, SSL_OP_COOKIE_EXCHANGE);
+
+	if (tls_config_is_dtls(ctx->config)) {
+		SSL_CTX_set_read_ahead(ctx->ssl_ctx, 1);
+
+		SSL_CTX_set_options(ctx->ssl_ctx, SSL_OP_COOKIE_EXCHANGE);
+		SSL_CTX_set_cookie_generate_cb(ctx->ssl_ctx, tls_generate_cookie);
+		SSL_CTX_set_cookie_verify_cb(ctx->ssl_ctx, tls_verify_cookie);
+	}
+
 	if (ctx->config->ciphers != NULL) {
 		if (SSL_CTX_set_cipher_list(ctx->ssl_ctx,
 		    ctx->config->ciphers) != 1) {
@@ -318,4 +329,107 @@ tls_close(struct tls *ctx)
 
 err:
 	return (-1);
+}
+
+int
+tls_generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len) {
+	const size_t COOKIE_SECRET_LENGTH = 48;
+	static unsigned char *cookie_secret = NULL;
+    HMAC_CTX hmac = {};
+	struct tls *conn_ctx;
+	int res = 0;
+	size_t peer_len;
+
+	union {
+		struct sockaddr sa;
+		struct sockaddr_in s4;
+		struct sockaddr_in6 s6;
+	} peer = {.s6 = {}};
+
+	conn_ctx = SSL_get_app_data(ssl);
+	if (conn_ctx == NULL) {
+		goto out;
+	}
+
+	/* initialize cookie secret */
+	if (cookie_secret == NULL) {
+		if ((cookie_secret = calloc(1, COOKIE_SECRET_LENGTH)) == NULL) {
+			goto out;
+		}
+
+		if (RAND_bytes(cookie_secret, COOKIE_SECRET_LENGTH) != 1) {
+			free(cookie_secret);
+			cookie_secret = NULL;
+
+			tls_set_error(conn_ctx, "RAND_bytes");
+			goto out;
+		}
+	}
+
+	peer_len = BIO_dgram_get_peer(SSL_get_rbio(ssl), &peer);
+
+	HMAC_CTX_init(&hmac);
+	if (HMAC_Init_ex(&hmac, cookie_secret, COOKIE_SECRET_LENGTH,
+			EVP_sha256(), NULL) != 1) {
+		tls_set_error(conn_ctx, "HMAC_Init_ex");
+		goto out;
+	}
+
+	switch (peer.sa.sa_family) {
+	default:
+		tls_set_error(conn_ctx, "unkown sa_family");
+		goto cleanup;
+
+	case AF_INET:
+		if (peer_len != sizeof(peer.s4))
+			goto cleanup;
+		if (HMAC_Update(&hmac, (unsigned char*) &peer.s4.sin_addr, sizeof(peer.s4.sin_addr)) != 1)
+			goto cleanup;
+		if (HMAC_Update(&hmac, (unsigned char*) &peer.s4.sin_port, sizeof(peer.s4.sin_port)) != 1)
+			goto cleanup;
+    	break;
+
+	case AF_INET6:
+		if (peer_len != sizeof(peer.s6))
+			goto cleanup;
+		if (HMAC_Update(&hmac, (unsigned char*) &peer.s6.sin6_addr, sizeof(peer.s6.sin6_addr)) != 1)
+			goto cleanup;
+		if (HMAC_Update(&hmac, (unsigned char*) &peer.s6.sin6_port, sizeof(peer.s6.sin6_port)) != 1)
+			goto cleanup;
+		break;
+	}
+
+	if (HMAC_Final(&hmac, cookie, cookie_len) != 1) {
+		tls_set_error(conn_ctx, "HMAC_Final");
+		goto cleanup;
+	}
+
+	res = 1;
+
+cleanup:
+	HMAC_CTX_cleanup(&hmac);
+
+out:
+	return (res);
+}
+
+int
+tls_verify_cookie(SSL *ssl, unsigned char *actual_cookie, unsigned int actual_cookie_len) {
+	unsigned int expected_cookie_len;
+	unsigned char expected_cookie[EVP_MAX_MD_SIZE];
+
+	if (tls_generate_cookie(ssl, expected_cookie, &expected_cookie_len) != 1) {
+		goto err;
+	}
+
+	if (actual_cookie_len != expected_cookie_len) {
+		goto err;
+	}
+
+	if (timingsafe_memcmp(actual_cookie, expected_cookie, expected_cookie_len) == 0) {
+		return (1);
+	}
+
+err:
+	return (0);
 }
