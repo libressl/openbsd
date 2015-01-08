@@ -255,7 +255,7 @@ session_cmp(SSL_SESSION *s1, SSL_SESSION *s2)
 		return (1);
 	}
 
-	if (session_strcmp(s1->tlsext_hostname, s2->tlsext_hostname,
+	if (session_strcmp((unsigned char *)s1->tlsext_hostname, (unsigned char *)s2->tlsext_hostname,
 	    (s1->tlsext_hostname ? strlen(s1->tlsext_hostname) : 0)) != 0) {
 		fprintf(stderr, "sid_ctx differs\n");
 		return (1);
