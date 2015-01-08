@@ -594,7 +594,7 @@ pkey_gost01_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 
 	case EVP_PKEY_CTRL_SET_IV:
 	    {
-		char *ukm = malloc(p1);
+		unsigned char *ukm = malloc(p1);
 
 		if (ukm == NULL) {
 			GOSTerr(GOST_F_PKEY_GOST01_CTRL,
