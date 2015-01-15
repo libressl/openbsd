@@ -1,9 +1,10 @@
-/*	$OpenBSD: arc4random_freebsd.h,v 1.1 2014/07/20 20:51:13 bcook Exp $	*/
+/*	$OpenBSD: arc4random_freebsd.h,v 1.1 2014/11/03 06:23:30 bcook Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
  * Copyright (c) 2008, Damien Miller <djm@openbsd.org>
  * Copyright (c) 2013, Markus Friedl <markus@openbsd.org>
+ * Copyright (c) 2014, Theo de Raadt <deraadt@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
