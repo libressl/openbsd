@@ -1,4 +1,4 @@
-/*	$OpenBSD: ip6opt.c,v 1.6 2014/02/17 21:05:39 stsp Exp $	*/
+/*	$OpenBSD: ip6opt.c,v 1.7 2014/06/13 15:41:06 chrisz Exp $	*/
 /*	$KAME: ip6opt.c,v 1.18 2005/06/15 07:11:35 keiichi Exp $	*/
 
 /*
@@ -30,7 +30,6 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 

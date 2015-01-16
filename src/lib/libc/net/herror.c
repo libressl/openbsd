@@ -1,4 +1,4 @@
-/*	$OpenBSD: herror.c,v 1.7 2005/03/25 13:24:12 otto Exp $	*/
+/*	$OpenBSD: herror.c,v 1.8 2005/08/06 20:30:03 espie Exp $	*/
 
 /*
  * ++Copyright++ 1987, 1993
@@ -52,7 +52,6 @@
  */
 
 #include <sys/types.h>
-#include <sys/param.h>
 #include <sys/uio.h>
 #include <netdb.h>
 #include <unistd.h>

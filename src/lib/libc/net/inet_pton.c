@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_pton.c,v 1.7 2006/12/30 23:37:37 itojun Exp $	*/
+/*	$OpenBSD: inet_pton.c,v 1.8 2010/05/06 15:47:14 claudio Exp $	*/
 
 /* Copyright (c) 1996 by Internet Software Consortium.
  *
@@ -16,7 +16,6 @@
  * SOFTWARE.
  */
 
-#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

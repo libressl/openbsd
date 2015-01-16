@@ -1,4 +1,4 @@
-/*	$OpenBSD: res_data.c,v 1.2 2003/06/02 20:18:36 millert Exp $	*/
+/*	$OpenBSD: res_data.c,v 1.3 2005/08/06 20:30:03 espie Exp $	*/
 
 /*
  * ++Copyright++ 1995
@@ -52,7 +52,6 @@
  */
 
 #include <sys/types.h>
-#include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>

@@ -1,4 +1,4 @@
-/*	$OpenBSD: random.c,v 1.27 2014/12/16 20:42:36 deraadt Exp $ */
+/*	$OpenBSD: random.c,v 1.28 2014/12/16 20:51:32 sthen Exp $ */
 /*
  * Copyright (c) 1983 Regents of the University of California.
  * All rights reserved.
@@ -28,9 +28,6 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/param.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

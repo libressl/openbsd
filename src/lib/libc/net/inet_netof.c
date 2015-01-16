@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: inet_netof.c,v 1.6 2005/08/06 20:30:03 espie Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -28,7 +28,6 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/param.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
