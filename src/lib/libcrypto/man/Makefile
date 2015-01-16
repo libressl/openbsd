@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.13 2014/09/16 18:15:21 miod Exp $
+# $OpenBSD: Makefile,v 1.14 2014/12/06 22:18:18 schwarze Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -1146,4 +1146,4 @@ maninstall:
 .include <bsd.subdir.mk>
 
 clean cleandir:
-	rm -f ${MAN} ${MANLINT}
+	rm -f ${MAN}
