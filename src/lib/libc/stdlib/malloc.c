@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.171 2014/08/18 14:34:58 tedu Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.172 2015/01/05 21:04:04 tedu Exp $	*/
 /*
  * Copyright (c) 2008, 2010, 2011 Otto Moerbeek <otto@drijf.net>
  * Copyright (c) 2012 Matthew Dempsky <matthew@openbsd.org>
@@ -26,7 +26,7 @@
 /* #define MALLOC_STATS */
 
 #include <sys/types.h>
-#include <sys/param.h>
+#include <sys/param.h>	/* PAGE_SHIFT ALIGN */
 #include <sys/queue.h>
 #include <sys/mman.h>
 #include <sys/uio.h>

@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.50 2014/07/21 18:13:12 deraadt Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.51 2015/01/15 06:57:18 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -31,7 +31,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/param.h>
 #include <sys/time.h>
 
 #define KEYSTREAM_ONLY
