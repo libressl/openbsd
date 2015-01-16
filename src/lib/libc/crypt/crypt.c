@@ -1,4 +1,4 @@
-/*	$OpenBSD: crypt.c,v 1.24 2014/11/25 03:23:22 tedu Exp $	*/
+/*	$OpenBSD: crypt.c,v 1.25 2014/12/08 20:36:18 tedu Exp $	*/
 
 /*
  * FreeSec: libcrypt
@@ -47,7 +47,6 @@
  */
 
 #include <sys/types.h>
-#include <sys/param.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <string.h>
