@@ -1,3 +1,4 @@
+/*	$OpenBSD$	*/
 /*
  * Copyright (c) 2008 Bret S. Lambert <blambert@openbsd.org>
  *

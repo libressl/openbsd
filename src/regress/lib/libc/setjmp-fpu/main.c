@@ -1,3 +1,4 @@
+/*	$OpenBSD$	*/
 int	test__setjmp(void);
 int	test_setjmp(void);
 int	test_sigsetjmp(void);
