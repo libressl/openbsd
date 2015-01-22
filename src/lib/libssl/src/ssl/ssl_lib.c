@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_lib.c,v 1.93 2014/12/14 14:34:43 jsing Exp $ */
+/* $OpenBSD: ssl_lib.c,v 1.94 2014/12/15 00:46:53 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2860,6 +2860,12 @@ SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile,
     const char *CApath)
 {
 	return (X509_STORE_load_locations(ctx->cert_store, CAfile, CApath));
+}
+
+int
+SSL_CTX_load_verify_mem(SSL_CTX *ctx, void *buf, int len)
+{
+	return (X509_STORE_load_mem(ctx->cert_store, buf, len));
 }
 
 void
