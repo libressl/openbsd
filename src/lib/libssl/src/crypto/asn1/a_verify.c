@@ -1,4 +1,4 @@
-/* $OpenBSD: a_verify.c,v 1.19 2014/06/24 19:37:58 miod Exp $ */
+/* $OpenBSD: a_verify.c,v 1.20 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -82,6 +82,13 @@ ASN1_item_verify(const ASN1_ITEM *it, X509_ALGOR *a,
 
 	if (!pkey) {
 		ASN1err(ASN1_F_ASN1_ITEM_VERIFY, ERR_R_PASSED_NULL_PARAMETER);
+		return -1;
+	}
+
+	if (signature->type == V_ASN1_BIT_STRING && signature->flags & 0x7)
+	{
+		ASN1err(ASN1_F_ASN1_VERIFY,
+		    ASN1_R_INVALID_BIT_STRING_BITS_LEFT);
 		return -1;
 	}
 
