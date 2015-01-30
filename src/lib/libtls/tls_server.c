@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_server.c,v 1.1 2014/10/31 13:46:17 jsing Exp $ */
+/* $OpenBSD: tls_server.c,v 1.2 2015/01/16 14:34:51 reyk Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -133,8 +133,7 @@ tls_accept_socket(struct tls *ctx, struct tls **cctx, int socket)
 		case SSL_ERROR_WANT_WRITE:
 			return (TLS_WRITE_AGAIN);
 		default:
-			tls_set_error(ctx, "ssl accept failure (%i)",
-			    ssl_err);
+			tls_set_error(ctx, "TLS accept failed (%i)", ssl_err);
 			goto err;
 		}
 	}
