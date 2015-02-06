@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_rsa.c,v 1.18 2014/11/16 14:12:47 jsing Exp $ */
+/* $OpenBSD: ssl_rsa.c,v 1.19 2014/12/14 15:30:50 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -736,7 +736,7 @@ end:
 }
 
 int
-SSL_CTX_use_certificate_chain(SSL_CTX *ctx, void *buf, int len)
+SSL_CTX_use_certificate_chain_mem(SSL_CTX *ctx, void *buf, int len)
 {
 	BIO *in;
 	int ret = 0;
