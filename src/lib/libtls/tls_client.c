@@ -19,7 +19,6 @@
 #include <sys/socket.h>
 
 #include <arpa/inet.h>
-#include <netinet/in.h>
 
 #include <limits.h>
 #include <netdb.h>
@@ -81,8 +80,11 @@ tls_connect(struct tls *ctx, const char *host, const char *port)
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-
+	if (tls_config_is_dtls(ctx->config)) {
+		hints.ai_socktype = SOCK_DGRAM;
+	} else {
+		hints.ai_socktype = SOCK_STREAM;
+	}
 	if ((ret = getaddrinfo(h, p, &hints, &res0)) != 0) {
 		tls_set_error(ctx, "%s", gai_strerror(ret));
 		goto err;
@@ -151,7 +153,14 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 		return (-1);
 	}
 
-	if ((ctx->ssl_ctx = SSL_CTX_new(SSLv23_client_method())) == NULL) {
+	if (tls_config_is_dtls(ctx->config)) {
+		ctx->ssl_ctx = SSL_CTX_new(DTLSv1_client_method());
+	}
+	else {
+		ctx->ssl_ctx = SSL_CTX_new(SSLv23_client_method());
+	}
+
+	if (ctx->ssl_ctx == NULL) {
 		tls_set_error(ctx, "ssl context failure");
 		goto err;
 	}

@@ -73,5 +73,7 @@ int tls_host_port(const char *hostport, char **host, char **port);
 int tls_set_error(struct tls *ctx, char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))
     __attribute__((__nonnull__ (2)));
+int tls_generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len);
+int tls_verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len);
 
 #endif /* HEADER_TLS_INTERNAL_H */
