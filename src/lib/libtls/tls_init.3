@@ -1,4 +1,4 @@
-.\" $OpenBSD: tls_init.3,v 1.7 2015/01/22 09:16:24 reyk Exp $
+.\" $OpenBSD: tls_init.3,v 1.8 2015/01/22 11:08:54 jmc Exp $
 .\"
 .\" Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
 .\"
@@ -28,7 +28,8 @@
 .Nm tls_config_set_cert_file ,
 .Nm tls_config_set_cert_mem ,
 .Nm tls_config_set_ciphers ,
-.Nm tls_config_set_ecdhcurve ,
+.Nm tls_config_set_dheparams ,
+.Nm tls_config_set_ecdhecurve ,
 .Nm tls_config_set_key_file ,
 .Nm tls_config_set_key_mem ,
 .Nm tls_config_set_protocols ,
@@ -72,7 +73,9 @@
 .Ft "int"
 .Fn tls_config_set_ciphers "struct tls_config *config" "const char *ciphers"
 .Ft "int"
-.Fn tls_config_set_ecdhcurve "struct tls_config *config" "const char *name"
+.Fn tls_config_set_dheparams "struct tls_config *config" "const char *params"
+.Ft "int"
+.Fn tls_config_set_ecdhecurve "struct tls_config *config" "const char *name"
 .Ft "int"
 .Fn tls_config_set_key_file "struct tls_config *config" "const char *key_file"
 .Ft "int"
