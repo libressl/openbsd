@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_padlock.c,v 1.12 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: eng_padlock.c,v 1.13 2014/10/18 17:20:40 jsing Exp $ */
 /*
  * Support for VIA PadLock Advanced Cryptography Engine (ACE)
  * Written by Michal Ludvig <michal@logix.cz>
@@ -168,9 +168,11 @@ padlock_bind_helper(ENGINE *e)
 	/* Check available features */
 	padlock_available();
 
-#if 1	/* disable RNG for now, see commentary in vicinity of RNG code */
+	/*
+	 * RNG is currently disabled for reasons discussed in commentary just
+	 * before padlock_rand_bytes function.
+	 */
 	padlock_use_rng = 0;
-#endif
 
 	/* Generate a nice engine name with available features */
 	(void) snprintf(padlock_name, sizeof(padlock_name),
