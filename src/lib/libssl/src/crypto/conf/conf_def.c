@@ -1,4 +1,4 @@
-/* $OpenBSD: conf_def.c,v 1.27 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: conf_def.c,v 1.28 2014/07/11 15:38:03 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -388,27 +388,12 @@ again:
 				}
 			} else
 				tv = sv;
-#if 1
+
 			if (_CONF_add_string(conf, tv, v) == 0) {
 				CONFerr(CONF_F_DEF_LOAD_BIO,
 				    ERR_R_MALLOC_FAILURE);
 				goto err;
 			}
-#else
-			v->section = tv->section;
-			if (!sk_CONF_VALUE_push(ts, v)) {
-				CONFerr(CONF_F_DEF_LOAD_BIO,
-				    ERR_R_MALLOC_FAILURE);
-				goto err;
-			}
-			vv = (CONF_VALUE *)lh_insert(conf->data, v);
-			if (vv != NULL) {
-				sk_CONF_VALUE_delete_ptr(ts, vv);
-				free(vv->name);
-				free(vv->value);
-				free(vv);
-			}
-#endif
 			v = NULL;
 		}
 	}
