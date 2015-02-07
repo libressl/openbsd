@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_info.c,v 1.18 2014/07/11 08:44:49 jsing Exp $ */
+/* $OpenBSD: v3_info.c,v 1.19 2014/10/05 18:28:56 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -208,8 +208,5 @@ int
 i2a_ACCESS_DESCRIPTION(BIO *bp, ACCESS_DESCRIPTION* a)
 {
 	i2a_ASN1_OBJECT(bp, a->method);
-#ifdef UNDEF
-	i2a_GENERAL_NAME(bp, a->location);
-#endif
 	return 2;
 }

@@ -1,4 +1,4 @@
-/* $OpenBSD: conf_lib.c,v 1.11 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: conf_lib.c,v 1.12 2014/07/09 11:10:50 bcook Exp $ */
 /* Written by Richard Levitte (richard@levitte.org) for the OpenSSL
  * project 2000.
  */
@@ -373,21 +373,3 @@ NCONF_dump_bio(const CONF *conf, BIO *out)
 
 	return conf->meth->dump(conf, out);
 }
-
-
-/* This function should be avoided */
-#if 0
-long
-NCONF_get_number(CONF *conf, char *group, char *name)
-{
-	int status;
-	long ret = 0;
-
-	status = NCONF_get_number_e(conf, group, name, &ret);
-	if (status == 0) {
-		/* This function does not believe in errors... */
-		ERR_get_error();
-	}
-	return ret;
-}
-#endif
