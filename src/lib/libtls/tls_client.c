@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_client.c,v 1.10 2015/01/30 14:25:37 bluhm Exp $ */
+/* $OpenBSD: tls_client.c,v 1.11 2015/02/07 09:50:09 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -82,6 +82,7 @@ tls_connect(struct tls *ctx, const char *host, const char *port)
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_ADDRCONFIG;
 
 	if ((ret = getaddrinfo(h, p, &hints, &res0)) != 0) {
 		tls_set_error(ctx, "%s", gai_strerror(ret));
