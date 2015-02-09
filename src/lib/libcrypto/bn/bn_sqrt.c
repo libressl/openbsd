@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_sqrt.c,v 1.4 2014/06/12 15:49:28 deraadt Exp $ */
+/* $OpenBSD: bn_sqrt.c,v 1.5 2014/07/11 08:44:48 jsing Exp $ */
 /* Written by Lenka Fibikova <fibikova@exp-math.uni-essen.de>
  * and Bodo Moeller for the OpenSSL project. */
 /* ====================================================================
@@ -108,13 +108,17 @@ BN_mod_sqrt(BIGNUM *in, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
 	}
 
 	BN_CTX_start(ctx);
-	A = BN_CTX_get(ctx);
-	b = BN_CTX_get(ctx);
-	q = BN_CTX_get(ctx);
-	t = BN_CTX_get(ctx);
-	x = BN_CTX_get(ctx);
-	y = BN_CTX_get(ctx);
-	if (y == NULL)
+	if ((A = BN_CTX_get(ctx)) == NULL)
+		goto end;
+	if ((b = BN_CTX_get(ctx)) == NULL)
+		goto end;
+	if ((q = BN_CTX_get(ctx)) == NULL)
+		goto end;
+	if ((t = BN_CTX_get(ctx)) == NULL)
+		goto end;
+	if ((x = BN_CTX_get(ctx)) == NULL)
+		goto end;
+	if ((y = BN_CTX_get(ctx)) == NULL)
 		goto end;
 
 	if (ret == NULL)
