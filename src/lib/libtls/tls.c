@@ -26,6 +26,9 @@
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/x509.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
+#include <openssl/engine.h>
 
 #include <tls.h>
 #include "tls_internal.h"
@@ -49,6 +52,19 @@ tls_init(void)
 	tls_initialised = 1;
 
 	return (0);
+}
+
+void
+tls_quit(void)
+{
+	CONF_modules_free();
+	ERR_remove_state(0);
+	ENGINE_cleanup();
+	CONF_modules_unload(1);
+	ERR_free_strings();
+	EVP_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	sk_SSL_COMP_free(SSL_COMP_get_compression_methods());
 }
 
 const char *

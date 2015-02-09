@@ -34,6 +34,7 @@ struct tls;
 struct tls_config;
 
 int tls_init(void);
+void tls_quit(void);
 
 const char *tls_error(struct tls *ctx);
 
