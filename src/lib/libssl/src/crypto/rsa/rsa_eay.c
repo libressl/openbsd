@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_eay.c,v 1.35 2014/07/11 15:21:51 miod Exp $ */
+/* $OpenBSD: rsa_eay.c,v 1.36 2014/10/18 17:20:40 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -181,7 +181,7 @@ RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned char *to,
 	ret = BN_CTX_get(ctx);
 	num = BN_num_bytes(rsa->n);
 	buf = malloc(num);
-	if (!f || !ret || !buf) {
+	if (f == NULL || ret == NULL || buf == NULL) {
 		RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, ERR_R_MALLOC_FAILURE);
 		goto err;
 	}
@@ -366,7 +366,7 @@ RSA_eay_private_encrypt(int flen, const unsigned char *from, unsigned char *to,
 	ret = BN_CTX_get(ctx);
 	num = BN_num_bytes(rsa->n);
 	buf = malloc(num);
-	if (!f || !ret || !buf) {
+	if (f == NULL || ret == NULL || buf == NULL) {
 		RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, ERR_R_MALLOC_FAILURE);
 		goto err;
 	}
