@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_lib.c,v 1.25 2014/11/16 14:12:47 jsing Exp $ */
+/* $OpenBSD: d1_lib.c,v 1.26 2014/12/14 15:30:50 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -297,13 +297,6 @@ dtls1_get_cipher(unsigned int u)
 void
 dtls1_start_timer(SSL *s)
 {
-#ifndef OPENSSL_NO_SCTP
-	/* Disable timer for SCTP */
-	if (BIO_dgram_is_sctp(SSL_get_wbio(s))) {
-		memset(&(s->d1->next_timeout), 0, sizeof(struct timeval));
-		return;
-	}
-#endif
 
 	/* If timer is not set, initialize duration with 1 second */
 	if (s->d1->next_timeout.tv_sec == 0 && s->d1->next_timeout.tv_usec == 0) {
