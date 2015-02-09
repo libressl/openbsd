@@ -1,4 +1,4 @@
-/* $OpenBSD: ech_ossl.c,v 1.7 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: ech_ossl.c,v 1.8 2014/07/12 16:03:37 miod Exp $ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
@@ -120,8 +120,10 @@ static int ecdh_compute_key(void *out, size_t outlen, const EC_POINT *pub_key,
 
 	if ((ctx = BN_CTX_new()) == NULL) goto err;
 	BN_CTX_start(ctx);
-	x = BN_CTX_get(ctx);
-	y = BN_CTX_get(ctx);
+	if ((x = BN_CTX_get(ctx)) == NULL)
+		goto err;
+	if ((y = BN_CTX_get(ctx)) == NULL)
+		goto err;
 	
 	priv_key = EC_KEY_get0_private_key(ecdh);
 	if (priv_key == NULL)
