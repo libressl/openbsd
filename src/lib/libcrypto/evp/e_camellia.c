@@ -1,4 +1,4 @@
-/* $OpenBSD: e_camellia.c,v 1.5 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: e_camellia.c,v 1.6 2014/07/10 22:45:57 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
@@ -53,7 +53,6 @@
  *
  */
 
-#include <assert.h>
 #include <string.h>
 
 #include <openssl/opensslconf.h>
