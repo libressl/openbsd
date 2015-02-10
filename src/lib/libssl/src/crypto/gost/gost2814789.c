@@ -1,4 +1,4 @@
-/* $OpenBSD: gost2814789.c,v 1.2 2014/11/09 23:06:52 miod Exp $ */
+/* $OpenBSD: gost2814789.c,v 1.3 2014/12/07 16:33:51 jsing Exp $ */
 /*
  * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Copyright (c) 2005-2006 Cryptocom LTD
@@ -212,8 +212,6 @@ Gost2814789_cfb64_encrypt(const unsigned char *in, unsigned char *out,
 	unsigned int n;
 	size_t l = 0;
 
-	OPENSSL_assert(in && out && key && ivec && num);
-
 	n = *num;
 
 	if (enc) {
@@ -356,8 +354,6 @@ Gost2814789_cnt_encrypt(const unsigned char *in, unsigned char *out, size_t len,
 {
 	unsigned int n;
 	size_t l = 0;
-
-	OPENSSL_assert(in && out && key && cnt_buf && num);
 
 	n = *num;
 

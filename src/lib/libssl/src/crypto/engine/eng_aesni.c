@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_aesni.c,v 1.6 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: eng_aesni.c,v 1.7 2014/07/11 08:44:48 jsing Exp $ */
 /*
  * Support for Intel AES-NI intruction set
  *   Author: Huang Ying <ying.huang@intel.com>
@@ -73,7 +73,6 @@
  *
  */
 
-#include <assert.h>
 #include <stdio.h>
 
 #include <openssl/opensslconf.h>
@@ -155,8 +154,6 @@ aesni_cfb128_encrypt(const unsigned char *in, unsigned char *out,
 {
 	unsigned int n;
 	size_t l = 0;
-
-	assert(in && out && key && ivec && num);
 
 	n = *num;
 
@@ -260,8 +257,6 @@ aesni_ofb128_encrypt(const unsigned char *in, unsigned char *out,
 {
 	unsigned int n;
 	size_t l = 0;
-
-	assert(in && out && key && ivec && num);
 
 	n = *num;
 
