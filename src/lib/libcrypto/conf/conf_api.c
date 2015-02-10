@@ -1,4 +1,4 @@
-/* $OpenBSD: conf_api.c,v 1.11 2014/06/23 22:19:02 deraadt Exp $ */
+/* $OpenBSD: conf_api.c,v 1.12 2015/02/07 13:19:15 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,7 +63,6 @@
 # define NDEBUG
 #endif
 
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
