@@ -1,4 +1,4 @@
-/* $OpenBSD: x_info.c,v 1.13 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: x_info.c,v 1.14 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -106,5 +106,3 @@ X509_INFO_free(X509_INFO *x)
 	free(x->enc_data);
 	free(x);
 }
-
-IMPLEMENT_STACK_OF(X509_INFO)
