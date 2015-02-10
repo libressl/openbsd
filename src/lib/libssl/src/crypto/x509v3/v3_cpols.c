@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_cpols.c,v 1.16 2014/10/05 18:27:33 miod Exp $ */
+/* $OpenBSD: v3_cpols.c,v 1.17 2015/02/09 16:03:11 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -612,6 +612,3 @@ X509_POLICY_NODE_print(BIO *out, X509_POLICY_NODE *node, int indent)
 	else
 		BIO_printf(out, "%*sNo Qualifiers\n", indent + 2, "");
 }
-
-IMPLEMENT_STACK_OF(X509_POLICY_NODE)
-IMPLEMENT_STACK_OF(X509_POLICY_DATA)

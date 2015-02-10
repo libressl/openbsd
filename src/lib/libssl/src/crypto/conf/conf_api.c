@@ -1,4 +1,4 @@
-/* $OpenBSD: conf_api.c,v 1.12 2015/02/07 13:19:15 doug Exp $ */
+/* $OpenBSD: conf_api.c,v 1.13 2015/02/10 09:50:12 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -289,5 +289,3 @@ err:
 	}
 	return (v);
 }
-
-IMPLEMENT_STACK_OF(CONF_VALUE)
