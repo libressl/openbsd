@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_lu.c,v 1.17 2014/07/11 12:52:41 miod Exp $ */
+/* $OpenBSD: x509_lu.c,v 1.18 2014/09/26 19:32:15 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -733,6 +733,3 @@ X509_STORE_set_verify_cb(X509_STORE *ctx,
 {
 	ctx->verify_cb = verify_cb;
 }
-
-IMPLEMENT_STACK_OF(X509_LOOKUP)
-IMPLEMENT_STACK_OF(X509_OBJECT)

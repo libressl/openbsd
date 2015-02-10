@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_purp.c,v 1.23 2014/10/05 18:33:57 miod Exp $ */
+/* $OpenBSD: v3_purp.c,v 1.24 2014/12/06 19:26:37 doug Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2001.
  */
@@ -102,8 +102,6 @@ static X509_PURPOSE xstandard[] = {
 };
 
 #define X509_PURPOSE_COUNT (sizeof(xstandard)/sizeof(X509_PURPOSE))
-
-IMPLEMENT_STACK_OF(X509_PURPOSE)
 
 static STACK_OF(X509_PURPOSE) *xptable = NULL;
 

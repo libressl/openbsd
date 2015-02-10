@@ -1,4 +1,4 @@
-/* $OpenBSD: a_strnid.c,v 1.17 2014/07/11 08:44:47 jsing Exp $ */
+/* $OpenBSD: a_strnid.c,v 1.18 2014/10/28 05:46:55 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -290,6 +290,3 @@ st_free(ASN1_STRING_TABLE *tbl)
 	if (tbl->flags & STABLE_FLAGS_MALLOC)
 		free(tbl);
 }
-
-
-IMPLEMENT_STACK_OF(ASN1_STRING_TABLE)
