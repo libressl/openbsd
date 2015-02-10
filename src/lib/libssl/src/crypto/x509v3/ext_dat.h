@@ -1,4 +1,4 @@
-/* $OpenBSD: ext_dat.h,v 1.10 2014/06/12 15:49:31 deraadt Exp $ */
+/* $OpenBSD: ext_dat.h,v 1.11 2014/07/10 22:45:58 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -103,10 +103,6 @@ static const X509V3_EXT_METHOD *standard_exts[] = {
 #endif
 	&v3_sxnet,
 	&v3_info,
-#ifndef OPENSSL_NO_RFC3779
-	&v3_addr,
-	&v3_asid,
-#endif
 #ifndef OPENSSL_NO_OCSP
 	&v3_ocsp_nonce,
 	&v3_ocsp_crlid,
