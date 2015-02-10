@@ -1,4 +1,4 @@
-/* $OpenBSD: aes_ige.c,v 1.5 2014/06/12 15:49:27 deraadt Exp $ */
+/* $OpenBSD: aes_ige.c,v 1.6 2014/07/11 08:44:47 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
@@ -81,10 +81,8 @@ AES_ige_encrypt(const unsigned char *in, unsigned char *out, size_t length,
     const AES_KEY *key, unsigned char *ivec, const int enc)
 {
 	size_t n;
-	size_t len = length;
+	size_t len;
 
-	OPENSSL_assert(in && out && key && ivec);
-	OPENSSL_assert((AES_ENCRYPT == enc) || (AES_DECRYPT == enc));
 	OPENSSL_assert((length % AES_BLOCK_SIZE) == 0);
 
 	len = length / AES_BLOCK_SIZE;
