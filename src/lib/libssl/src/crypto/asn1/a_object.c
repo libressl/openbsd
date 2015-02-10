@@ -1,4 +1,4 @@
-/* $OpenBSD: a_object.c,v 1.22 2014/07/12 16:03:36 miod Exp $ */
+/* $OpenBSD: a_object.c,v 1.23 2014/08/08 04:53:43 guenther Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -403,6 +403,3 @@ ASN1_OBJECT_create(int nid, unsigned char *data, int len,
 	    ASN1_OBJECT_FLAG_DYNAMIC_DATA;
 	return (OBJ_dup(&o));
 }
-
-IMPLEMENT_STACK_OF(ASN1_OBJECT)
-IMPLEMENT_ASN1_SET_OF(ASN1_OBJECT)
