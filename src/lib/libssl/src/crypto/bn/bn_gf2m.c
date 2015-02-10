@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_gf2m.c,v 1.16 2014/10/28 07:35:58 jsg Exp $ */
+/* $OpenBSD: bn_gf2m.c,v 1.17 2015/02/09 15:49:22 jsing Exp $ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
@@ -88,7 +88,6 @@
  *
  */
 
-#include <assert.h>
 #include <limits.h>
 #include <stdio.h>
 
