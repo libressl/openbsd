@@ -1,4 +1,4 @@
-/* $OpenBSD: digest.c,v 1.24 2014/11/09 19:12:18 miod Exp $ */
+/* $OpenBSD: digest.c,v 1.25 2015/02/10 09:52:35 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -114,6 +114,7 @@
 
 #include <openssl/opensslconf.h>
 
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 
