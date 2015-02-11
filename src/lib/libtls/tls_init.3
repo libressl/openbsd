@@ -1,4 +1,4 @@
-.\" $OpenBSD: tls_init.3,v 1.9 2015/02/07 06:19:26 jsing Exp $
+.\" $OpenBSD: tls_init.3,v 1.10 2015/02/07 23:45:06 reyk Exp $
 .\"
 .\" Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
 .\"
@@ -111,9 +111,9 @@
 .Ft "int"
 .Fn tls_connect "struct tls *ctx" "const char *host" "const char *port"
 .Ft "int"
-.Fn tls_connect_fds "struct tls *ctx" "int fd_read" "int fd_write" "const char *hostname"
+.Fn tls_connect_fds "struct tls *ctx" "int fd_read" "int fd_write" "const char *servername"
 .Ft "int"
-.Fn tls_connect_socket "struct tls *ctx" "int s" "const char *hostname"
+.Fn tls_connect_socket "struct tls *ctx" "int s" "const char *servername"
 .Ft "int"
 .Fn tls_accept_socket "struct tls *tls" "struct tls **cctx" "int socket"
 .Ft "int"
