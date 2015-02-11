@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: tb_pkmeth.c,v 1.4 2014/06/12 15:49:29 deraadt Exp $ */
 /* ====================================================================
  * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
  *
@@ -52,6 +52,8 @@
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
+#include <openssl/err.h>
 
 #include "eng_int.h"
 #include <openssl/evp.h>
