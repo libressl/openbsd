@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_lib.c,v 1.20 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: dsa_lib.c,v 1.21 2014/07/12 16:03:37 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -65,6 +65,7 @@
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/dsa.h>
+#include <openssl/err.h>
 
 #ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>

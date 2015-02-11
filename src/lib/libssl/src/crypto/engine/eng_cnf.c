@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_cnf.c,v 1.11 2014/06/22 11:33:47 jsing Exp $ */
+/* $OpenBSD: eng_cnf.c,v 1.12 2014/07/10 13:58:22 jsing Exp $ */
 /* Written by Stephen Henson (steve@openssl.org) for the OpenSSL
  * project 2001.
  */
@@ -57,6 +57,8 @@
  */
 
 #include <string.h>
+
+#include <openssl/err.h>
 
 #include "eng_int.h"
 #include <openssl/conf.h>

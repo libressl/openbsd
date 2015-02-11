@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_ctrl.c,v 1.8 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: eng_ctrl.c,v 1.9 2014/07/10 13:58:22 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1999-2001 The OpenSSL Project.  All rights reserved.
  *
@@ -54,6 +54,8 @@
  */
 
 #include <string.h>
+
+#include <openssl/err.h>
 
 #include "eng_int.h"
 
