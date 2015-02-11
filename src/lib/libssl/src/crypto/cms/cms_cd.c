@@ -1,4 +1,4 @@
-/* $OpenBSD: cms_cd.c,v 1.4 2014/07/10 22:45:56 jsing Exp $ */
+/* $OpenBSD: cms_cd.c,v 1.5 2014/07/11 08:44:48 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -60,9 +60,6 @@
 #include <openssl/pem.h>
 #include <openssl/x509v3.h>
 
-#ifndef OPENSSL_NO_COMP
-#include <openssl/comp.h>
-#endif
 
 #include "cms_lcl.h"
 
