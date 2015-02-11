@@ -1,4 +1,4 @@
-/* $OpenBSD: pmeth_lib.c,v 1.9 2014/07/12 16:03:37 miod Exp $ */
+/* $OpenBSD: pmeth_lib.c,v 1.10 2014/11/09 19:17:13 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -62,6 +62,7 @@
 
 #include <openssl/opensslconf.h>
 
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 

@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_openssl.c,v 1.8 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: eng_openssl.c,v 1.9 2014/07/11 08:44:48 jsing Exp $ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -69,6 +69,7 @@
 #include <openssl/crypto.h>
 #include <openssl/dso.h>
 #include <openssl/engine.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rand.h>

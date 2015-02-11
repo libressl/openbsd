@@ -1,4 +1,4 @@
-/* $OpenBSD: prime.c,v 1.4 2014/12/28 15:48:52 jsing Exp $ */
+/* $OpenBSD: prime.c,v 1.5 2015/01/13 03:42:36 lteo Exp $ */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
  *
@@ -54,6 +54,7 @@
 #include "apps.h"
 
 #include <openssl/bn.h>
+#include <openssl/err.h>
 
 struct {
 	int bits;
