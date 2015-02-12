@@ -1,4 +1,4 @@
-/* $OpenBSD: bss_fd.c,v 1.16 2014/07/10 22:45:56 jsing Exp $ */
+/* $OpenBSD: bss_fd.c,v 1.17 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,12 +63,6 @@
 
 #include <openssl/opensslconf.h>
 
-#if defined(OPENSSL_NO_POSIX_IO)
-/*
- * One can argue that one should implement dummy placeholder for
- * BIO_s_fd here...
- */
-#else
 #include <openssl/bio.h>
 
 static int fd_write(BIO *h, const char *buf, int num);
@@ -271,4 +265,3 @@ BIO_fd_non_fatal_error(int err)
 	}
 	return (0);
 }
-#endif

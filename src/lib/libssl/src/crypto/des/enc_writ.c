@@ -1,4 +1,4 @@
-/* $OpenBSD: enc_writ.c,v 1.12 2014/07/11 08:44:48 jsing Exp $ */
+/* $OpenBSD: enc_writ.c,v 1.13 2014/10/22 13:02:04 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -82,9 +82,6 @@
 int DES_enc_write(int fd, const void *_buf, int len,
 		  DES_key_schedule *sched, DES_cblock *iv)
 	{
-#if defined(OPENSSL_NO_POSIX_IO)
-	return (-1);
-#else
 #ifdef _LIBC
 	extern unsigned long time();
 	extern int write();
@@ -173,5 +170,4 @@ int DES_enc_write(int fd, const void *_buf, int len,
 		}
 
 	return(len);
-#endif /* OPENSSL_NO_POSIX_IO */
 	}
