@@ -122,7 +122,7 @@ tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *host)
 				data = ASN1_STRING_data(altname->d.dNSName);
 				len = ASN1_STRING_length(altname->d.dNSName);
 
-				if (len < 0 || len != strlen(data)) {
+				if (len < 0 || len != strlen((char *)data)) {
 					tls_set_error(ctx,
 					    "error verifying host '%s': "
 					    "NUL byte in subjectAltName, "
@@ -132,7 +132,7 @@ tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *host)
 					break;
 				}
 
-				if (tls_match_hostname(data, host) == 0) {
+				if (tls_match_hostname((char *)data, host) == 0) {
 					rv = 0;
 					break;
 				}

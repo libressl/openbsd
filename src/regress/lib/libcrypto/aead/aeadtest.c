@@ -255,7 +255,7 @@ main(int argc, char **argv)
 			if (!any_values_set)
 				continue;
 
-			switch (aead_from_name(&aead, bufs[AEAD])) {
+			switch (aead_from_name(&aead, (char *)bufs[AEAD])) {
 			case 0:
 				fprintf(stderr, "Skipping test...\n");
 				continue;
@@ -318,7 +318,7 @@ main(int argc, char **argv)
 		}
 
 		if (j == AEAD) {
-			*buf_len = strlcpy(buf, line + i, BUF_MAX);
+			*buf_len = strlcpy((char *)buf, line + i, BUF_MAX);
 			for (j = 0; j < BUF_MAX; j++) {
 				if (buf[j] == '\n')
 					buf[j] = '\0';
