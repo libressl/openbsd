@@ -1,4 +1,4 @@
-/* $OpenBSD: ecp_mont.c,v 1.8 2014/06/12 15:49:29 deraadt Exp $ */
+/* $OpenBSD: ecp_mont.c,v 1.9 2014/07/12 16:03:37 miod Exp $ */
 /*
  * Originally written by Bodo Moeller for the OpenSSL project.
  */
@@ -228,6 +228,7 @@ ec_GFp_mont_group_set_curve(EC_GROUP *group, const BIGNUM *p, const BIGNUM *a,
 err:
 	BN_CTX_free(new_ctx);
 	BN_MONT_CTX_free(mont);
+	BN_free(one);
 	return ret;
 }
 
