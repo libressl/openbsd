@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_cpols.c,v 1.17 2015/02/09 16:03:11 jsing Exp $ */
+/* $OpenBSD: v3_cpols.c,v 1.18 2015/02/10 11:22:22 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -461,6 +461,9 @@ notice_section(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *unot, int ia5org)
 				X509V3err(X509V3_F_NOTICE_SECTION,
 				    X509V3_R_INVALID_NUMBERS);
 				X509V3_conf_err(cnf);
+				if (nos != NULL)
+					sk_CONF_VALUE_pop_free(nos,
+					    X509V3_conf_free);
 				goto err;
 			}
 			ret = nref_nos(nref->noticenos, nos);
