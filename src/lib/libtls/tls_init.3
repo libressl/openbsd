@@ -1,4 +1,4 @@
-.\" $OpenBSD: tls_init.3,v 1.13 2015/02/15 13:33:14 jsing Exp $
+.\" $OpenBSD: tls_init.3,v 1.14 2015/02/15 13:36:06 jsing Exp $
 .\"
 .\" Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
 .\"
@@ -135,6 +135,7 @@ Both clients and servers are supported.
 The
 .Fn tls_init
 function should be called once before any function is used.
+It may be called more than once, but not concurrently.
 .Pp
 Before a connection is created, a configuration must be created.
 The
@@ -381,7 +382,30 @@ Functions that return
 .Vt int
 will return 0 on success and -1 on error.
 Functions that return a pointer will return NULL on error.
-.\" .Sh ERRORS
+.Pp
+The
+.Fn tls_read
+and
+.Fn tls_write
+functions and the
+.Fn tls_connect
+family of functions have two special return values.
+.Pp
+.Bl -tag -width "TLS_WRITE_AGAIN" -offset indent -compact
+.It Dv TLS_READ_AGAIN
+A read operation is necessary to continue.
+.It Dv TLS_WRITE_AGAIN
+A write operation is necessary to continue.
+.El
+.Pp
+The caller should call the appropriate function, or in the case of
+.Fn tls_connect ,
+repeat the call.
+.Sh ERRORS
+The
+.Fn tls_error
+function may be used to retrieve a string containing more information
+about the most recent error.
 .\" .Sh SEE ALSO
 .Sh HISTORY
 The
