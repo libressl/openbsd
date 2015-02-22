@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_enc.c,v 1.57 2014/12/10 15:43:31 jsing Exp $ */
+/* $OpenBSD: s3_enc.c,v 1.58 2014/12/15 00:46:53 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -846,6 +846,8 @@ ssl3_alert_code(int code)
 		return (SSL3_AD_HANDSHAKE_FAILURE);
 	case SSL_AD_UNKNOWN_PSK_IDENTITY:
 		return (TLS1_AD_UNKNOWN_PSK_IDENTITY);
+	case SSL_AD_INAPPROPRIATE_FALLBACK:
+		return (TLS1_AD_INAPPROPRIATE_FALLBACK);
 	default:
 		return (-1);
 	}
