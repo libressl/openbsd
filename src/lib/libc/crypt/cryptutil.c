@@ -1,4 +1,4 @@
-/* $OpenBSD: cryptutil.c,v 1.7 2014/12/30 10:27:24 tedu Exp $ */
+/* $OpenBSD: cryptutil.c,v 1.8 2015/01/15 17:32:43 chl Exp $ */
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
  *
@@ -69,8 +69,10 @@ crypt_newhash(const char *pass, const char *pref, char *hash, size_t hashlen)
 		rounds = bcrypt_autorounds();
 	} else {
 		rounds = strtonum(pref + 9, 4, 31, &errstr);
-		if (errstr)
+		if (errstr) {
+			errno = EINVAL;
 			goto err;
+		}
 	}
 	rv = bcrypt_newhash(pass, rounds, hash, hashlen);
 
