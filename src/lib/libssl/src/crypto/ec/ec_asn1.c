@@ -1043,13 +1043,8 @@ d2i_ECPrivateKey(EC_KEY ** a, const unsigned char **in, long len)
 	EC_KEY *ret = NULL;
 	EC_PRIVATEKEY *priv_key = NULL;
 
-	if ((priv_key = EC_PRIVATEKEY_new()) == NULL) {
-		ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_MALLOC_FAILURE);
-		return NULL;
-	}
-	if ((priv_key = d2i_EC_PRIVATEKEY(&priv_key, in, len)) == NULL) {
+	if ((priv_key = d2i_EC_PRIVATEKEY(NULL, in, len)) == NULL) {
 		ECerr(EC_F_D2I_ECPRIVATEKEY, ERR_R_EC_LIB);
-		EC_PRIVATEKEY_free(priv_key);
 		return NULL;
 	}
 	if (a == NULL || *a == NULL) {
@@ -1109,10 +1104,12 @@ d2i_ECPrivateKey(EC_KEY ** a, const unsigned char **in, long len)
 			goto err;
 		}
 	}
+	if (a)
+		*a = ret;
 	ok = 1;
 err:
 	if (!ok) {
-		if (ret)
+		if (ret) && (a == NULL || *a != ret))
 			EC_KEY_free(ret);
 		ret = NULL;
 	}
