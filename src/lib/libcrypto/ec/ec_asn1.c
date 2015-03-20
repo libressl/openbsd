@@ -1,4 +1,4 @@
-/* $OpenBSD: ec_asn1.c,v 1.12 2015/02/10 05:43:09 jsing Exp $ */
+/* $OpenBSD: ec_asn1.c,v 1.13 2015/03/19 14:00:22 tedu Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -1235,6 +1235,8 @@ d2i_ECParameters(EC_KEY ** a, const unsigned char **in, long len)
 
 	if (!d2i_ECPKParameters(&ret->group, in, len)) {
 		ECerr(EC_F_D2I_ECPARAMETERS, ERR_R_EC_LIB);
+		if (a == NULL || *a != ret)
+			EC_KEY_free(ret);
 		return NULL;
 	}
 
