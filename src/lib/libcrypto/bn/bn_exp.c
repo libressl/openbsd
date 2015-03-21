@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_exp.c,v 1.20 2015/02/09 15:49:22 jsing Exp $ */
+/* $OpenBSD: bn_exp.c,v 1.21 2015/02/14 15:13:24 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -874,7 +874,8 @@ BN_mod_exp_mont_word(BIGNUM *rr, BN_ULONG a, const BIGNUM *p, const BIGNUM *m,
 	}
 	if (m->top == 1)
 		a %= m->d[0]; /* make sure that 'a' is reduced */
-		bits = BN_num_bits(p);
+
+	bits = BN_num_bits(p);
 	if (bits == 0) {
 		ret = BN_one(rr);
 		return ret;

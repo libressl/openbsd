@@ -1,4 +1,4 @@
-/* $OpenBSD: bss_mem.c,v 1.12 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: bss_mem.c,v 1.13 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -142,7 +142,7 @@ mem_free(BIO *a)
 			b = (BUF_MEM *)a->ptr;
 			if (a->flags & BIO_FLAGS_MEM_RDONLY)
 				b->data = NULL;
-				BUF_MEM_free(b);
+			BUF_MEM_free(b);
 			a->ptr = NULL;
 		}
 	}
