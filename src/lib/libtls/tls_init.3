@@ -391,9 +391,9 @@ will return 0 on success and -1 on error.
 Functions that return a pointer will return NULL on error.
 .Pp
 The
-.Fn tls_read
-and
-.Fn tls_write
+.Fn tls_read ,
+.Fn tls_write , and
+.Fn tls_close
 functions and the
 .Fn tls_connect
 family of functions have two special return values.
@@ -406,7 +406,9 @@ A write operation is necessary to continue.
 .El
 .Pp
 The caller should call the appropriate function, or in the case of
-.Fn tls_connect ,
+.Fn tls_connect
+and
+.Fn tls_close ,
 repeat the call.
 .Sh ERRORS
 The
