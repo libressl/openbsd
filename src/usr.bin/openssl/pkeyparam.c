@@ -107,6 +107,8 @@ pkeyparam_main(int argc, char **argv)
 			text = 1;
 		else if (strcmp(*args, "-noout") == 0)
 			noout = 1;
+		else
+			badarg = 1;
 		args++;
 	}
 
