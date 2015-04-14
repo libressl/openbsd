@@ -1,4 +1,4 @@
-/* $OpenBSD: s_time.c,v 1.4 2015/02/08 10:22:45 doug Exp $ */
+/* $OpenBSD: s_time.c,v 1.5 2015/04/14 11:45:00 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -94,8 +94,6 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
 #define SECONDS	30
-extern int verify_depth;
-extern int verify_error;
 
 static void s_time_usage(void);
 static SSL *doConnection(SSL * scon);
