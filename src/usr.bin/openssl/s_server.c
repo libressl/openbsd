@@ -1,4 +1,4 @@
-/* $OpenBSD: s_server.c,v 1.8 2014/12/10 15:24:01 jsing Exp $ */
+/* $OpenBSD: s_server.c,v 1.9 2014/12/14 14:42:06 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -201,8 +201,6 @@ static int accept_socket = -1;
 
 #define TEST_CERT	"server.pem"
 #define TEST_CERT2	"server2.pem"
-
-extern int verify_depth, verify_return_error;
 
 static char *cipher = NULL;
 static int s_server_verify = SSL_VERIFY_NONE;
