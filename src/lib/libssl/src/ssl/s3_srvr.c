@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_srvr.c,v 1.100 2015/02/25 03:49:21 bcook Exp $ */
+/* $OpenBSD: s3_srvr.c,v 1.101 2015/03/27 12:29:54 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -988,9 +988,9 @@ ssl3_get_client_hello(SSL *s)
 	}
 	if (p + i - d > n)
 		goto truncated;
-	if ((i > 0) &&
-	    (ssl_bytes_to_cipher_list(s, p, i, &(ciphers)) == NULL)) {
-		goto err;
+	if (i > 0) {
+		if ((ciphers = ssl_bytes_to_cipher_list(s, p, i)) == NULL)
+			goto err;
 	}
 	p += i;
 
