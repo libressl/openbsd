@@ -1,4 +1,4 @@
-/* $OpenBSD: b_dump.c,v 1.19 2014/07/11 08:44:47 jsing Exp $ */
+/* $OpenBSD: b_dump.c,v 1.20 2014/11/11 19:26:12 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -107,7 +107,6 @@ BIO_dump_indent_cb(int (*cb)(const void *data, size_t len, void *u),
 	if ((rows * dump_width) < len)
 		rows++;
 	for (i = 0; i < rows; i++) {
-		buf[0] = '\0';	/* start with empty string */
 		strlcpy(buf, str, sizeof buf);
 		snprintf(tmp, sizeof tmp, "%04x - ", i*dump_width);
 		strlcat(buf, tmp, sizeof buf);
