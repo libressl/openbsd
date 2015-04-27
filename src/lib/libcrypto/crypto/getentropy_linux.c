@@ -27,8 +27,9 @@
 #include <sys/ioctl.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
-#ifdef HAVE_SYS_SYSCTL_H
+#ifdef SYS__sysctl
 #include <sys/sysctl.h>
+#include <linux/sysctl.h>
 #endif
 #include <sys/statvfs.h>
 #include <sys/socket.h>
