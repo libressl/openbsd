@@ -21,6 +21,14 @@
 #include <tls.h>
 #include "tls_internal.h"
 
+static int insecure_always_accept_verify_callback(int ok, X509_STORE_CTX *ctx);
+
+static int
+insecure_always_accept_verify_callback(int ok, X509_STORE_CTX *ctx)
+{
+    return 1;
+}
+
 struct tls *
 tls_server(void)
 {
@@ -62,6 +70,13 @@ tls_configure_server(struct tls *ctx)
 		goto err;
 	if (tls_configure_keypair(ctx) != 0)
 		goto err;
+
+	if (ctx->config->verify_cert) {
+		SSL_CTX_set_verify(ctx->ssl_ctx, SSL_VERIFY_PEER, NULL);
+	} else {
+		SSL_CTX_set_verify(ctx->ssl_ctx, SSL_VERIFY_PEER,
+		                   insecure_always_accept_verify_callback);
+	}
 
 	if (ctx->config->dheparams == -1)
 		SSL_CTX_set_dh_auto(ctx->ssl_ctx, 1);
