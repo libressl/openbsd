@@ -95,6 +95,7 @@ int tls_close(struct tls *_ctx);
 
 uint8_t *tls_load_file(const char *_file, size_t *_len, char *_password);
 
+int tls_get_cert_fingerprint(struct tls *_ctx, char *_buf, size_t _buflen);
 #ifdef __cplusplus
 }
 #endif
