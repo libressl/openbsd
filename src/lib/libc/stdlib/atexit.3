@@ -29,9 +29,9 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	$OpenBSD: atexit.3,v 1.9 2013/06/05 03:39:23 tedu Exp $
+.\"	$OpenBSD: atexit.3,v 1.10 2014/11/20 04:55:43 guenther Exp $
 .\"
-.Dd $Mdocdate: June 5 2013 $
+.Dd $Mdocdate: November 20 2014 $
 .Dt ATEXIT 3
 .Os
 .Sh NAME
@@ -78,6 +78,7 @@ No memory was available to add the function to the list.
 The existing list of functions is unmodified.
 .El
 .Sh SEE ALSO
+.Xr dlclose 3 ,
 .Xr exit 3
 .Sh STANDARDS
 The
