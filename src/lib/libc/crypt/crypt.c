@@ -1,4 +1,4 @@
-/*	$OpenBSD: crypt.c,v 1.26 2015/01/16 16:48:51 deraadt Exp $	*/
+/*	$OpenBSD: crypt.c,v 1.27 2015/04/06 20:49:41 tedu Exp $	*/
 
 #include <pwd.h>
 
@@ -13,4 +13,6 @@ crypt(const char *key, const char *setting)
 			return (NULL);
 		}
 	}
+
+	return (NULL);
 }
