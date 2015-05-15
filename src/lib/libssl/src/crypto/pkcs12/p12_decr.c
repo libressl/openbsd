@@ -1,4 +1,4 @@
-/* $OpenBSD: p12_decr.c,v 1.13 2014/07/11 08:44:49 jsing Exp $ */
+/* $OpenBSD: p12_decr.c,v 1.14 2015/02/14 12:43:07 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -77,9 +77,10 @@ PKCS12_pbe_crypt(X509_ALGOR *algor, const char *pass, int passlen,
 	/* Decrypt data */
 	if (!EVP_PBE_CipherInit(algor->algorithm, pass, passlen,
 	    algor->parameter, &ctx, en_de)) {
+		out = NULL;
 		PKCS12err(PKCS12_F_PKCS12_PBE_CRYPT,
 		    PKCS12_R_PKCS12_ALGOR_CIPHERINIT_ERROR);
-		return NULL;
+		goto err;
 	}
 
 	if (!(out = malloc(inlen + EVP_CIPHER_CTX_block_size(&ctx)))) {
