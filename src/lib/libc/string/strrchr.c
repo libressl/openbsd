@@ -1,4 +1,4 @@
-/*	$OpenBSD: rindex.c,v 1.6 2005/08/08 08:05:37 espie Exp $ */
+/*	$OpenBSD: strrchr.c,v 1.1 2014/11/30 19:43:57 deraadt Exp $ */
 /*
  * Copyright (c) 1988 Regents of the University of California.
  * All rights reserved.
@@ -29,6 +29,8 @@
  */
 
 #include <string.h>
+
+__weak_alias(rindex, strrchr);
 
 char *
 strrchr(const char *p, int ch)
