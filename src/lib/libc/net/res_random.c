@@ -1,4 +1,4 @@
-/* $OpenBSD: res_random.c,v 1.20 2013/11/12 07:00:24 deraadt Exp $ */
+/* $OpenBSD: res_random.c,v 1.21 2014/07/20 04:22:34 guenther Exp $ */
 
 /*
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
@@ -101,6 +101,7 @@ static u_int16_t ru_counter = 0;
 static u_int16_t ru_msb = 0;
 static struct prf_ctx *ru_prf = NULL;
 static time_t ru_reseed;
+static pid_t ru_pid;
 
 static u_int16_t pmod(u_int16_t, u_int16_t, u_int16_t);
 static void res_initid(void);
@@ -227,15 +228,19 @@ u_int
 res_randomid(void)
 {
 	struct timespec ts;
+	pid_t pid;
 	u_int r;
 	_THREAD_PRIVATE_MUTEX(random);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts);
+	pid = getpid();
 
 	_THREAD_PRIVATE_MUTEX_LOCK(random);
 
-	if (ru_counter >= RU_MAX || ts.tv_sec > ru_reseed)
+	if (ru_counter >= RU_MAX || ts.tv_sec > ru_reseed || pid != ru_pid) {
 		res_initid();
+		ru_pid = pid;
+	}
 
 	/* Linear Congruential Generator */
 	ru_x = (ru_a * ru_x + ru_b) % RU_M;
