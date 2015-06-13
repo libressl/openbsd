@@ -1,4 +1,4 @@
-/*	$OpenBSD: bs_cbs.c,v 1.6 2015/04/29 01:27:34 doug Exp $	*/
+/*	$OpenBSD: bs_cbs.c,v 1.7 2015/04/29 02:11:09 doug Exp $	*/
 /*
  * Copyright (c) 2014, Google Inc.
  *
@@ -312,6 +312,13 @@ int
 CBS_peek_asn1_tag(const CBS *cbs, unsigned tag_value)
 {
 	if (CBS_len(cbs) < 1)
+		return 0;
+
+	/*
+	 * Tag number 31 indicates the start of a long form number.
+	 * This is valid in ASN.1, but CBS only supports short form.
+	 */
+	if ((tag_value & 0x1f) == 0x1f)
 		return 0;
 
 	return CBS_data(cbs)[0] == tag_value;
