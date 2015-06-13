@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_eay.c,v 1.37 2015/02/09 15:49:22 jsing Exp $ */
+/* $OpenBSD: rsa_eay.c,v 1.38 2015/02/14 15:10:39 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -393,7 +393,7 @@ RSA_eay_private_encrypt(int flen, const unsigned char *from, unsigned char *to,
 	if (BN_bin2bn(buf, num, f) == NULL)
 		goto err;
 
-		if (BN_ucmp(f, rsa->n) >= 0) {
+	if (BN_ucmp(f, rsa->n) >= 0) {
 		/* usually the padding functions would catch this */
 		RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT,
 		    RSA_R_DATA_TOO_LARGE_FOR_MODULUS);
