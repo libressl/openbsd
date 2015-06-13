@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_pkt.c,v 1.39 2015/01/21 00:15:50 doug Exp $ */
+/* $OpenBSD: d1_pkt.c,v 1.40 2015/02/09 10:53:28 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -1437,7 +1437,7 @@ dtls1_dispatch_alert(SSL *s)
 		|| s->s3->send_alert[1] == DTLS1_AD_MISSING_HANDSHAKE_MESSAGE
 #endif
 		)
-		(void)BIO_flush(s->wbio);
+			(void)BIO_flush(s->wbio);
 
 		if (s->msg_callback)
 			s->msg_callback(1, s->version, SSL3_RT_ALERT,
