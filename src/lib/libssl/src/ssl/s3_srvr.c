@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_srvr.c,v 1.102 2015/04/15 16:25:43 jsing Exp $ */
+/* $OpenBSD: s3_srvr.c,v 1.103 2015/05/15 11:00:14 jsg Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1867,14 +1867,9 @@ ssl3_get_client_key_exchange(SSL *s)
 			goto truncated;
 		n2s(p, i);
 		if (n != i + 2) {
-			if (!(s->options & SSL_OP_SSLEAY_080_CLIENT_DH_BUG)) {
-				SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
-				    SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
-				goto err;
-			} else {
-				p -= 2;
-				i = (int)n;
-			}
+			SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE,
+			    SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG);
+			goto err;
 		}
 
 		if (n == 0L) {
