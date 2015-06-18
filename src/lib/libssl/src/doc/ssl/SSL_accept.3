@@ -1,7 +1,7 @@
 .\"
-.\"	$OpenBSD$
+.\"	$OpenBSD: SSL_accept.3,v 1.2 2014/12/02 14:11:01 jmc Exp $
 .\"
-.Dd $Mdocdate: October 12 2014 $
+.Dd $Mdocdate: December 2 2014 $
 .Dt SSL_ACCEPT 3
 .Os
 .Sh NAME
@@ -29,17 +29,7 @@ If the underlying
 is
 .Em blocking ,
 .Fn SSL_accept
-will only return once the handshake has been finished or an error occurred,
-except for SGC (Server Gated Cryptography).
-For SGC,
-.Fn SSL_accept
-may return with \(mi1, but
-.Fn SSL_get_error
-will yield
-.Dv SSL_ERROR_WANT_READ/WRITE
-and
-.Fn SSL_accept
-should be called again.
+will only return once the handshake has been finished or an error occurred.
 .Pp
 If the underlying
 .Vt BIO
