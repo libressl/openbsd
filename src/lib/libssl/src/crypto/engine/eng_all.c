@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_all.c,v 1.26 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: eng_all.c,v 1.27 2015/02/07 13:19:15 doug Exp $ */
 /* Written by Richard Levitte <richard@levitte.org> for the OpenSSL
  * project 2000.
  */
@@ -70,7 +70,6 @@ ENGINE_load_builtin_engines(void)
 #ifndef OPENSSL_NO_RSAX
 	ENGINE_load_rsax();
 #endif
-	ENGINE_load_dynamic();
 #ifndef OPENSSL_NO_STATIC_ENGINE
 #ifndef OPENSSL_NO_HW
 #ifndef OPENSSL_NO_HW_PADLOCK
