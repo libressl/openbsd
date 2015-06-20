@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.19 2015/02/23 17:43:24 schwarze Exp $
+# $OpenBSD: Makefile,v 1.20 2015/05/24 15:44:52 schwarze Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -645,7 +645,6 @@ MLINKS+=\
 	EVP_DigestInit.3 EVP_md2.3 \
 	EVP_DigestInit.3 EVP_md5.3 \
 	EVP_DigestInit.3 EVP_md_null.3 \
-	EVP_DigestInit.3 EVP_mdc2.3 \
 	EVP_DigestInit.3 EVP_ripemd160.3 \
 	EVP_DigestInit.3 EVP_sha.3 \
 	EVP_DigestInit.3 EVP_sha1.3 \
