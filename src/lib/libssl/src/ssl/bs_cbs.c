@@ -1,4 +1,4 @@
-/*	$OpenBSD: bs_cbs.c,v 1.13 2015/06/17 07:25:56 doug Exp $	*/
+/*	$OpenBSD: bs_cbs.c,v 1.14 2015/06/19 00:23:36 doug Exp $	*/
 /*
  * Copyright (c) 2014, Google Inc.
  *
@@ -127,7 +127,7 @@ CBS_mem_equal(const CBS *cbs, const uint8_t *data, size_t len)
 	if (len != cbs->len)
 		return 0;
 
-	return CRYPTO_memcmp(cbs->data, data, len) == 0;
+	return timingsafe_memcmp(cbs->data, data, len) == 0;
 }
 
 static int
