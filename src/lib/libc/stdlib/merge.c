@@ -1,4 +1,4 @@
-/*	$OpenBSD: merge.c,v 1.8 2005/08/08 08:05:37 espie Exp $ */
+/*	$OpenBSD: merge.c,v 1.9 2011/03/06 00:55:38 deraadt Exp $ */
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -100,6 +100,9 @@ mergesort(void *base, size_t nmemb, size_t size,
 		errno = EINVAL;
 		return (-1);
 	}
+
+	if (nmemb == 0)
+		return (0);
 
 	/*
 	 * XXX
