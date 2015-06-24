@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_clnt.c,v 1.112 2015/06/15 05:32:58 doug Exp $ */
+/* $OpenBSD: s3_clnt.c,v 1.113 2015/06/20 18:19:56 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1815,13 +1815,13 @@ ssl3_get_cert_status(SSL *s)
 		goto f_err;
 	}
 	free(s->tlsext_ocsp_resp);
-	s->tlsext_ocsp_resp = BUF_memdup(p, resplen);
-	if (!s->tlsext_ocsp_resp) {
+	if ((s->tlsext_ocsp_resp = malloc(resplen)) == NULL) {
 		al = SSL_AD_INTERNAL_ERROR;
 		SSLerr(SSL_F_SSL3_GET_CERT_STATUS,
 		    ERR_R_MALLOC_FAILURE);
 		goto f_err;
 	}
+	memcpy(s->tlsext_ocsp_resp, p, resplen);
 	s->tlsext_ocsp_resplen = resplen;
 	if (s->ctx->tlsext_status_cb) {
 		int ret;
