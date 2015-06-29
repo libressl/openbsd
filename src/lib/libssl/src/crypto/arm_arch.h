@@ -1,4 +1,4 @@
-/* $OpenBSD: arm_arch.h,v 1.5 2014/06/13 20:47:19 miod Exp $ */
+/* $OpenBSD: arm_arch.h,v 1.6 2014/12/07 15:37:27 miod Exp $ */
 #ifndef __ARM_ARCH_H__
 #define __ARM_ARCH_H__
 
@@ -38,7 +38,7 @@
 # endif
 #endif
 
-#if !__ASSEMBLER__
+#if !defined(__ASSEMBLER__)
 extern unsigned int OPENSSL_armcap_P;
 
 #define ARMV7_NEON      (1<<0)
