@@ -1,4 +1,4 @@
-/* $OpenBSD: a_mbstr.c,v 1.20 2014/09/21 12:14:34 miod Exp $ */
+/* $OpenBSD: a_mbstr.c,v 1.21 2014/10/12 20:47:12 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -288,7 +288,7 @@ traverse_string(const unsigned char *p, int len, int inform,
 			len -= 2;
 			break;
 		case MBSTRING_UNIV:
-			value = *p++ << 24;
+			value = (unsigned long)*p++ << 24;
 			value |= *p++ << 16;
 			value |= *p++ << 8;
 			value |= *p++;
