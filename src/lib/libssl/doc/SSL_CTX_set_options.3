@@ -1,5 +1,5 @@
 .\"
-.\"	$OpenBSD: SSL_CTX_set_options.3,v 1.5 2015/06/15 05:16:56 doug Exp $
+.\"	$OpenBSD: SSL_CTX_set_options.3,v 1.6 2015/06/15 05:32:58 doug Exp $
 .\"
 .Dd $Mdocdate: June 15 2015 $
 .Dt SSL_CTX_SET_OPTIONS 3
@@ -125,7 +125,9 @@ this option has no effect.
 .It Dv SSL_OP_TLS_D5_BUG
 \&...
 .It Dv SSL_OP_TLS_BLOCK_PADDING_BUG
-\&...
+As of
+.Ox 5.8 ,
+this option has no effect.
 .It Dv SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
 Disables a countermeasure against a SSL 3.0/TLS 1.0 protocol vulnerability
 affecting CBC ciphers, which cannot be handled by some broken SSL
