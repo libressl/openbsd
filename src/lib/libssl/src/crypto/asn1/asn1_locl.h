@@ -146,6 +146,3 @@ struct x509_crl_method_st {
 
 #define	UNICODE_IS_SURROGATE(x) \
 	((x) >= UNICODE_SURROGATE_MIN && (x) <= UNICODE_SURROGATE_MAX)
-
-int UTF8_getc(const unsigned char *str, int len, unsigned long *val);
-int UTF8_putc(unsigned char *str, int len, unsigned long value);
