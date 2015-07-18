@@ -1,4 +1,4 @@
-/* $OpenBSD: bss_acpt.c,v 1.24 2014/07/13 16:03:09 beck Exp $ */
+/* $OpenBSD: bss_acpt.c,v 1.25 2014/07/25 06:05:32 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -270,8 +270,6 @@ again:
 err:
 		if (bio != NULL)
 			BIO_free(bio);
-		else if (s >= 0)
-			close(s);
 		return (0);
 		/* break; */
 	case ACPT_S_OK:
