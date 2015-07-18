@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.c,v 1.9 2015/04/02 13:19:15 jsing Exp $ */
+/* $OpenBSD: tls.c,v 1.11 2015/04/15 16:08:43 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -183,6 +183,9 @@ err:
 int
 tls_configure_ssl(struct tls *ctx)
 {
+	SSL_CTX_set_mode(ctx->ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
+	SSL_CTX_set_mode(ctx->ssl_ctx, SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
+
 	SSL_CTX_set_options(ctx->ssl_ctx, SSL_OP_NO_SSLv2);
 	SSL_CTX_set_options(ctx->ssl_ctx, SSL_OP_NO_SSLv3);
 
