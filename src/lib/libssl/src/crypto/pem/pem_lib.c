@@ -1,4 +1,4 @@
-/* $OpenBSD: pem_lib.c,v 1.39 2015/02/11 04:05:14 beck Exp $ */
+/* $OpenBSD: pem_lib.c,v 1.40 2015/07/16 02:14:48 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -370,7 +370,7 @@ PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp, void *x,
 	}
 	/* dzise + 8 bytes are needed */
 	/* actually it needs the cipher block size extra... */
-	data = malloc((unsigned int)dsize + 20);
+	data = malloc(dsize + 20);
 	if (data == NULL) {
 		PEMerr(PEM_F_PEM_ASN1_WRITE_BIO, ERR_R_MALLOC_FAILURE);
 		goto err;
