@@ -221,6 +221,8 @@ tls_free(struct tls *ctx)
 		return;
 	tls_reset(ctx);
 	free(ctx);
+	if (tls_config_default != NULL)
+		tls_config_free(tls_config_default);
 }
 
 void
