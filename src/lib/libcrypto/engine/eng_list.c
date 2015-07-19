@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_list.c,v 1.19 2015/06/19 06:05:11 bcook Exp $ */
+/* $OpenBSD: eng_list.c,v 1.20 2015/06/19 06:32:43 bcook Exp $ */
 /* Written by Geoff Thorpe (geoff@geoffthorpe.net) for the OpenSSL
  * project 2000.
  */
@@ -92,11 +92,8 @@ engine_list_cleanup(void)
 {
 	ENGINE *iterator = engine_list_head;
 
-	while (iterator != NULL) {
-		ENGINE_remove(iterator);
+	while (iterator != NULL && ENGINE_remove(iterator))
 		iterator = engine_list_head;
-	}
-	return;
 }
 
 /* These static functions starting with a lower case "engine_" always
