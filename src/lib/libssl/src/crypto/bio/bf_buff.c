@@ -1,4 +1,4 @@
-/* $OpenBSD: bf_buff.c,v 1.20 2014/07/10 13:58:22 jsing Exp $ */
+/* $OpenBSD: bf_buff.c,v 1.21 2014/07/11 08:44:47 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -426,7 +426,6 @@ buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 			} else {
 				ctx->obuf_len = 0;
 				ctx->obuf_off = 0;
-				ret = 1;
 				break;
 			}
 		}
