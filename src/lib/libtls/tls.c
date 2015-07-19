@@ -55,6 +55,9 @@ tls_init(void)
 const char *
 tls_error(struct tls *ctx)
 {
+	if (ctx == NULL)
+		return NULL;
+
 	return ctx->errmsg;
 }
 
@@ -63,6 +66,9 @@ tls_set_error(struct tls *ctx, char *fmt, ...)
 {
 	va_list ap;
 	int rv;
+
+        if (ctx == NULL || ftm == NULL)
+		return (-1);
 
 	ctx->err = errno;
 	free(ctx->errmsg);
@@ -93,6 +99,9 @@ tls_new(void)
 int
 tls_configure(struct tls *ctx, struct tls_config *config)
 {
+	if (ctx == NULL)
+		return (-1);
+	
 	if (config == NULL)
 		config = tls_config_default;
 
@@ -110,6 +119,9 @@ tls_configure_keypair(struct tls *ctx)
 	EVP_PKEY *pkey = NULL;
 	X509 *cert = NULL;
 	BIO *bio = NULL;
+
+	if (ctx == NULL)
+		return (-1);
 
 	if (ctx->config->cert_mem != NULL) {
 		if (ctx->config->cert_len > INT_MAX) {
@@ -183,6 +195,9 @@ err:
 int
 tls_configure_ssl(struct tls *ctx)
 {
+	if (ctx == NULL)
+		return (-1);
+
 	SSL_CTX_set_mode(ctx->ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
 	SSL_CTX_set_mode(ctx->ssl_ctx, SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 
@@ -228,6 +243,9 @@ tls_free(struct tls *ctx)
 void
 tls_reset(struct tls *ctx)
 {
+	if (ctx == NULL)
+		return -1;
+
 	SSL_CTX_free(ctx->ssl_ctx);
 	SSL_free(ctx->ssl_conn);
 
@@ -247,6 +265,9 @@ tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret, const char *prefix)
 	const char *errstr = "unknown error";
 	unsigned long err;
 	int ssl_err;
+
+	if (ctx == NULL)
+		return (-1);
 
 	ssl_err = SSL_get_error(ssl_conn, ssl_ret);
 	switch (ssl_err) {
@@ -292,6 +313,9 @@ tls_read(struct tls *ctx, void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
 
+	if (ctx == NULL)
+		return (-1);
+
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
 		return (-1);
@@ -312,6 +336,9 @@ int
 tls_write(struct tls *ctx, const void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
+
+	if (ctx == NULL)
+		return (-1);
 
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
@@ -334,6 +361,9 @@ tls_close(struct tls *ctx)
 {
 	int ssl_ret;
 	int rv = 0;
+
+	if (ctx == NULL)
+		return (-1);
 
 	if (ctx->ssl_conn != NULL) {
 		ssl_ret = SSL_shutdown(ctx->ssl_conn);
