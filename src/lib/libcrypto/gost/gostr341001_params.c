@@ -1,4 +1,4 @@
-/* $OpenBSD: gostr341001_params.c,v 1.1 2014/11/09 19:17:13 miod Exp $ */
+/* $OpenBSD: gostr341001_params.c,v 1.2 2014/11/09 23:06:52 miod Exp $ */
 /*
  * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Copyright (c) 2005-2006 Cryptocom LTD
@@ -49,7 +49,7 @@
  * ====================================================================
  */
 
-#include <strings.h>
+#include <string.h>
 
 #include <openssl/opensslconf.h>
 
