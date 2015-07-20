@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.8 2014/12/28 15:48:52 jsing Exp $ */
+/* $OpenBSD: ecparam.c,v 1.9 2015/06/20 14:24:49 jsing Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -406,8 +406,6 @@ ecparam_main(int argc, char **argv)
 			goto end;
 	}
 	if (ecparam_config.check) {
-		if (group == NULL)
-			BIO_printf(bio_err, "no elliptic curve parameters\n");
 		BIO_printf(bio_err, "checking elliptic curve parameters: ");
 		if (!EC_GROUP_check(group, NULL)) {
 			BIO_printf(bio_err, "failed\n");
