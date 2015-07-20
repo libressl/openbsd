@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.9 2015/06/20 14:24:49 jsing Exp $ */
+/* $OpenBSD: ecparam.c,v 1.10 2015/07/20 03:02:46 doug Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -449,10 +449,6 @@ ecparam_main(int argc, char **argv)
 		if (!EC_GROUP_get_order(group, ec_order, NULL))
 			goto end;
 		if (!EC_GROUP_get_cofactor(group, ec_cofactor, NULL))
-			goto end;
-
-		if (!ec_p || !ec_a || !ec_b || !ec_gen ||
-		    !ec_order || !ec_cofactor)
 			goto end;
 
 		len = BN_num_bits(ec_order);
