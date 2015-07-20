@@ -1,4 +1,4 @@
-/*	$OpenBSD: vis_test.c,v 1.2 2009/06/21 00:38:22 martynas Exp $	*/
+/*	$OpenBSD: vis_test.c,v 1.3 2011/03/13 22:12:37 deraadt Exp $	*/
 
 /* Public domain. 2005, Otto Moerbeek */
 
@@ -20,6 +20,7 @@ int flags[] = {
 	VIS_GLOB,
 	VIS_TAB,
 	VIS_NL,
+	VIS_DQ,
 	VIS_WHITE,
 	VIS_SAFE
 };
@@ -29,6 +30,7 @@ char *flagname[] = {
 	"VIS_GLOB",
 	"VIS_TAB",
 	"VIS_NL",
+	"VIS_DQ",
 	"VIS_WHITE",
 	"VIS_SAFE"
 };
