@@ -1,4 +1,4 @@
-/* $OpenBSD: asn1_lib.c,v 1.33 2015/02/07 13:19:15 doug Exp $ */
+/* $OpenBSD: asn1_lib.c,v 1.34 2015/02/07 22:30:25 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,7 +61,6 @@
 #include <string.h>
 
 #include <openssl/asn1.h>
-#include <openssl/asn1_mac.h>
 #include <openssl/err.h>
 
 static int asn1_get_length(const unsigned char **pp, int *inf, long *rl, int max);
