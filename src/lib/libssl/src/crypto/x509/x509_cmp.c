@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_cmp.c,v 1.24 2014/07/13 11:15:54 miod Exp $ */
+/* $OpenBSD: x509_cmp.c,v 1.25 2014/09/26 19:31:09 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -76,7 +76,7 @@ X509_issuer_and_serial_cmp(const X509 *a, const X509 *b)
 
 	ai = a->cert_info;
 	bi = b->cert_info;
-	i = M_ASN1_INTEGER_cmp(ai->serialNumber, bi->serialNumber);
+	i = ASN1_STRING_cmp(ai->serialNumber, bi->serialNumber);
 	if (i)
 		return (i);
 	return (X509_NAME_cmp(ai->issuer, bi->issuer));
