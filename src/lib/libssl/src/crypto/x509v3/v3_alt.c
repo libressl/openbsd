@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_alt.c,v 1.21 2014/07/11 08:44:49 jsing Exp $ */
+/* $OpenBSD: v3_alt.c,v 1.22 2014/10/28 05:46:56 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -390,7 +390,7 @@ copy_email(X509V3_CTX *ctx, GENERAL_NAMES *gens, int move_p)
 	while ((i = X509_NAME_get_index_by_NID(nm,
 	    NID_pkcs9_emailAddress, i)) >= 0) {
 		ne = X509_NAME_get_entry(nm, i);
-		email = M_ASN1_IA5STRING_dup(X509_NAME_ENTRY_get_data(ne));
+		email = ASN1_STRING_dup(X509_NAME_ENTRY_get_data(ne));
 		if (move_p) {
 			X509_NAME_delete_entry(nm, i);
 			X509_NAME_ENTRY_free(ne);
