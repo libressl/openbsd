@@ -1,4 +1,4 @@
-/* $OpenBSD: a_int.c,v 1.26 2015/03/19 14:00:22 tedu Exp $ */
+/* $OpenBSD: a_int.c,v 1.27 2015/07/19 18:29:31 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -66,7 +66,7 @@
 ASN1_INTEGER *
 ASN1_INTEGER_dup(const ASN1_INTEGER *x)
 {
-	return M_ASN1_INTEGER_dup(x);
+	return ASN1_STRING_dup(x);
 }
 
 int
