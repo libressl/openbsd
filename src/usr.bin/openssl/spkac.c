@@ -1,4 +1,4 @@
-/* $OpenBSD: spkac.c,v 1.2 2014/08/28 14:23:52 jsing Exp $ */
+/* $OpenBSD: spkac.c,v 1.3 2015/01/08 11:08:50 doug Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999. Based on an original idea by Massimiliano Pala
  * (madwolf@openca.org).
@@ -63,6 +63,7 @@
 #include <time.h>
 
 #include "apps.h"
+#include "progs.h"
 
 #include <openssl/bio.h>
 #include <openssl/conf.h>
