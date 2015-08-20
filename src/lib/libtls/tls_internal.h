@@ -66,6 +66,9 @@ struct tls {
 
 	SSL *ssl_conn;
 	SSL_CTX *ssl_ctx;
+
+	int used_dh_bits;
+	int used_ecdh_nid;
 };
 
 struct tls *tls_new(void);

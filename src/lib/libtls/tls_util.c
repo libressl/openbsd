@@ -168,3 +168,25 @@ tls_load_file(const char *name, size_t *len, char *password)
 
 	return (NULL);
 }
+
+ssize_t
+tls_get_connection_info(struct tls *ctx, char *buf, size_t buflen)
+{
+	SSL *conn = ctx->ssl_conn;
+	if (conn == NULL)
+		return -1;
+
+	if (ctx->used_dh_bits)
+		return snprintf(buf, buflen, "%s/%s/DH=%d",
+				SSL_get_version(conn), SSL_get_cipher(conn),
+				ctx->used_dh_bits);
+
+	if (ctx->used_ecdh_nid)
+		return snprintf(buf, buflen, "%s/%s/ECDH=%s",
+				SSL_get_version(conn), SSL_get_cipher(conn),
+				OBJ_nid2sn(ctx->used_ecdh_nid));
+
+	return snprintf(buf, buflen, "%s/%s",
+			SSL_get_version(conn), SSL_get_cipher(conn));
+}
+

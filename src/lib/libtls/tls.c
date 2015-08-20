@@ -180,6 +180,19 @@ err:
 	return (1);
 }
 
+static void
+tls_info_callback(const SSL *ssl, int where, int rc)
+{
+	struct tls *ctx = SSL_get_app_data(ssl);
+
+	/* steal info about used DH key */
+	if (ssl->s3 && ssl->s3->tmp.dh && !ctx->used_dh_bits) {
+		ctx->used_dh_bits = DH_size(ssl->s3->tmp.dh) * 8;
+	} else if (ssl->s3 && ssl->s3->tmp.ecdh && !ctx->used_ecdh_nid) {
+		ctx->used_ecdh_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ssl->s3->tmp.ecdh));
+	}
+}
+
 int
 tls_configure_ssl(struct tls *ctx)
 {
@@ -207,6 +220,8 @@ tls_configure_ssl(struct tls *ctx)
 			goto err;
 		}
 	}
+
+	SSL_CTX_set_info_callback(ctx->ssl_ctx, tls_info_callback);
 
 	return (0);
 
