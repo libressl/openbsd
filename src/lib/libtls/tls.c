@@ -229,6 +229,7 @@ tls_reset(struct tls *ctx)
 	SSL_CTX_free(ctx->ssl_ctx);
 	SSL_free(ctx->ssl_conn);
 
+	ctx->flags &= TLS_KEEP_FLAGS;
 	ctx->ssl_conn = NULL;
 	ctx->ssl_ctx = NULL;
 

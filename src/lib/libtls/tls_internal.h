@@ -53,6 +53,8 @@ struct tls_config {
 #define TLS_SERVER_CONN		(1 << 2)
 #define TLS_CONNECTING		(1 << 3)
 
+#define TLS_KEEP_FLAGS		(TLS_CLIENT | TLS_SERVER | TLS_SERVER_CONN)
+
 struct tls {
 	struct tls_config *config;
 	uint64_t flags;
