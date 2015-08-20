@@ -291,6 +291,8 @@ tls_read(struct tls *ctx, void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
 
+	*outlen = 0;
+
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
 		return (-1);
@@ -302,8 +304,6 @@ tls_read(struct tls *ctx, void *buf, size_t buflen, size_t *outlen)
 		return (0);
 	}
 
-	*outlen = 0;
-
 	return tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "read"); 
 }
 
@@ -311,6 +311,8 @@ int
 tls_write(struct tls *ctx, const void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
+
+	*outlen = 0;
 
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
@@ -322,8 +324,6 @@ tls_write(struct tls *ctx, const void *buf, size_t buflen, size_t *outlen)
 		*outlen = (size_t)ssl_ret;
 		return (0);
 	}
-
-	*outlen = 0;
 
 	return tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "write"); 
 }
