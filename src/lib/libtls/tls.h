@@ -39,9 +39,60 @@ extern "C" {
 
 #define TLS_READ_AGAIN	-2
 #define TLS_WRITE_AGAIN	-3
+#define TLS_NO_CERT	-4
 
 struct tls;
 struct tls_config;
+
+#define TLS_CERT_NAME_DNS	1
+#define TLS_CERT_NAME_IPv4	2
+#define TLS_CERT_NAME_IPv6	3
+#define TLS_CERT_NAME_EMAIL	4
+#define TLS_CERT_NAME_URI	5
+
+struct tls_cert_alt_name {
+	const void *alt_name;
+	int alt_name_type;
+};
+
+struct tls_cert_dname {
+	const char *common_name;
+	const char *country_name;
+	const char *state_or_province_name;
+	const char *locality_name;
+	const char *street_address;
+	const char *organization_name;
+	const char *organizational_unit_name;
+};
+
+struct tls_cert {
+	/* Version number from cert: 0:v1, 1:v2, 2:v3 */
+	int version;
+
+	/* did it pass verify?  useful when noverifycert is on. */
+	int successful_verify;
+
+	/* DistringuishedName for subject */
+	struct tls_cert_dname subject;
+
+	/* DistringuishedName for issuer */
+	struct tls_cert_dname issuer;
+
+	/* SubjectAltName extension */
+	struct tls_cert_alt_name *subject_alt_names;
+	int subject_alt_name_count;
+
+	/* decimal number */
+	const char *serial;
+
+	/* Validity times in ISO 8601 format: 2015-08-18T06:36:40Z */
+	const char *not_before;
+	const char *not_after;
+
+	/* Fingerprint as raw hash */
+	const unsigned char *fingerprint;
+	size_t fingerprint_size;
+};
 
 int tls_init(void);
 
@@ -97,6 +148,9 @@ int tls_close(struct tls *_ctx);
 ssize_t tls_get_connection_info(struct tls *ctx, char *buf, size_t buflen);
 
 uint8_t *tls_load_file(const char *_file, size_t *_len, char *_password);
+
+int tls_get_peer_cert(struct tls *ctx, struct tls_cert **cert_p, const char *fingerprint_algo);
+void tls_cert_free(struct tls_cert *cert);
 
 #ifdef __cplusplus
 }
