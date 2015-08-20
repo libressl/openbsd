@@ -23,8 +23,7 @@
 #include <limits.h>
 #include <string.h>
 
-#include <openssl/x509v3.h>
-
+#include <tls.h>
 #include "tls_internal.h"
 
 static int
@@ -78,148 +77,51 @@ tls_match_name(const char *cert_name, const char *name)
 
 /* See RFC 5280 section 4.2.1.6 for SubjectAltName details. */
 static int
-tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *name)
+tls_check_subject_altname(struct tls *ctx, struct tls_cert *cert, const char *name)
 {
-	STACK_OF(GENERAL_NAME) *altname_stack = NULL;
 	union { struct in_addr ip4; struct in6_addr ip6; } addrbuf;
+	struct tls_cert_alt_name *altname;
 	int addrlen, type;
-	int count, i;
-	int rv = -1;
+	int i;
 
-	altname_stack = X509_get_ext_d2i(cert, NID_subject_alt_name,
-	    NULL, NULL);
-	if (altname_stack == NULL)
+	if (cert->subject_alt_name_count == 0)
 		return -1;
 
 	if (inet_pton(AF_INET, name, &addrbuf) == 1) {
-		type = GEN_IPADD;
+		type = TLS_CERT_NAME_IPv4;
 		addrlen = 4;
 	} else if (inet_pton(AF_INET6, name, &addrbuf) == 1) {
-		type = GEN_IPADD;
+		type = TLS_CERT_NAME_IPv6;
 		addrlen = 16;
 	} else {
-		type = GEN_DNS;
+		type = TLS_CERT_NAME_DNS;
 		addrlen = 0;
 	}
 
-	count = sk_GENERAL_NAME_num(altname_stack);
-	for (i = 0; i < count; i++) {
-		GENERAL_NAME	*altname;
-
-		altname = sk_GENERAL_NAME_value(altname_stack, i);
-
-		if (altname->type != type)
+	for (i = 0; i < cert->subject_alt_name_count; i++) {
+		altname = &cert->subject_alt_names[i];
+		if (altname->alt_name_type != type)
 			continue;
 
-		if (type == GEN_DNS) {
-			unsigned char	*data;
-			int		 format, len;
-
-			format = ASN1_STRING_type(altname->d.dNSName);
-			if (format == V_ASN1_IA5STRING) {
-				data = ASN1_STRING_data(altname->d.dNSName);
-				len = ASN1_STRING_length(altname->d.dNSName);
-
-				if (len < 0 || len != strlen(data)) {
-					tls_set_error(ctx,
-					    "error verifying name '%s': "
-					    "NUL byte in subjectAltName, "
-					    "probably a malicious certificate",
-					    name);
-					rv = -2;
-					break;
-				}
-
-				/*
-				 * Per RFC 5280 section 4.2.1.6:
-				 * " " is a legal domain name, but that
-				 * dNSName must be rejected.
-				 */
-				if (strcmp(data, " ") == 0) {
-					tls_set_error(ctx,
-					    "error verifying name '%s': "
-					    "a dNSName of \" \" must not be "
-					    "used", name);
-					rv = -2;
-					break;
-				}
-
-				if (tls_match_name(data, name) == 0) {
-					rv = 0;
-					break;
-				}
-			} else {
-#ifdef DEBUG
-				fprintf(stdout, "%s: unhandled subjectAltName "
-				    "dNSName encoding (%d)\n", getprogname(),
-				    format);
-#endif
-			}
-
-		} else if (type == GEN_IPADD) {
-			unsigned char	*data;
-			int		 datalen;
-
-			datalen = ASN1_STRING_length(altname->d.iPAddress);
-			data = ASN1_STRING_data(altname->d.iPAddress);
-
-			if (datalen < 0) {
-				tls_set_error(ctx,
-				    "Unexpected negative length for an "
-				    "IP address: %d", datalen);
-				rv = -2;
-				break;
-			}
-
-			/*
-			 * Per RFC 5280 section 4.2.1.6:
-			 * IPv4 must use 4 octets and IPv6 must use 16 octets.
-			 */
-			if (datalen == addrlen &&
-			    memcmp(data, &addrbuf, addrlen) == 0) {
-				rv = 0;
-				break;
-			}
+		if (type == TLS_CERT_NAME_DNS) {
+			if (tls_match_name(altname->alt_name, name) == 0)
+				return 0;
+		} else {
+			if (memcmp(altname->alt_name, &addrbuf, addrlen) == 0)
+				return 0;
 		}
 	}
 
-	sk_GENERAL_NAME_pop_free(altname_stack, GENERAL_NAME_free);
-	return rv;
+	return -1;
 }
 
 static int
-tls_check_common_name(struct tls *ctx, X509 *cert, const char *name)
+tls_check_common_name(struct tls *ctx, struct tls_cert *cert, const char *name)
 {
-	X509_NAME *subject_name;
-	char *common_name = NULL;
-	int common_name_len;
-	int rv = -1;
 	union { struct in_addr ip4; struct in6_addr ip6; } addrbuf;
 
-	subject_name = X509_get_subject_name(cert);
-	if (subject_name == NULL)
-		goto out;
-
-	common_name_len = X509_NAME_get_text_by_NID(subject_name,
-	    NID_commonName, NULL, 0);
-	if (common_name_len < 0)
-		goto out;
-
-	common_name = calloc(common_name_len + 1, 1);
-	if (common_name == NULL)
-		goto out;
-
-	X509_NAME_get_text_by_NID(subject_name, NID_commonName, common_name,
-	    common_name_len + 1);
-
-	/* NUL bytes in CN? */
-	if (common_name_len != strlen(common_name)) {
-		tls_set_error(ctx, "error verifying name '%s': "
-		    "NUL byte in Common Name field, "
-		    "probably a malicious certificate", name);
-		rv = -2;
-		goto out;
-	}
+	if (cert->subject.common_name == NULL)
+		return -1;
 
 	if (inet_pton(AF_INET,  name, &addrbuf) == 1 ||
 	    inet_pton(AF_INET6, name, &addrbuf) == 1) {
@@ -227,30 +129,27 @@ tls_check_common_name(struct tls *ctx, X509 *cert, const char *name)
 		 * We don't want to attempt wildcard matching against IP
 		 * addresses, so perform a simple comparison here.
 		 */
-		if (strcmp(common_name, name) == 0)
-			rv = 0;
-		else
-			rv = -1;
-		goto out;
+		if (strcmp(cert->subject.common_name, name) == 0)
+			return 0;
+	} else {
+		if (tls_match_name(cert->subject.common_name, name) == 0)
+			return 0;
 	}
-
-	if (tls_match_name(common_name, name) == 0)
-		rv = 0;
-out:
-	free(common_name);
-	return rv;
+	return -1;
 }
 
 int
-tls_check_servername(struct tls *ctx, X509 *cert, const char *servername)
+tls_check_servername(struct tls *ctx, struct tls_cert *cert, const char *servername)
 {
 	int	rv;
 
 	rv = tls_check_subject_altname(ctx, cert, servername);
-	if (rv == 0 || rv == -2)
+	if (rv == 0)
 		return rv;
-
-	return tls_check_common_name(ctx, cert, servername);
+	rv = tls_check_common_name(ctx, cert, servername);
+	if (rv != 0)
+		tls_set_error(ctx, "name '%s' does not match cert", servername);
+	return rv;
 }
 
 int
