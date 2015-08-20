@@ -188,6 +188,8 @@ on an already established socket connection.
 Alternatively, a new client connection can be accepted over a pair of existing
 file descriptors by calling
 .Fn tls_accept_fds .
+It will always accept client without certificates.  If client does provide
+certificate, it is validated according to verifications settings in config.
 .Pp
 Two functions are provided for input and output,
 .Fn tls_read
@@ -243,16 +245,16 @@ Configuration options may apply to only clients or only servers or both.
 .Fn tls_config_set_ca_file
 sets the filename used to load a file
 containing the root certificates.
-.Em (Client)
+.Em (Client and server)
 .It
 .Fn tls_config_set_ca_path
 sets the path (directory) which should be searched for root
 certificates.
-.Em (Client)
+.Em (Client and server)
 .It
 .Fn tls_config_set_ca_mem
 sets the root certificates directly from memory.
-.Em (Client)
+.Em (Client and server)
 .It
 .Fn tls_config_set_cert_file
 sets file from which the public certificate will be read.
@@ -268,11 +270,11 @@ sets the list of ciphers that may be used.
 .It
 .Fn tls_config_set_key_file
 sets the file from which the private key will be read.
-.Em (Server)
+.Em (Client and server)
 .It
 .Fn tls_config_set_key_mem
 directly sets the private key from memory.
-.Em (Server)
+.Em (Client and server)
 .It
 .Fn tls_config_set_protocols
 sets which versions of the protocol may be used.
@@ -295,12 +297,12 @@ Additionally, the values
 .It
 .Fn tls_config_clear_keys
 clears any secret keys from memory.
-.Em (Server)
+.Em (Client and server)
 .It
 .Fn tls_config_insecure_noverifycert
 disables certificate verification.
 Be extremely careful when using this option.
-.Em (Client)
+.Em (Client and server)
 .It
 .Fn tls_config_insecure_noverifyname
 disables server name verification.
@@ -309,7 +311,7 @@ Be careful when using this option.
 .It
 .Fn tls_config_verify
 reenables server name and certificate verification.
-.Em (Client)
+.Em (Client and server)
 .It
 .Fn tls_load_file
 loads a certificate or key from disk into memory to be loaded with

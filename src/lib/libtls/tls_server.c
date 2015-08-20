@@ -63,6 +63,8 @@ tls_configure_server(struct tls *ctx)
 		goto err;
 	if (tls_configure_keypair(ctx) != 0)
 		goto err;
+	if (tls_configure_verify(ctx) != 0)
+		goto err;
 
 	if (ctx->config->dheparams == -1)
 		SSL_CTX_set_dh_auto(ctx->ssl_ctx, 1);
