@@ -234,6 +234,30 @@ tls_info_callback(const SSL *ssl, int where, int rc)
 	} else if (ssl->s3 && ssl->s3->tmp.ecdh && !ctx->used_ecdh_nid) {
 		ctx->used_ecdh_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ssl->s3->tmp.ecdh));
 	}
+
+	/* detect renegotation on established connection */
+	if (where & SSL_CB_HANDSHAKE_START) {
+		if (ctx->state & TLS_STATE_ESTABLISHED)
+			ctx->state |= TLS_STATE_ABORT;
+	} else if (where & SSL_CB_HANDSHAKE_DONE) {
+		ctx->state |= TLS_STATE_ESTABLISHED;
+	}
+}
+
+static int
+tls_do_abort(struct tls *ctx)
+{
+	int ssl_ret, rv;
+
+	ssl_ret = SSL_shutdown(ctx->ssl_conn);
+	if (ssl_ret < 0) {
+		rv = tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "shutdown");
+		if (rv == TLS_READ_AGAIN || rv == TLS_WRITE_AGAIN)
+			return (rv);
+	}
+
+	tls_set_errorx(ctx, "unexpected handshake, closing connection");
+	return -1;
 }
 
 int
@@ -356,6 +380,9 @@ tls_read(struct tls *ctx, void *buf, size_t buflen, size_t *outlen)
 		return (-1);
 	}
 
+	if (ctx->state & TLS_STATE_ABORT)
+		return tls_do_abort(ctx);
+
 	ssl_ret = SSL_read(ctx->ssl_conn, buf, buflen);
 	if (ssl_ret > 0) {
 		*outlen = (size_t)ssl_ret;
@@ -376,6 +403,9 @@ tls_write(struct tls *ctx, const void *buf, size_t buflen, size_t *outlen)
 		tls_set_errorx(ctx, "buflen too long");
 		return (-1);
 	}
+
+	if (ctx->state & TLS_STATE_ABORT)
+		return tls_do_abort(ctx);
 
 	ssl_ret = SSL_write(ctx->ssl_conn, buf, buflen);
 	if (ssl_ret > 0) {

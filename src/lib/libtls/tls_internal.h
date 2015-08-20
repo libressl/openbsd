@@ -53,6 +53,8 @@ struct tls_config {
 #define TLS_SERVER_CONN		(1 << 2)
 
 #define TLS_STATE_CONNECTING	(1 << 0)
+#define TLS_STATE_ESTABLISHED	(1 << 1)
+#define TLS_STATE_ABORT		(1 << 2)
 
 struct tls {
 	struct tls_config *config;
