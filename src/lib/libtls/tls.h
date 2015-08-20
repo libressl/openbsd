@@ -22,6 +22,7 @@
 extern "C" {
 #endif
 
+#include <sys/types.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -149,6 +150,8 @@ int tls_read(struct tls *_ctx, void *_buf, size_t _buflen, size_t *_outlen);
 int tls_write(struct tls *_ctx, const void *_buf, size_t _buflen,
     size_t *_outlen);
 int tls_close(struct tls *_ctx);
+
+ssize_t tls_get_connection_info(struct tls *ctx, char *buf, size_t buflen);
 
 uint8_t *tls_load_file(const char *_file, size_t *_len, char *_password);
 

@@ -132,7 +132,8 @@
 .Fn tls_get_peer_cert "struct tls *ctx" "struct tls_cert **cert_p" "const char *fingerprint_algo"
 .Ft "void"
 .Fn tls_cert_free "struct tls_cert *cert"
-
+.Ft "ssize_t"
+.Fn tls_get_connection_info "struct tls *ctx" "char *buf" "size_t buflen"
 .Sh DESCRIPTION
 The
 .Nm tls
@@ -417,6 +418,10 @@ Extracts and returns peer certificate info.
 .Fn tls_cert_free
 Frees certificate returned by
 .Fn tls_get_peer_cert .
+.It
+.Fn tls_get_connection_info
+Shows string describing TLS protocol version, used ciphersuite and
+ECDH/DH parameters.
 .El
 .Sh DATA STRUCTURES
 The data from certificate is returned in following data structures:
@@ -524,6 +529,16 @@ Peer did not provide certificate.
 .Pp
 It is used to allow to distinguish clients without certificate from clients
 with corrupt certificate.
+.Pp
+The
+.Fn tls_get_connection_info
+function returns -1 on internal error or how many bytes would it need
+to print the info.  Like
+.Fn snprintf
+does.  If this value is less than
+.Fa buflen
+argument, the buffer fully contains the value, otherwise is was cut off.
+Buffer will be always zero-terminated, unless it's length is 0.
 .Sh EXAMPLES
 Example showing how to handle partial TLS writes.
 .Bd -literal -offset indent
