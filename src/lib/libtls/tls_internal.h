@@ -52,6 +52,8 @@ struct tls_config {
 #define TLS_SERVER		(1 << 1)
 #define TLS_SERVER_CONN		(1 << 2)
 #define TLS_CONNECTING		(1 << 3)
+#define TLS_ESTABLISHED		(1 << 4)
+#define TLS_ABORT		(1 << 5)
 
 #define TLS_KEEP_FLAGS		(TLS_CLIENT | TLS_SERVER | TLS_SERVER_CONN)
 
