@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include <limits.h>
 #include <string.h>
 
 #include <openssl/x509v3.h>
