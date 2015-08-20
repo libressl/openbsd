@@ -27,11 +27,7 @@
 
 #include "tls_internal.h"
 
-int tls_match_name(const char *cert_name, const char *name);
-int tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *name);
-int tls_check_common_name(struct tls *ctx, X509 *cert, const char *name);
-
-int
+static int
 tls_match_name(const char *cert_name, const char *name)
 {
 	const char *cert_domain, *domain, *next_dot;
@@ -81,7 +77,7 @@ tls_match_name(const char *cert_name, const char *name)
 }
 
 /* See RFC 5280 section 4.2.1.6 for SubjectAltName details. */
-int
+static int
 tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *name)
 {
 	STACK_OF(GENERAL_NAME) *altname_stack = NULL;
@@ -191,7 +187,7 @@ tls_check_subject_altname(struct tls *ctx, X509 *cert, const char *name)
 	return rv;
 }
 
-int
+static int
 tls_check_common_name(struct tls *ctx, X509 *cert, const char *name)
 {
 	X509_NAME *subject_name;
