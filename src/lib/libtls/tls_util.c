@@ -105,7 +105,8 @@ tls_load_file(const char *name, size_t *len, char *password)
 	FILE *fp;
 	EVP_PKEY *key = NULL;
 	BIO *bio = NULL;
-	char *data, *buf = NULL;
+	uint8_t *buf = NULL;
+	char *data;
 	struct stat st;
 	size_t size;
 	int fd = -1;
@@ -122,7 +123,7 @@ tls_load_file(const char *name, size_t *len, char *password)
 		size = (size_t)st.st_size;
 		if ((buf = calloc(1, size + 1)) == NULL)
 			goto fail;
-		if (read(fd, buf, size) != size)
+		if (read(fd, buf, size) != (ssize_t)size)
 			goto fail;
 		close(fd);
 		goto done;
