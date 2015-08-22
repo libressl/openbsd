@@ -1,4 +1,4 @@
-/* $OpenBSD: engine.c,v 1.3 2015/02/08 10:22:45 doug Exp $ */
+/* $OpenBSD: engine.c,v 1.4 2015/07/16 15:24:41 beck Exp $ */
 /* Written by Richard Levitte <richard@levitte.org> for the OpenSSL
  * project 2000.
  */
@@ -309,8 +309,6 @@ util_do_cmds(ENGINE * e, STACK_OF(OPENSSL_STRING) * cmds,
 		}
 	}
 }
-
-int engine_main(int, char **);
 
 int
 engine_main(int argc, char **argv)

@@ -1,4 +1,4 @@
-/* $OpenBSD: s_client.c,v 1.14 2015/07/17 16:07:44 doug Exp $ */
+/* $OpenBSD: s_client.c,v 1.15 2015/08/11 05:01:03 landry Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -320,8 +320,6 @@ enum {
 	PROTO_FTP,
 	PROTO_XMPP
 };
-
-int s_client_main(int, char **);
 
 int
 s_client_main(int argc, char **argv)
