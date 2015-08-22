@@ -1,4 +1,4 @@
-/* $OpenBSD: ec.c,v 1.2 2014/08/28 14:23:52 jsing Exp $ */
+/* $OpenBSD: ec.c,v 1.3 2015/07/12 22:16:49 doug Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -278,8 +278,6 @@ ec_usage(void)
 	OBJ_NAME_do_all_sorted(OBJ_NAME_TYPE_CIPHER_METH, show_ciphers, NULL);
 	fprintf(stderr, "\n");
 }
-
-int ec_main(int, char **);
 
 int
 ec_main(int argc, char **argv)

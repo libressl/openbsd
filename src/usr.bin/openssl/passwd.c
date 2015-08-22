@@ -1,4 +1,4 @@
-/* $OpenBSD: passwd.c,v 1.2 2014/10/22 13:54:03 jsing Exp $ */
+/* $OpenBSD: passwd.c,v 1.3 2015/01/05 15:25:39 jsing Exp $ */
 
 #if defined OPENSSL_NO_MD5
 #define NO_MD5CRYPT_1
@@ -131,8 +131,6 @@ passwd_usage(void)
 	    "    [-reverse] [-salt string] [-stdin] [-table] [password]\n\n");
         options_usage(passwd_options);
 }
-
-int passwd_main(int, char **);
 
 int
 passwd_main(int argc, char **argv)

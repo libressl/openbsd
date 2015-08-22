@@ -1,4 +1,4 @@
-/* $OpenBSD: speed.c,v 1.7 2015/07/03 21:45:10 miod Exp $ */
+/* $OpenBSD: speed.c,v 1.8 2015/07/20 21:55:13 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -224,9 +224,6 @@ KDF1_SHA1(const void *in, size_t inlen, void *out, size_t * outlen)
 	return NULL;
 #endif				/* OPENSSL_NO_SHA */
 }
-
-
-int speed_main(int, char **);
 
 int
 speed_main(int argc, char **argv)

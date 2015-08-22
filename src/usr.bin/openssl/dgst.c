@@ -1,4 +1,4 @@
-/* $OpenBSD: dgst.c,v 1.2 2015/07/20 17:10:45 doug Exp $ */
+/* $OpenBSD: dgst.c,v 1.3 2015/07/20 18:23:52 rpointel Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -97,8 +97,6 @@ list_md_fn(const EVP_MD * m, const char *from, const char *to, void *arg)
 	BIO_printf(arg, "-%-14s to use the %s message digest algorithm\n",
 	    mname, mname);
 }
-
-int dgst_main(int, char **);
 
 int
 dgst_main(int argc, char **argv)

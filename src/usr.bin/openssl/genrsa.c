@@ -1,4 +1,4 @@
-/* $OpenBSD: genrsa.c,v 1.2 2014/08/28 14:23:52 jsing Exp $ */
+/* $OpenBSD: genrsa.c,v 1.3 2014/10/22 13:51:31 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -84,8 +84,6 @@
 #define DEFBITS	2048
 
 static int genrsa_cb(int p, int n, BN_GENCB * cb);
-
-int genrsa_main(int, char **);
 
 int
 genrsa_main(int argc, char **argv)
