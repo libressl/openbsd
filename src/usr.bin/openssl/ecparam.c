@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.10 2015/07/20 03:02:46 doug Exp $ */
+/* $OpenBSD: ecparam.c,v 1.11 2015/07/20 21:56:47 doug Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -258,8 +258,6 @@ ecparam_usage(void)
 	    "    [-param_enc arg] [-text]\n\n");
 	options_usage(ecparam_options);
 }
-
-int ecparam_main(int, char **);
 
 int
 ecparam_main(int argc, char **argv)
