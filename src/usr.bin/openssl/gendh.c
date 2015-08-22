@@ -1,4 +1,4 @@
-/* $OpenBSD: gendh.c,v 1.2 2014/10/22 13:51:31 jsing Exp $ */
+/* $OpenBSD: gendh.c,v 1.3 2015/07/12 22:09:00 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -136,8 +136,6 @@ gendh_usage(void)
 	    "usage: gendh [-2 | -5] [-engine id] [-out file] [numbits]\n\n");
 	options_usage(gendh_options);
 }
-
-int gendh_main(int, char **);
 
 int
 gendh_main(int argc, char **argv)

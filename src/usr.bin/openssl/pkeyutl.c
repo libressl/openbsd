@@ -1,4 +1,4 @@
-/* $OpenBSD: pkeyutl.c,v 1.4 2014/10/08 04:00:55 deraadt Exp $ */
+/* $OpenBSD: pkeyutl.c,v 1.5 2015/07/15 06:16:42 bcook Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -80,8 +80,6 @@ static int setup_peer(BIO * err, EVP_PKEY_CTX * ctx, int peerform,
 static int do_keyop(EVP_PKEY_CTX * ctx, int pkey_op,
     unsigned char *out, size_t * poutlen,
     unsigned char *in, size_t inlen);
-
-int pkeyutl_main(int argc, char **);
 
 int
 pkeyutl_main(int argc, char **argv)

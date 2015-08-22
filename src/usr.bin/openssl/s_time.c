@@ -1,4 +1,4 @@
-/* $OpenBSD: s_time.c,v 1.7 2015/04/15 16:33:49 jsing Exp $ */
+/* $OpenBSD: s_time.c,v 1.8 2015/07/17 16:10:49 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -242,8 +242,6 @@ tm_Time_F(int s)
  * MAIN - main processing area for client
  *			real name depends on MONOLITH
  */
-int s_time_main(int, char **);
-
 int
 s_time_main(int argc, char **argv)
 {

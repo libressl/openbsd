@@ -1,4 +1,4 @@
-/* $OpenBSD: pkcs7.c,v 1.3 2015/07/20 16:48:11 doug Exp $ */
+/* $OpenBSD: pkcs7.c,v 1.4 2015/07/21 16:34:31 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -157,8 +157,6 @@ pkcs7_usage()
 	    "    [-out file] [-outform DER | PEM] [-print_certs] [-text]\n\n");
         options_usage(pkcs7_options);
 }
-
-int pkcs7_main(int, char **);
 
 int
 pkcs7_main(int argc, char **argv)
