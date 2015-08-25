@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_hpux.c,v 1.8 2014/07/19 16:12:00 deraadt Exp $	*/
+/*	$OpenBSD: getentropy_hpux.c,v 1.2 2015/01/07 01:15:57 bcook Exp $	*/
 
 /*
  * Copyright (c) 2014 Theo de Raadt <deraadt@openbsd.org>
@@ -60,7 +60,7 @@
 
 #define HR(x, l) (SHA512_Update(&ctx, (char *)(x), (l)))
 #define HD(x)	 (SHA512_Update(&ctx, (char *)&(x), sizeof (x)))
-#define HF(x)	 (SHA512_Update(&ctx, (char *)&(x), sizeof (void*)))
+#define HF(x)    (SHA512_Update(&ctx, (char *)&(x), sizeof (void*)))
 
 int	getentropy(void *buf, size_t len);
 
