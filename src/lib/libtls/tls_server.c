@@ -16,6 +16,7 @@
  */
 
 #include <openssl/ec.h>
+#include <openssl/rand.h>
 #include <openssl/ssl.h>
 
 #include <tls.h>
@@ -62,6 +63,8 @@ tls_configure_server(struct tls *ctx)
 		goto err;
 	if (tls_configure_keypair(ctx) != 0)
 		goto err;
+	if (tls_configure_verify(ctx) != 0)
+		goto err;
 
 	if (ctx->config->dheparams == -1)
 		SSL_CTX_set_dh_auto(ctx->ssl_ctx, 1);
@@ -86,7 +89,10 @@ tls_configure_server(struct tls *ctx)
 	 * persistent caching of sessions so it is OK to set a temporary
 	 * session ID context that is valid during run time.
 	 */
-	arc4random_buf(sid, sizeof(sid));
+	if (!RAND_bytes(sid, sizeof(sid))) {
+		tls_set_error(ctx, "failed to generate session id");
+		goto err;
+	}
 	if (!SSL_CTX_set_session_id_context(ctx->ssl_ctx, sid, sizeof(sid))) {
 		tls_set_error(ctx, "failed to set session id context");
 		goto err;

@@ -25,7 +25,7 @@
 
 #define _PATH_SSL_CA_FILE "/etc/ssl/cert.pem"
 
-#define TLS_CIPHERS_COMPAT	"ALL:!aNULL:!eNULL"
+#define TLS_CIPHERS_COMPAT	"HIGH:!aNULL"
 #define TLS_CIPHERS_DEFAULT	"TLSv1.2+AEAD+ECDHE:TLSv1.2+AEAD+DHE"
 
 struct tls_config {
@@ -52,27 +52,35 @@ struct tls_config {
 #define TLS_SERVER		(1 << 1)
 #define TLS_SERVER_CONN		(1 << 2)
 #define TLS_CONNECTING		(1 << 3)
+#define TLS_ESTABLISHED		(1 << 4)
+#define TLS_ABORT		(1 << 5)
+
+#define TLS_KEEP_FLAGS		(TLS_CLIENT | TLS_SERVER | TLS_SERVER_CONN)
 
 struct tls {
 	struct tls_config *config;
 	uint64_t flags;
 
-	int err;
 	char *errmsg;
+	int err;
 
 	int socket;
 
 	SSL *ssl_conn;
 	SSL_CTX *ssl_ctx;
+
+	int used_dh_bits;
+	int used_ecdh_nid;
 };
 
 struct tls *tls_new(void);
 struct tls *tls_server_conn(struct tls *ctx);
 
-int tls_check_servername(struct tls *ctx, X509 *cert, const char *servername);
+int tls_check_servername(struct tls *ctx, struct tls_cert *cert, const char *servername);
 int tls_configure_keypair(struct tls *ctx);
 int tls_configure_server(struct tls *ctx);
 int tls_configure_ssl(struct tls *ctx);
+int tls_configure_verify(struct tls *ctx);
 int tls_host_port(const char *hostport, char **host, char **port);
 int tls_set_error(struct tls *ctx, char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))

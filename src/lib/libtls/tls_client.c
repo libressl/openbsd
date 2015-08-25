@@ -165,7 +165,6 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
     const char *servername)
 {
 	union { struct in_addr ip4; struct in6_addr ip6; } addrbuf;
-	X509 *cert = NULL;
 	int ret, err;
 
 	if (ctx->flags & TLS_CONNECTING)
@@ -189,6 +188,12 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 	if (tls_configure_ssl(ctx) != 0)
 		goto err;
 
+	if (ctx->config->key_file || ctx->config->cert_file ||
+	    ctx->config->key_mem || ctx->config->cert_mem) {
+		if (tls_configure_keypair(ctx) != 0)
+			goto err;
+	}
+
 	if (ctx->config->verify_name) {
 		if (servername == NULL) {
 			tls_set_error(ctx, "server name not specified");
@@ -196,35 +201,15 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 		}
 	}
 
-	if (ctx->config->verify_cert) {
-		SSL_CTX_set_verify(ctx->ssl_ctx, SSL_VERIFY_PEER, NULL);
-
-		if (ctx->config->ca_mem != NULL) {
-			if (ctx->config->ca_len > INT_MAX) {
-				tls_set_error(ctx, "ca too long");
-				goto err;
-			}
-
-			if (SSL_CTX_load_verify_mem(ctx->ssl_ctx,
-			    ctx->config->ca_mem, ctx->config->ca_len) != 1) {
-				tls_set_error(ctx,
-				    "ssl verify memory setup failure");
-				goto err;
-			}
-		} else if (SSL_CTX_load_verify_locations(ctx->ssl_ctx,
-		    ctx->config->ca_file, ctx->config->ca_path) != 1) {
-			tls_set_error(ctx, "ssl verify setup failure");
-			goto err;
-		}
-		if (ctx->config->verify_depth >= 0)
-			SSL_CTX_set_verify_depth(ctx->ssl_ctx,
-			    ctx->config->verify_depth);
-	}
+	if (tls_configure_verify(ctx) != 0)
+		goto err;
 
 	if ((ctx->ssl_conn = SSL_new(ctx->ssl_ctx)) == NULL) {
 		tls_set_error(ctx, "ssl connection failure");
 		goto err;
 	}
+	SSL_set_app_data(ctx->ssl_conn, ctx);
+
 	if (SSL_set_rfd(ctx->ssl_conn, fd_read) != 1 ||
 	    SSL_set_wfd(ctx->ssl_conn, fd_write) != 1) {
 		tls_set_error(ctx, "ssl file descriptor failure");
@@ -256,24 +241,18 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 	ctx->flags &= ~TLS_CONNECTING;
 
 	if (ctx->config->verify_name) {
-		cert = SSL_get_peer_certificate(ctx->ssl_conn);
-		if (cert == NULL) {
-			tls_set_error(ctx, "no server certificate");
+		struct tls_cert *cert = NULL;
+		ret = tls_get_peer_cert(ctx, &cert, NULL);
+		if (ret != 0)
 			goto err;
-		}
-		if ((ret = tls_check_servername(ctx, cert, servername)) != 0) {
-			if (ret != -2)
-				tls_set_error(ctx, "name `%s' not present in"
-				    " server certificate", servername);
+		ret = tls_check_servername(ctx, cert, servername);
+		tls_cert_free(cert);
+		if (ret != 0)
 			goto err;
-		}
-		X509_free(cert);
 	}
 
 	return (0);
 
 err:
-	X509_free(cert);
-
 	return (-1);
 }

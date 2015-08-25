@@ -180,6 +180,43 @@ err:
 	return (1);
 }
 
+static void
+tls_info_callback(const SSL *ssl, int where, int rc)
+{
+	struct tls *ctx = SSL_get_app_data(ssl);
+
+	/* steal info about used DH key */
+	if (ssl->s3 && ssl->s3->tmp.dh && !ctx->used_dh_bits) {
+		ctx->used_dh_bits = DH_size(ssl->s3->tmp.dh) * 8;
+	} else if (ssl->s3 && ssl->s3->tmp.ecdh && !ctx->used_ecdh_nid) {
+		ctx->used_ecdh_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ssl->s3->tmp.ecdh));
+	}
+
+	/* detect renegotation on established connection */
+	if (where & SSL_CB_HANDSHAKE_START) {
+		if (ctx->flags & TLS_ESTABLISHED)
+			ctx->flags |= TLS_ABORT;
+	} else if (where & SSL_CB_HANDSHAKE_DONE) {
+		ctx->flags |= TLS_ESTABLISHED;
+	}
+}
+
+static int
+tls_do_abort(struct tls *ctx)
+{
+	int ssl_ret, rv;
+
+	ssl_ret = SSL_shutdown(ctx->ssl_conn);
+	if (ssl_ret < 0) {
+		rv = tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "shutdown");
+		if (rv == TLS_READ_AGAIN || rv == TLS_WRITE_AGAIN)
+			return (rv);
+	}
+
+	tls_set_error(ctx, "unexpected handshake, closing connection");
+	return -1;
+}
+
 int
 tls_configure_ssl(struct tls *ctx)
 {
@@ -208,6 +245,8 @@ tls_configure_ssl(struct tls *ctx)
 		}
 	}
 
+	SSL_CTX_set_info_callback(ctx->ssl_ctx, tls_info_callback);
+
 	return (0);
 
 err:
@@ -229,6 +268,7 @@ tls_reset(struct tls *ctx)
 	SSL_CTX_free(ctx->ssl_ctx);
 	SSL_free(ctx->ssl_conn);
 
+	ctx->flags &= TLS_KEEP_FLAGS;
 	ctx->ssl_conn = NULL;
 	ctx->ssl_ctx = NULL;
 
@@ -290,18 +330,21 @@ tls_read(struct tls *ctx, void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
 
+	*outlen = 0;
+
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
 		return (-1);
 	}
+
+	if (ctx->flags & TLS_ABORT)
+		return tls_do_abort(ctx);
 
 	ssl_ret = SSL_read(ctx->ssl_conn, buf, buflen);
 	if (ssl_ret > 0) {
 		*outlen = (size_t)ssl_ret;
 		return (0);
 	}
-
-	*outlen = 0;
 
 	return tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "read"); 
 }
@@ -311,18 +354,21 @@ tls_write(struct tls *ctx, const void *buf, size_t buflen, size_t *outlen)
 {
 	int ssl_ret;
 
+	*outlen = 0;
+
 	if (buflen > INT_MAX) {
 		tls_set_error(ctx, "buflen too long");
 		return (-1);
 	}
+
+	if (ctx->flags & TLS_ABORT)
+		return tls_do_abort(ctx);
 
 	ssl_ret = SSL_write(ctx->ssl_conn, buf, buflen);
 	if (ssl_ret > 0) {
 		*outlen = (size_t)ssl_ret;
 		return (0);
 	}
-
-	*outlen = 0;
 
 	return tls_ssl_error(ctx, ctx->ssl_conn, ssl_ret, "write"); 
 }
