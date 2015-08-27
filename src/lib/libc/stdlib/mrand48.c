@@ -1,4 +1,4 @@
-/*	$OpenBSD: mrand48.c,v 1.4 2014/12/08 21:45:20 deraadt Exp $ */
+/*	$OpenBSD: mrand48.c,v 1.5 2014/12/09 00:02:18 tedu Exp $ */
 /*
  * Copyright (c) 1993 Martin Birgmeier
  * All rights reserved.
@@ -13,8 +13,6 @@
  */
 
 #include "rand48.h"
-
-extern unsigned short __rand48_seed[3];
 
 long
 mrand48(void)
