@@ -1,4 +1,4 @@
-/*	$OpenBSD: rthread_fork.c,v 1.10 2013/11/29 16:27:40 guenther Exp $ */
+/*	$OpenBSD: atfork.h,v 1.1 2015/04/07 01:27:07 guenther Exp $ */
 
 /*
  * Copyright (c) 2008 Kurt Miller <kurt@openbsd.org>
@@ -40,5 +40,6 @@ struct atfork_fn {
 	void	*fn_dso;
 };
 
+__BEGIN_HIDDEN_DECLS
 extern TAILQ_HEAD(atfork_listhead, atfork_fn) _atfork_list;
-
+__END_HIDDEN_DECLS
