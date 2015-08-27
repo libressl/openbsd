@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_sess.c,v 1.44 2014/12/14 15:30:50 jsing Exp $ */
+/* $OpenBSD: ssl_sess.c,v 1.45 2015/07/21 03:34:38 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -300,7 +300,6 @@ ssl_get_new_session(SSL *s, int session)
 
 	if (session) {
 		switch (s->version) {
-		case SSL3_VERSION:
 		case TLS1_VERSION:
 		case TLS1_1_VERSION:
 		case TLS1_2_VERSION:
