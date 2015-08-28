@@ -75,6 +75,7 @@ int tls_check_servername(struct tls *ctx, X509 *cert, const char *servername);
 int tls_configure_keypair(struct tls *ctx);
 int tls_configure_server(struct tls *ctx);
 int tls_configure_ssl(struct tls *ctx);
+int tls_configure_verify(struct tls *ctx);
 int tls_host_port(const char *hostport, char **host, char **port);
 int tls_set_error(struct tls *ctx, const char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))
