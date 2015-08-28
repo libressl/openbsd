@@ -165,7 +165,6 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
     const char *servername)
 {
 	union { struct in_addr ip4; struct in6_addr ip6; } addrbuf;
-	X509 *cert = NULL;
 	int ret, err;
 
 	if ((ctx->flags & TLS_CLIENT) == 0) {
@@ -244,24 +243,19 @@ connecting:
 	ctx->state &= ~TLS_STATE_CONNECTING;
 
 	if (ctx->config->verify_name) {
-		cert = SSL_get_peer_certificate(ctx->ssl_conn);
-		if (cert == NULL) {
-			tls_set_errorx(ctx, "no server certificate");
+		struct tls_cert *cert = NULL;
+		ret = tls_get_peer_cert(ctx, &cert, NULL);
+		if (ret != 0)
 			goto err;
-		}
-		if ((ret = tls_check_servername(ctx, cert, servername)) != 0) {
-			if (ret != -2)
-				tls_set_errorx(ctx, "name `%s' not present in"
-				    " server certificate", servername);
+		ret = tls_check_servername(ctx, cert, servername);
+		tls_cert_free(cert);
+		if (ret != 0)
 			goto err;
-		}
-		X509_free(cert);
 	}
 
 	return (0);
 
 err:
-	X509_free(cert);
-
 	return (-1);
 }
+
