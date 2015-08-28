@@ -128,6 +128,11 @@
 .Fn tls_read "struct tls *ctx" "void *buf" "size_t buflen" "size_t *outlen"
 .Ft "int"
 .Fn tls_write "struct tls *ctx" "const void *buf" "size_t buflen" "size_t *outlen"
+.Ft "int"
+.Fn tls_get_peer_cert "struct tls *ctx" "struct tls_cert **cert_p" "const char *fingerprint_algo"
+.Ft "void"
+.Fn tls_cert_free "struct tls_cert *cert"
+
 .Sh DESCRIPTION
 The
 .Nm tls
@@ -402,6 +407,71 @@ to the socket.
 The amount of data written is returned in
 .Fa outlen .
 .El
+.Pp
+The following functions delivers information about established connection.
+.Bl -bullet -offset four
+.It
+.Fn tls_get_peer_cert
+Extracts and returns peer certificate info.
+.It
+.Fn tls_cert_free
+Frees certificate returned by
+.Fn tls_get_peer_cert .
+.El
+.Sh DATA STRUCTURES
+The data from certificate is returned in following data structures:
+.Bd -literal -offset indent
+struct tls_cert {
+        int			successful_verify;
+        int			version;
+
+        struct tls_cert_dname	subject;
+        struct tls_cert_dname	issuer;
+
+        struct tls_cert_general_name *subject_alt_names;
+        int			subject_alt_name_count;
+
+        const char		*serial;
+        const char		*not_before;
+        const char		*not_after;
+
+        const unsigned char	*fingerprint;
+        size_t			fingerprint_size;
+}
+
+struct tls_cert_dname {
+        const char *common_name;
+        const char *country_name;
+        const char *state_or_province_name;
+        const char *locality_name;
+        const char *street_address;
+        const char *organization_name;
+        const char *organizational_unit_name;
+}
+
+struct tls_cert_general_name {
+        const void *name_value;
+        int name_type;
+}
+.Ed
+.Pp
+Values for
+.Va name_type :
+.Pp
+.Bl -tag -width "TLS_CERT_GNAME_EMAIL" -offset indent -compact
+.It Dv TLS_CERT_GNAME_DNS
+Value is string that contains DNS name.
+.It Dv TLS_CERT_GNAME_EMAIL
+Value is string that contains email address.
+.It Dv TLS_CERT_GNAME_URI
+Value is string that contains URI.
+.It Dv TLS_CERT_GNAME_IPv4
+Value is 4 bytes of
+.Vt "struct in_addr" .
+.It Dv TLS_CERT_GNAME_IPv6
+Value is 16 bytes of
+.Vt "struct in6_addr" .
+.El
 .Sh RETURN VALUES
 Functions that return
 .Vt int
@@ -442,6 +512,18 @@ and the
 and
 .Fn tls_connect
 function families, repeat the call.
+.Pp
+The
+.Fn tls_get_peer_cert
+function has following special return value:
+.Pp
+.Bl -tag -width "TLS_WRITE_AGAIN" -offset indent -compact
+.It Dv TLS_NO_CERT
+Peer did not provide certificate.
+.El
+.Pp
+It is used to allow to distinguish clients without certificate from clients
+with corrupt certificate.
 .Sh EXAMPLES
 Example showing how to handle partial TLS writes.
 .Bd -literal -offset indent

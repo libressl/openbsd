@@ -86,4 +86,7 @@ int tls_set_errorx(struct tls *ctx, const char *fmt, ...)
 int tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret,
     const char *prefix);
 
+int tls_parse_cert(struct tls *ctx, struct tls_cert **cert_p,
+		   const char *fingerprint_algo, X509 *x509);
+
 #endif /* HEADER_TLS_INTERNAL_H */
