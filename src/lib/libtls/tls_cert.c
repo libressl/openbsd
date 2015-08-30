@@ -151,10 +151,46 @@ nomem:
  */
 
 static int
-tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, int minchars, int maxchars)
+check_invalid_bytes(struct tls *ctx, unsigned char *data, unsigned int len,
+		    int ascii_only, const char *desc)
 {
-	int format, len, i, ret = -1;
-	unsigned char *data, c;
+	unsigned int i, c;
+
+	/* data is utf8 string, check for crap */
+	for (i = 0; i < len; i++) {
+		c = data[i];
+
+		if (ascii_only && (c & 0x80) != 0) {
+			tls_set_errorx(ctx, "invalid %s: contains non-ascii in ascii string", desc);
+			goto failed;
+		} else if (c < 0x20) {
+			/* ascii control chars, including NUL */
+			if (c != '\t' && c != '\n' && c != '\r') {
+				tls_set_errorx(ctx, "invalid %s: contains C0 control char", desc);
+				goto failed;
+			}
+		} else if (c == 0xC2 && (i + 1) < len) {
+			/* C1 control chars in UTF-8: \xc2\x80 - \xc2\x9f */
+			c = data[i + 1];
+			if (c >= 0x80 && c <= 0x9F) {
+				tls_set_errorx(ctx, "invalid %s: contains C1 control char", desc);
+				goto failed;
+			}
+		} else if (c == 0x7F) {
+			tls_set_errorx(ctx, "invalid %s: contains DEL char", desc);
+			goto failed;
+		}
+	}
+	return 0;
+failed:
+	return -1;
+}
+
+static int
+tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, int minchars, int maxchars, const char *desc)
+{
+	int format, len, ret = -1;
+	unsigned char *data;
 	ASN1_STRING *a1utf = NULL;
 	int ascii_only = 0;
 	char *cstr = NULL;
@@ -166,7 +202,7 @@ tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, in
 	data = ASN1_STRING_data(a1str);
 	len = ASN1_STRING_length(a1str);
 	if (len < minchars) {
-		tls_set_errorx(ctx, "invalid length");
+		tls_set_errorx(ctx, "invalid %s: string too short", desc);
 		goto failed;
 	}
 
@@ -177,7 +213,7 @@ tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, in
 	case V_ASN1_IA5STRING:
 		/* Ascii */
 		if (len > maxchars) {
-			tls_set_errorx(ctx, "invalid length");
+			tls_set_errorx(ctx, "invalid %s: string too long", desc);
 			goto failed;
 		}
 		ascii_only = 1;
@@ -202,7 +238,7 @@ tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, in
 		mbconvert = MBSTRING_UTF8;
 		break;
 	default:
-		tls_set_errorx(ctx, "invalid string type");
+		tls_set_errorx(ctx, "invalid %s: unexpected string type", desc);
 		goto failed;
 	}
 
@@ -210,12 +246,7 @@ tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, in
 	if (mbconvert != -1) {
 		mbres = ASN1_mbstring_ncopy(&a1utf, data, len, mbconvert, B_ASN1_UTF8STRING, minchars, maxchars);
 		if (mbres < 0) {
-			int err = ERR_peek_error();
-			if (err != 0) {
-				tls_set_errorx(ctx, "multibyte conversion failed: %s", ERR_error_string(err, NULL));
-			} else {
-				tls_set_errorx(ctx, "multibyte conversion failed");
-			}
+			tls_set_error_libssl(ctx, "invalid %s", desc);
 			goto failed;
 		}
 		if (mbres != V_ASN1_UTF8STRING) {
@@ -226,31 +257,15 @@ tls_parse_asn1string(struct tls *ctx, ASN1_STRING *a1str, const char **dst_p, in
 		len = ASN1_STRING_length(a1utf);
 	}
 
-	/* Now we have utf8 string, check for crap */
-	for (i = 0; i < len; i++) {
-		c = data[i];
-
-		if (ascii_only && (c & 0x80) != 0) {
-			tls_set_errorx(ctx, "8-bit chars not allowed: 0x%02x", c);
-			goto failed;
-		} else if (c < 0x20) {
-			/* ascii control chars, including NUL */
-			if (c != '\t' && c != '\n' && c != '\r') {
-				tls_set_errorx(ctx, "invalid C0 control char: 0x%02x", c);
-				goto failed;
-			}
-		} else if (c == 0xC2 && (i + 1) < len) {
-			/* C1 control chars in UTF-8: \xc2\x80 - \xc2\x9f */
-			c = data[i + 1];
-			if (c >= 0x80 && c <= 0x9F) {
-				tls_set_errorx(ctx, "invalid C1 control char 0x%02x", c);
-				goto failed;
-			}
-		} else if (c == 0x7F) {
-			tls_set_errorx(ctx, "invalid DEL char");
-			goto failed;
-		}
+	/* must not allow \0 */
+	if (memchr(data, 0, len) != NULL) {
+		tls_set_errorx(ctx, "invalid %s: contains NUL", desc);
+		goto failed;
 	}
+
+	/* no escape codes please */
+	if (check_invalid_bytes(ctx, data, len, ascii_only, desc) < 0)
+		goto failed;
 
 	/* copy to new string */
 	cstr = malloc(len + 1);
@@ -268,7 +283,7 @@ failed:
 }
 
 static int
-tls_cert_get_dname_string(struct tls *ctx, X509_NAME *name, int nid, const char **str_p, int minchars, int maxchars)
+tls_cert_get_dname_string(struct tls *ctx, X509_NAME *name, int nid, const char **str_p, int minchars, int maxchars, const char *desc)
 {
 	int loc, len;
 	X509_NAME_ENTRY *ne;
@@ -285,14 +300,14 @@ tls_cert_get_dname_string(struct tls *ctx, X509_NAME *name, int nid, const char 
 	a1str = X509_NAME_ENTRY_get_data(ne);
 	if (!a1str)
 		return 0;
-	len = tls_parse_asn1string(ctx, a1str, str_p, minchars, maxchars);
+	len = tls_parse_asn1string(ctx, a1str, str_p, minchars, maxchars, desc);
 	if (len < 0)
 		return -1;
 	return 0;
 }
 
 static int
-tls_load_alt_ia5string(struct tls *ctx, ASN1_IA5STRING *ia5str, struct tls_cert *cert, int slot_type, int minchars, int maxchars)
+tls_load_alt_ia5string(struct tls *ctx, ASN1_IA5STRING *ia5str, struct tls_cert *cert, int slot_type, int minchars, int maxchars, const char *desc)
 {
 	struct tls_cert_general_name *slot;
 	const char *data;
@@ -300,7 +315,7 @@ tls_load_alt_ia5string(struct tls *ctx, ASN1_IA5STRING *ia5str, struct tls_cert 
 
 	slot = &cert->subject_alt_names[cert->subject_alt_name_count];
 
-	len = tls_parse_asn1string(ctx, ia5str, &data, minchars, maxchars);
+	len = tls_parse_asn1string(ctx, ia5str, &data, minchars, maxchars, desc);
 	if (len < 0)
 		return 0;
 
@@ -310,7 +325,7 @@ tls_load_alt_ia5string(struct tls *ctx, ASN1_IA5STRING *ia5str, struct tls_cert 
 	 * dNSName must be rejected.
 	 */
 	if (len == 1 && data[0] == ' ') {
-		tls_set_errorx(ctx, "single space as name");
+		tls_set_errorx(ctx, "invalid %s: single space", desc);
 		return -1;
 	}
 
@@ -389,11 +404,11 @@ tls_cert_get_altnames(struct tls *ctx, struct tls_cert *cert, X509 *x509_cert)
 		altname = sk_GENERAL_NAME_value(altname_stack, i);
 
 		if (altname->type == GEN_DNS) {
-			rv = tls_load_alt_ia5string(ctx, altname->d.dNSName, cert, TLS_CERT_GNAME_DNS, 1, UB_GNAME_DNS);
+			rv = tls_load_alt_ia5string(ctx, altname->d.dNSName, cert, TLS_CERT_GNAME_DNS, 1, UB_GNAME_DNS, "dns");
 		} else if (altname->type == GEN_EMAIL) {
-			rv = tls_load_alt_ia5string(ctx, altname->d.rfc822Name, cert, TLS_CERT_GNAME_EMAIL, 1, UB_GNAME_EMAIL);
+			rv = tls_load_alt_ia5string(ctx, altname->d.rfc822Name, cert, TLS_CERT_GNAME_EMAIL, 1, UB_GNAME_EMAIL, "email");
 		} else if (altname->type == GEN_URI) {
-			rv = tls_load_alt_ia5string(ctx, altname->d.uniformResourceIdentifier, cert, TLS_CERT_GNAME_URI, 1, UB_GNAME_URI);
+			rv = tls_load_alt_ia5string(ctx, altname->d.uniformResourceIdentifier, cert, TLS_CERT_GNAME_URI, 1, UB_GNAME_URI, "uri");
 		} else if (altname->type == GEN_IPADD) {
 			rv = tls_load_alt_ipaddr(ctx, altname->d.iPAddress, cert);
 		} else {
@@ -413,19 +428,26 @@ static int
 tls_get_dname(struct tls *ctx, X509_NAME *name, struct tls_cert_dname *dname)
 {
 	int ret;
-	ret = tls_cert_get_dname_string(ctx, name, NID_commonName, &dname->common_name, 1, UB_COMMON_NAME);
+	ret = tls_cert_get_dname_string(ctx, name, NID_commonName, &dname->common_name,
+					1, UB_COMMON_NAME, "commonName");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_countryName, &dname->country_name, 0, UB_COUNTRY_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_countryName, &dname->country_name,
+						0, UB_COUNTRY_NAME, "countryName");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_stateOrProvinceName, &dname->state_or_province_name, 0, UB_STATE_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_stateOrProvinceName, &dname->state_or_province_name,
+						0, UB_STATE_NAME, "stateName");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_localityName, &dname->locality_name, 0, UB_LOCALITY_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_localityName, &dname->locality_name,
+						0, UB_LOCALITY_NAME, "localityName");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_streetAddress, &dname->street_address, 0, UB_LOCALITY_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_streetAddress, &dname->street_address,
+						0, UB_LOCALITY_NAME, "streetAddress");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_organizationName, &dname->organization_name, 0, UB_ORGANIZATION_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_organizationName, &dname->organization_name,
+						0, UB_ORGANIZATION_NAME, "organizationName");
 	if (ret == 0)
-		ret = tls_cert_get_dname_string(ctx, name, NID_organizationalUnitName, &dname->organizational_unit_name, 0, UB_ORGANIZATIONAL_UNIT_NAME);
+		ret = tls_cert_get_dname_string(ctx, name, NID_organizationalUnitName, &dname->organizational_unit_name,
+						0, UB_ORGANIZATIONAL_UNIT_NAME, "organizationalUnitName");
 	return ret;
 }
 
