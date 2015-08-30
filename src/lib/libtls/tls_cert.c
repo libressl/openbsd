@@ -34,14 +34,15 @@
  */
 
 /* Upper bounds */
-#define UB_COMMON_NAME				64
-#define UB_COUNTRY_NAME				3
-#define UB_STATE_NAME				128
-#define UB_LOCALITY_NAME			128
-#define UB_ORGANIZATION_NAME			64
-#define UB_ORGANIZATIONAL_UNIT_NAME		64
+#define UB_COMMON_NAME				255
+#define UB_COUNTRY_NAME				255
+#define UB_STATE_NAME				255
+#define UB_LOCALITY_NAME			255
+#define UB_STREET_ADDRESS			255
+#define UB_ORGANIZATION_NAME			255
+#define UB_ORGANIZATIONAL_UNIT_NAME		255
 
-#define UB_GNAME_DNS				64
+#define UB_GNAME_DNS				255
 #define UB_GNAME_EMAIL				255
 #define UB_GNAME_URI				255
 
@@ -429,7 +430,7 @@ tls_get_dname(struct tls *ctx, X509_NAME *name, struct tls_cert_dname *dname)
 {
 	int ret;
 	ret = tls_cert_get_dname_string(ctx, name, NID_commonName, &dname->common_name,
-					1, UB_COMMON_NAME, "commonName");
+					0, UB_COMMON_NAME, "commonName");
 	if (ret == 0)
 		ret = tls_cert_get_dname_string(ctx, name, NID_countryName, &dname->country_name,
 						0, UB_COUNTRY_NAME, "countryName");
@@ -441,7 +442,7 @@ tls_get_dname(struct tls *ctx, X509_NAME *name, struct tls_cert_dname *dname)
 						0, UB_LOCALITY_NAME, "localityName");
 	if (ret == 0)
 		ret = tls_cert_get_dname_string(ctx, name, NID_streetAddress, &dname->street_address,
-						0, UB_LOCALITY_NAME, "streetAddress");
+						0, UB_STREET_ADDRESS, "streetAddress");
 	if (ret == 0)
 		ret = tls_cert_get_dname_string(ctx, name, NID_organizationName, &dname->organization_name,
 						0, UB_ORGANIZATION_NAME, "organizationName");
