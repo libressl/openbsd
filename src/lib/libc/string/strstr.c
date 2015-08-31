@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strstr.c,v 1.5 2005/08/08 08:05:37 espie Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -54,3 +54,4 @@ strstr(const char *s, const char *find)
 	}
 	return ((char *)s);
 }
+DEF_STRONG(strstr);

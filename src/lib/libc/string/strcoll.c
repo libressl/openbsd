@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strcoll.c,v 1.5 2005/08/08 08:05:37 espie Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -42,3 +42,4 @@ strcoll(const char *s1, const char *s2)
 	/* LC_COLLATE is unimplemented, hence always "C" */
 	return (strcmp(s1, s2));
 }
+DEF_STRONG(strcoll);

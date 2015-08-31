@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlcat.c,v 1.14 2015/01/15 03:54:12 millert Exp $	*/
+/*	$OpenBSD: strlcat.c,v 1.15 2015/03/02 21:41:08 millert Exp $	*/
 
 /*
  * Copyright (c) 1998, 2015 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -53,3 +53,4 @@ strlcat(char *dst, const char *src, size_t dsize)
 
 	return(dlen + (src - osrc));	/* count does not include NUL */
 }
+DEF_WEAK(strlcat);

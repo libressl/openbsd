@@ -1,4 +1,4 @@
-/*	$OpenBSD: strncpy.c,v 1.6 2005/08/08 08:05:37 espie Exp $	*/
+/*	$OpenBSD: strncpy.c,v 1.7 2014/06/10 04:17:37 deraadt Exp $	*/
 
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
@@ -56,3 +56,4 @@ strncpy(char *dst, const char *src, size_t n)
 	}
 	return (dst);
 }
+DEF_STRONG(strncpy);
