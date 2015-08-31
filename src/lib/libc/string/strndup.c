@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: strndup.c,v 1.1 2010/05/18 22:24:55 tedu Exp $	*/
 
 /*
  * Copyright (c) 2010 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -37,3 +37,4 @@ strndup(const char *str, size_t maxlen)
 
 	return copy;
 }
+DEF_WEAK(strndup);

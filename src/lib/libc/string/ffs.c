@@ -1,4 +1,4 @@
-/*	$OpenBSD: ffs.c,v 1.7 2005/08/08 08:05:37 espie Exp $	*/
+/*	$OpenBSD: ffs.c,v 1.8 2014/06/10 04:17:37 deraadt Exp $	*/
 
 /*
  * Public domain.
@@ -38,3 +38,4 @@ ffs(int mask)
 
 	return (bit + t[ r & 0xf ]);
 }
+DEF_WEAK(ffs);

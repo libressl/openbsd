@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcopy.c,v 1.5 2005/08/08 08:05:37 espie Exp $ */
+/*	$OpenBSD: bcopy.c,v 1.6 2014/11/30 19:43:56 deraadt Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -110,3 +110,4 @@ bcopy(const void *src0, void *dst0, size_t length)
 done:
 	return;
 }
+DEF_WEAK(bcopy);
