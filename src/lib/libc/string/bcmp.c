@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcmp.c,v 1.9 2008/03/19 03:00:23 ray Exp $	*/
+/*	$OpenBSD: bcmp.c,v 1.10 2014/06/10 04:17:37 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1987 Regents of the University of California.
@@ -49,3 +49,4 @@ bcmp(const void *b1, const void *b2, size_t length)
 	while (--length);
 	return (0);
 }
+DEF_WEAK(bcmp);

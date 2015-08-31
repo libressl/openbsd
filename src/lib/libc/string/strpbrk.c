@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strpbrk.c,v 1.5 2005/08/08 08:05:37 espie Exp $ */
 /*
  * Copyright (c) 1985 Regents of the University of California.
  * All rights reserved.
@@ -46,3 +46,4 @@ strpbrk(const char *s1, const char *s2)
 	}
 	return (NULL);
 }
+DEF_STRONG(strpbrk);

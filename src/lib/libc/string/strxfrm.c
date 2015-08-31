@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strxfrm.c,v 1.6 2005/08/08 08:05:37 espie Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -49,3 +49,4 @@ strxfrm(char *dst, const char *src, size_t n)
 		return (strlen(src));
 	return (strlcpy(dst, src, n));
 }
+DEF_STRONG(strxfrm);

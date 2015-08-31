@@ -1,4 +1,4 @@
-/*	$OpenBSD: bzero.c,v 1.7 2005/08/08 08:05:37 espie Exp $	*/
+/*	$OpenBSD: bzero.c,v 1.8 2014/06/10 04:17:37 deraadt Exp $	*/
 
 /*
  * Copyright (c) 1987 Regents of the University of California.
@@ -42,3 +42,4 @@ bzero(void *b, size_t length)
 	for (p = b; length--;)
 		*p++ = '\0';
 }
+DEF_WEAK(bzero);
