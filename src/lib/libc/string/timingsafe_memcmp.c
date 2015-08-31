@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: timingsafe_memcmp.c,v 1.1 2014/06/13 02:12:17 matthew Exp $	*/
 /*
  * Copyright (c) 2014 Google Inc.
  *
@@ -44,3 +44,4 @@ timingsafe_memcmp(const void *b1, const void *b2, size_t len)
 
         return (res);
 }
+DEF_WEAK(timingsafe_memcmp);

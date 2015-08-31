@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: strmode.c,v 1.7 2005/08/08 08:05:37 espie Exp $ */
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -138,3 +138,4 @@ strmode(int mode, char *p)
 	*p++ = ' ';		/* will be a '+' if ACL's implemented */
 	*p = '\0';
 }
+DEF_WEAK(strmode);
