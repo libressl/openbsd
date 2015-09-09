@@ -53,7 +53,8 @@
 .Nm tls_accept_fds ,
 .Nm tls_accept_socket ,
 .Nm tls_read ,
-.Nm tls_write
+.Nm tls_write ,
+.Nm tls_get_cert_fingerprint
 .Nd TLS client and server API
 .Sh SYNOPSIS
 .In tls.h
@@ -128,6 +129,8 @@
 .Fn tls_read "struct tls *ctx" "void *buf" "size_t buflen" "size_t *outlen"
 .Ft "int"
 .Fn tls_write "struct tls *ctx" "const void *buf" "size_t buflen" "size_t *outlen"
+.Ft "int"
+.Fn tls_get_cert_fingerprint "struct tls *ctx" "char *buf" "size_t buflen"
 .Sh DESCRIPTION
 The
 .Nm tls
@@ -399,6 +402,16 @@ bytes of data from
 to the socket.
 The amount of data written is returned in
 .Fa outlen .
+.It
+.Fn tls_get_cert_fingerprint
+if
+.Fa buf
+and
+.Fa buflen
+are large enough, and the peer has provided a certificate, copies the peer's
+.Fa sha1_hash
+into the
+.Fa buf .
 .El
 .Sh RETURN VALUES
 Functions that return

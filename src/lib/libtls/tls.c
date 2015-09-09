@@ -406,3 +406,25 @@ tls_close(struct tls *ctx)
 
 	return (rv);
 }
+
+int
+tls_get_cert_fingerprint(struct tls *ctx, char *buf, size_t buflen)
+{
+	X509 *cert;
+
+	if (buflen < SHA_DIGEST_LENGTH + 1) {
+		tls_set_error(ctx, "buflen too small");
+		return -1;
+	}
+
+	if ((cert = SSL_get_peer_certificate(ctx->ssl_conn)) == NULL) {
+		tls_set_error(ctx, "no peer certificate");
+		return -1;
+	}
+
+	strlcpy(buf, cert->sha1_hash, SHA_DIGEST_LENGTH + 1);
+
+	X509_free(cert);
+
+	return 0;
+}
