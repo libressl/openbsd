@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_util.c,v 1.1 2014/10/31 13:46:17 jsing Exp $ */
+/* $OpenBSD: tls_util.c,v 1.2 2015/02/07 23:25:37 reyk Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  * Copyright (c) 2015 Reyk Floeter <reyk@openbsd.org>
@@ -73,14 +73,14 @@ tls_host_port(const char *hostport, char **host, char **port)
 	rv = 0;
 	goto done;
 
-fail:
+ fail:
 	free(*host);
 	*host = NULL;
 	free(*port);
 	*port = NULL;
 	rv = -1;
 
-done:
+ done:
 	free(s);
 
 	return (rv);
