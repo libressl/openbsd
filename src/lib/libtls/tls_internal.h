@@ -23,7 +23,7 @@
 
 #define _PATH_SSL_CA_FILE "/etc/ssl/cert.pem"
 
-#define TLS_CIPHERS_COMPAT	"ALL:!aNULL:!eNULL"
+#define TLS_CIPHERS_COMPAT	"HIGH:MEDIUM:+3DES:!aNULL"
 #define TLS_CIPHERS_DEFAULT	"TLSv1.2+AEAD+ECDHE:TLSv1.2+AEAD+DHE"
 
 struct tls_config {
@@ -51,6 +51,8 @@ struct tls_config {
 #define TLS_SERVER_CONN		(1 << 2)
 
 #define TLS_STATE_CONNECTING	(1 << 0)
+#define TLS_STATE_ESTABLISHED	(1 << 1)
+#define TLS_STATE_ABORT		(1 << 2)
 
 struct tls {
 	struct tls_config *config;
@@ -64,15 +66,19 @@ struct tls {
 
 	SSL *ssl_conn;
 	SSL_CTX *ssl_ctx;
+
+	int used_dh_bits;
+	int used_ecdh_nid;
 };
 
 struct tls *tls_new(void);
 struct tls *tls_server_conn(struct tls *ctx);
 
-int tls_check_servername(struct tls *ctx, X509 *cert, const char *servername);
+int tls_check_servername(struct tls *ctx, struct tls_cert *cert, const char *servername);
 int tls_configure_keypair(struct tls *ctx);
 int tls_configure_server(struct tls *ctx);
 int tls_configure_ssl(struct tls *ctx);
+int tls_configure_verify(struct tls *ctx);
 int tls_host_port(const char *hostport, char **host, char **port);
 int tls_set_error(struct tls *ctx, const char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))
@@ -82,5 +88,11 @@ int tls_set_errorx(struct tls *ctx, const char *fmt, ...)
     __attribute__((__nonnull__ (2)));
 int tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret,
     const char *prefix);
+int tls_set_error_libssl(struct tls *ctx, const char *fmt, ...)
+    __attribute__((__format__ (printf, 2, 3)))
+    __attribute__((__nonnull__ (2)));
+
+int tls_parse_cert(struct tls *ctx, struct tls_cert **cert_p,
+		   const char *fingerprint_algo, X509 *x509);
 
 #endif /* HEADER_TLS_INTERNAL_H */

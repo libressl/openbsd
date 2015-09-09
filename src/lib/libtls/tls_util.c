@@ -105,7 +105,8 @@ tls_load_file(const char *name, size_t *len, char *password)
 	FILE *fp;
 	EVP_PKEY *key = NULL;
 	BIO *bio = NULL;
-	char *data, *buf = NULL;
+	uint8_t *buf = NULL;
+	char *data;
 	struct stat st;
 	size_t size;
 	int fd = -1;
@@ -122,7 +123,7 @@ tls_load_file(const char *name, size_t *len, char *password)
 		size = (size_t)st.st_size;
 		if ((buf = calloc(1, size + 1)) == NULL)
 			goto fail;
-		if (read(fd, buf, size) != size)
+		if (read(fd, buf, size) != (ssize_t)size)
 			goto fail;
 		close(fd);
 		goto done;
@@ -167,3 +168,25 @@ tls_load_file(const char *name, size_t *len, char *password)
 
 	return (NULL);
 }
+
+ssize_t
+tls_get_connection_info(struct tls *ctx, char *buf, size_t buflen)
+{
+	SSL *conn = ctx->ssl_conn;
+	if (conn == NULL)
+		return -1;
+
+	if (ctx->used_dh_bits)
+		return snprintf(buf, buflen, "%s/%s/DH=%d",
+				SSL_get_version(conn), SSL_get_cipher(conn),
+				ctx->used_dh_bits);
+
+	if (ctx->used_ecdh_nid)
+		return snprintf(buf, buflen, "%s/%s/ECDH=%s",
+				SSL_get_version(conn), SSL_get_cipher(conn),
+				OBJ_nid2sn(ctx->used_ecdh_nid));
+
+	return snprintf(buf, buflen, "%s/%s",
+			SSL_get_version(conn), SSL_get_cipher(conn));
+}
+

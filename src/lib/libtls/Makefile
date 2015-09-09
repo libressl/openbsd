@@ -13,6 +13,7 @@ LDADD+= -L${BSDOBJDIR}/lib/libssl/ssl -lssl
 HDRS=	tls.h
 
 SRCS=	tls.c \
+	tls_cert.c \
 	tls_client.c \
 	tls_config.c \
 	tls_server.c \
