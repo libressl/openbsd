@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_config.c,v 1.8 2015/02/22 14:59:37 jsing Exp $ */
+/* $OpenBSD: tls_config.c,v 1.9 2015/02/22 15:09:54 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -299,4 +299,16 @@ tls_config_verify(struct tls_config *config)
 {
 	config->verify_cert = 1;
 	config->verify_name = 1;
+}
+
+void
+tls_config_verify_client(struct tls_config *config)
+{
+	config->verify_client = 1;
+}
+
+void
+tls_config_verify_client_optional(struct tls_config *config)
+{
+	config->verify_client = 2;
 }
