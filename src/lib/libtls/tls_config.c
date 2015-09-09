@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_config.c,v 1.9 2015/02/22 15:09:54 jsing Exp $ */
+/* $OpenBSD: tls_config.c,v 1.10 2015/09/09 19:23:04 beck Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -84,7 +84,7 @@ tls_config_new(void)
 
 	return (config);
 
-err:
+ err:
 	tls_config_free(config);
 	return (NULL);
 }
