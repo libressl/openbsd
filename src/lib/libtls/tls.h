@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.h,v 1.12 2015/03/31 14:03:38 jsing Exp $ */
+/* $OpenBSD: tls.h,v 1.13 2015/06/19 06:20:11 bcook Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -72,6 +72,9 @@ int tls_config_parse_protocols(uint32_t *_protocols, const char *_protostr);
 void tls_config_insecure_noverifycert(struct tls_config *_config);
 void tls_config_insecure_noverifyname(struct tls_config *_config);
 void tls_config_verify(struct tls_config *_config);
+
+void tls_config_verify_client(struct tls_config *_config);
+void tls_config_verify_client_optional(struct tls_config *_config);
 
 struct tls *tls_client(void);
 struct tls *tls_server(void);
