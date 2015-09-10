@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_server.c,v 1.12 2015/09/09 19:23:04 beck Exp $ */
+/* $OpenBSD: tls_server.c,v 1.13 2015/09/09 19:49:07 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -87,6 +87,10 @@ tls_configure_server(struct tls *ctx)
 		SSL_CTX_set_tmp_ecdh(ctx->ssl_ctx, ecdh_key);
 		EC_KEY_free(ecdh_key);
 	}
+
+	if (ctx->config->ciphers_server == 1)
+		SSL_CTX_set_options(ctx->ssl_ctx,
+		    SSL_OP_CIPHER_SERVER_PREFERENCE); 
 
 	/*
 	 * Set session ID context to a random value.  We don't support
