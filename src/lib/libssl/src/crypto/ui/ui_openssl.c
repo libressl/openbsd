@@ -1,4 +1,4 @@
-/* $OpenBSD: ui_openssl.c,v 1.23 2014/07/13 00:10:47 deraadt Exp $ */
+/* $OpenBSD: ui_openssl.c,v 1.24 2015/07/16 02:46:49 guenther Exp $ */
 /* Written by Richard Levitte (richard@levitte.org) and others
  * for the OpenSSL project 2001.
  */
@@ -286,7 +286,7 @@ error:
 	if (ps >= 1)
 		popsig();
 
-	OPENSSL_cleanse(result, BUFSIZ);
+	explicit_bzero(result, BUFSIZ);
 	return ok;
 }
 
