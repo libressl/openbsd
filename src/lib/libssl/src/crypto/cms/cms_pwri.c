@@ -1,4 +1,4 @@
-/* $OpenBSD: cms_pwri.c,v 1.8 2014/10/22 13:02:04 jsing Exp $ */
+/* $OpenBSD: cms_pwri.c,v 1.9 2015/05/15 11:00:14 jsg Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -262,7 +262,7 @@ kek_unwrap_key(unsigned char *out, size_t *outlen, const unsigned char *in,
 	rv = 1;
 
 err:
-	OPENSSL_cleanse(tmp, inlen);
+	explicit_bzero(tmp, inlen);
 	free(tmp);
 	return rv;
 }
