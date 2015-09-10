@@ -1,4 +1,4 @@
-/* $OpenBSD: gostr341194.c,v 1.3 2014/12/07 16:33:51 jsing Exp $ */
+/* $OpenBSD: gostr341194.c,v 1.4 2015/07/15 17:13:17 beck Exp $ */
 /*
  * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Copyright (c) 2005-2006 Cryptocom LTD
@@ -267,7 +267,7 @@ GOSTR341194(const unsigned char *d, size_t n, unsigned char *md, int nid)
 		return 0;
 	GOSTR341194_Update(&c, d, n);
 	GOSTR341194_Final(md, &c);
-	OPENSSL_cleanse(&c, sizeof(c));
+	explicit_bzero(&c, sizeof(c));
 	return (md);
 }
 #endif

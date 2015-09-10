@@ -1,4 +1,4 @@
-/* $OpenBSD: gcm128.c,v 1.11 2015/02/07 13:19:15 doug Exp $ */
+/* $OpenBSD: gcm128.c,v 1.12 2015/02/10 09:46:30 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 2010 The OpenSSL Project.  All rights reserved.
  *
@@ -1533,7 +1533,7 @@ GCM128_CONTEXT *CRYPTO_gcm128_new(void *key, block128_f block)
 void CRYPTO_gcm128_release(GCM128_CONTEXT *ctx)
 {
 	if (ctx) {
-		OPENSSL_cleanse(ctx,sizeof(*ctx));
+		explicit_bzero(ctx,sizeof(*ctx));
 		free(ctx);
 	}
 }

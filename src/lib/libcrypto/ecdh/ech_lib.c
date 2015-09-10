@@ -1,4 +1,4 @@
-/* $OpenBSD: ech_lib.c,v 1.7 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: ech_lib.c,v 1.8 2015/02/07 13:19:15 doug Exp $ */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
@@ -180,7 +180,7 @@ void ecdh_data_free(void *data)
 
 	CRYPTO_free_ex_data(CRYPTO_EX_INDEX_ECDH, r, &r->ex_data);
 
-	OPENSSL_cleanse((void *)r, sizeof(ECDH_DATA));
+	explicit_bzero((void *)r, sizeof(ECDH_DATA));
 
 	free(r);
 	}

@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_exp.c,v 1.21 2015/02/14 15:13:24 miod Exp $ */
+/* $OpenBSD: bn_exp.c,v 1.22 2015/03/21 08:05:20 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -825,7 +825,7 @@ err:
 	if ((in_mont == NULL) && (mont != NULL))
 		BN_MONT_CTX_free(mont);
 	if (powerbuf != NULL) {
-		OPENSSL_cleanse(powerbuf, powerbufLen);
+		explicit_bzero(powerbuf, powerbufLen);
 		free(powerbufFree);
 	}
 	BN_CTX_end(ctx);

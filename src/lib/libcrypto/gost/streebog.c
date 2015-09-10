@@ -1,4 +1,4 @@
-/* $OpenBSD: streebog.c,v 1.3 2014/12/07 16:07:56 miod Exp $ */
+/* $OpenBSD: streebog.c,v 1.4 2014/12/07 16:33:51 jsing Exp $ */
 /*
  * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Copyright (c) 2005-2006 Cryptocom LTD
@@ -1455,7 +1455,7 @@ STREEBOG256(const unsigned char *d, size_t n, unsigned char *md)
 	STREEBOG256_Init(&c);
 	STREEBOG256_Update(&c, d, n);
 	STREEBOG256_Final(md, &c);
-	OPENSSL_cleanse(&c, sizeof(c));
+	explicit_bzero(&c, sizeof(c));
 	return (md);
 }
 
@@ -1470,7 +1470,7 @@ STREEBOG512(const unsigned char *d, size_t n, unsigned char *md)
 	STREEBOG512_Init(&c);
 	STREEBOG512_Update(&c, d, n);
 	STREEBOG512_Final(md, &c);
-	OPENSSL_cleanse(&c, sizeof(c));
+	explicit_bzero(&c, sizeof(c));
 	return (md);
 }
 
