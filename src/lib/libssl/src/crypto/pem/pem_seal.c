@@ -1,4 +1,4 @@
-/* $OpenBSD: pem_seal.c,v 1.20 2014/07/11 08:44:49 jsing Exp $ */
+/* $OpenBSD: pem_seal.c,v 1.21 2014/10/18 17:20:40 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -117,7 +117,7 @@ PEM_SealInit(PEM_ENCODE_SEAL_CTX *ctx, EVP_CIPHER *type, EVP_MD *md_type,
 
 err:
 	free(s);
-	OPENSSL_cleanse(key, EVP_MAX_KEY_LENGTH);
+	explicit_bzero(key, EVP_MAX_KEY_LENGTH);
 	return (ret);
 }
 

@@ -1,4 +1,4 @@
-/* $OpenBSD: randfile.c,v 1.40 2014/10/22 13:02:04 jsing Exp $ */
+/* $OpenBSD: randfile.c,v 1.41 2015/07/18 22:46:42 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -130,7 +130,7 @@ RAND_write_file(const char *file)
 	}
 
 	fclose(out);
-	OPENSSL_cleanse(buf, BUFSIZE);
+	explicit_bzero(buf, BUFSIZE);
 	return ret;
 }
 

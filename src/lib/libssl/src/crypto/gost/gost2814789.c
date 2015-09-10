@@ -1,4 +1,4 @@
-/* $OpenBSD: gost2814789.c,v 1.3 2014/12/07 16:33:51 jsing Exp $ */
+/* $OpenBSD: gost2814789.c,v 1.4 2015/02/10 09:46:30 miod Exp $ */
 /*
  * Copyright (c) 2014 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  * Copyright (c) 2005-2006 Cryptocom LTD
@@ -464,7 +464,7 @@ GOST2814789IMIT(const unsigned char *d, size_t n, unsigned char *md, int nid,
 	Gost2814789_set_key(&c.cipher, key, 256);
 	GOST2814789IMIT_Update(&c, d, n);
 	GOST2814789IMIT_Final(md, &c);
-	OPENSSL_cleanse(&c, sizeof(c));
+	explicit_bzero(&c, sizeof(c));
 	return (md);
 }
 
