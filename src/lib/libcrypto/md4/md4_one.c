@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: md4_one.c,v 1.6 2014/06/12 15:49:29 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -71,7 +71,7 @@ unsigned char *MD4(const unsigned char *d, size_t n, unsigned char *md)
 		return NULL;
 	MD4_Update(&c,d,n);
 	MD4_Final(md,&c);
-	OPENSSL_cleanse(&c,sizeof(c)); /* security consideration */
+	OPENSSL_cleanse(&c,sizeof(c));
 	return(md);
 	}
 
