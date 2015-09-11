@@ -1,4 +1,4 @@
-/* $OpenBSD: s_server.c,v 1.16 2015/09/10 16:01:06 jsing Exp $ */
+/* $OpenBSD: s_server.c,v 1.17 2015/09/11 14:30:23 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1462,7 +1462,6 @@ sv_body(char *hostname, int s, unsigned char *context)
 					i = 0;	/* 13; */
 					continue;
 					/*
-					 * strcpy(buf,"server side
 					 * RE-NEGOTIATE\n");
 					 */
 				}
@@ -1476,7 +1475,6 @@ sv_body(char *hostname, int s, unsigned char *context)
 					i = 0;	/* 13; */
 					continue;
 					/*
-					 * strcpy(buf,"server side
 					 * RE-NEGOTIATE asking for client
 					 * cert\n");
 					 */
