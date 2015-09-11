@@ -1,4 +1,4 @@
-/*	$OpenBSD: verifytest.c,v 1.3 2015/02/22 15:14:32 jsing Exp $	*/
+/*	$OpenBSD: verifytest.c,v 1.4 2015/09/11 12:57:24 beck Exp $	*/
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -149,6 +149,11 @@ struct verify_test verify_tests[] = {
 		.alt_name_type = GEN_IPADD,
 		.name = "cafe::beef",
 		.want = 0,
+	},
+	{
+		.common_name = "*.openbsd.org",
+		.name = ".openbsd.org",
+		.want = -1,
 	},
 };
 
