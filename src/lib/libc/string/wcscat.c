@@ -1,4 +1,4 @@
-/*	$OpenBSD: wcscat.c,v 1.2 2005/06/19 22:12:07 espie Exp $	*/
+/*	$OpenBSD: wcscat.c,v 1.3 2005/08/08 08:05:37 espie Exp $	*/
 /*	$NetBSD: wcscat.c,v 1.2 2001/01/03 14:29:36 lukem Exp $	*/
 
 /*-
@@ -53,3 +53,4 @@ wcscat(wchar_t *s1, const wchar_t *s2)
 	*q = '\0';
 	return s1;
 }
+DEF_STRONG(wcscat);
