@@ -1,4 +1,4 @@
-/*	$OpenBSD: wcswidth.c,v 1.3 2005/08/08 08:05:37 espie Exp $	*/
+/*	$OpenBSD: wcswidth.c,v 1.4 2011/04/04 18:16:24 stsp Exp $	*/
 /*	$NetBSD: wcswidth.c,v 1.2 2001/01/03 14:29:37 lukem Exp $	*/
 
 /*-
@@ -48,3 +48,4 @@ wcswidth(const wchar_t *s, size_t n)
 
 	return w;
 }
+DEF_WEAK(wcswidth);

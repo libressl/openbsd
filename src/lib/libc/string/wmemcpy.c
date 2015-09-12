@@ -1,4 +1,4 @@
-/*	$OpenBSD: wmemcpy.c,v 1.2 2005/06/19 22:12:07 espie Exp $	*/
+/*	$OpenBSD: wmemcpy.c,v 1.3 2005/08/08 08:05:37 espie Exp $	*/
 /*	$NetBSD: wmemcpy.c,v 1.2 2001/01/03 14:29:37 lukem Exp $	*/
 
 /*-
@@ -38,3 +38,4 @@ wmemcpy(wchar_t *d, const wchar_t *s, size_t n)
 
 	return (wchar_t *)memcpy(d, s, n * sizeof(wchar_t));
 }
+DEF_STRONG(wmemcpy);
