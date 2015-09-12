@@ -1,4 +1,4 @@
-/*	$OpenBSD: strtoumax.c,v 1.1 2006/01/13 17:58:09 millert Exp $	*/
+/*	$OpenBSD: strtoumax.c,v 1.2 2014/09/13 20:10:12 schwarze Exp $	*/
 /*
  * Copyright (c) 1992 The Regents of the University of California.
  * All rights reserved.
@@ -106,3 +106,4 @@ strtoumax(const char *nptr, char **endptr, int base)
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+DEF_STRONG(strtoumax);

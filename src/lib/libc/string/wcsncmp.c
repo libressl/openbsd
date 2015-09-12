@@ -1,4 +1,4 @@
-/*	$OpenBSD: wcsncmp.c,v 1.3 2005/08/08 05:53:01 espie Exp $	*/
+/*	$OpenBSD: wcsncmp.c,v 1.4 2005/08/08 08:05:37 espie Exp $	*/
 /*	$NetBSD: wcsncmp.c,v 1.5 2003/08/07 16:43:54 agc Exp $	*/
 
 /*
@@ -50,3 +50,4 @@ wcsncmp(const wchar_t *s1, const wchar_t *s2, size_t n)
 	} while (--n != 0);
 	return (0);
 }
+DEF_STRONG(wcsncmp);
