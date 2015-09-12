@@ -1,4 +1,4 @@
-/*	$OpenBSD: rcmdsh.c,v 1.13 2014/04/24 18:56:24 jmc Exp $	*/ 
+/*	$OpenBSD: rcmdsh.c,v 1.14 2015/03/23 22:29:32 halex Exp $	*/ 
 
 /*
  * Copyright (c) 2001, MagniComp
@@ -181,3 +181,4 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 	}
 	/* NOTREACHED */
 }
+DEF_WEAK(rcmdsh);
