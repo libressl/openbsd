@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_pton.c,v 1.8 2010/05/06 15:47:14 claudio Exp $	*/
+/*	$OpenBSD: inet_pton.c,v 1.9 2015/01/16 16:48:51 deraadt Exp $	*/
 
 /* Copyright (c) 1996 by Internet Software Consortium.
  *
@@ -57,6 +57,7 @@ inet_pton(int af, const char *src, void *dst)
 	}
 	/* NOTREACHED */
 }
+DEF_WEAK(inet_pton);
 
 /* int
  * inet_pton4(src, dst)

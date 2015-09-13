@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_network.c,v 1.10 2005/08/06 20:30:03 espie Exp $ */
+/*	$OpenBSD: inet_network.c,v 1.11 2013/11/25 17:29:19 deraadt Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -82,3 +82,4 @@ again:
 	}
 	return (val);
 }
+DEF_WEAK(inet_network);

@@ -1,4 +1,4 @@
-/*	$OpenBSD: inet_addr.c,v 1.10 2013/11/24 23:51:28 deraadt Exp $	*/
+/*	$OpenBSD: inet_addr.c,v 1.11 2015/01/16 16:48:51 deraadt Exp $	*/
 
 /*
  * ++Copyright++ 1983, 1990, 1993
@@ -172,3 +172,4 @@ inet_aton(const char *cp, struct in_addr *addr)
 		addr->s_addr = htonl(val);
 	return (1);
 }
+DEF_WEAK(inet_aton);
