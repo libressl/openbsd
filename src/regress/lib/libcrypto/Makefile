@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.18 2015/06/20 01:07:25 doug Exp $
+#	$OpenBSD: Makefile,v 1.19 2015/09/13 21:09:56 doug Exp $
 
 SUBDIR= \
 	aead \
@@ -24,7 +24,6 @@ SUBDIR= \
 	hmac \
 	idea \
 	ige \
-	md4 \
 	md5 \
 	pbkdf2 \
 	pkcs7 \
