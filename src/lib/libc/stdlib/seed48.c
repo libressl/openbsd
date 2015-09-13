@@ -1,4 +1,4 @@
-/*	$OpenBSD: seed48.c,v 1.4 2014/12/08 21:45:20 deraadt Exp $ */
+/*	$OpenBSD: seed48.c,v 1.5 2015/08/27 04:33:31 guenther Exp $ */
 /*
  * Copyright (c) 1993 Martin Birgmeier
  * All rights reserved.
@@ -42,3 +42,4 @@ seed48_deterministic(unsigned short xseed[3])
 	__rand48_add = RAND48_ADD;
 	return sseed;
 }
+DEF_WEAK(seed48_deterministic);
