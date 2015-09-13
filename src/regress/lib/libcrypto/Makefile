@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.17 2014/11/18 21:52:43 miod Exp $
+#	$OpenBSD: Makefile,v 1.18 2015/06/20 01:07:25 doug Exp $
 
 SUBDIR= \
 	aead \
@@ -34,7 +34,6 @@ SUBDIR= \
 	rc2 \
 	rc4 \
 	rmd \
-	sha \
 	sha1 \
 	sha2 \
 	sha256 \
