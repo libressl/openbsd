@@ -1,4 +1,4 @@
-/*	$OpenBSD: strtoul.c,v 1.8 2013/04/17 17:40:35 tedu Exp $ */
+/*	$OpenBSD: strtoul.c,v 1.9 2014/09/13 20:10:12 schwarze Exp $ */
 /*
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -107,3 +107,4 @@ strtoul(const char *nptr, char **endptr, int base)
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+DEF_STRONG(strtoul);
