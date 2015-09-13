@@ -380,13 +380,17 @@ tls_handshake(struct tls *ctx)
 {
 	int rv = -1;
 
-	if ((ctx->conninfo = calloc(1, sizeof(*ctx->conninfo))) == NULL)
-		goto out;
+	if (!ctx->conninfo) {
+		if ((ctx->conninfo = calloc(1, sizeof(*ctx->conninfo))) == NULL)
+			goto out;
+	}
 
 	if ((ctx->flags & TLS_CLIENT) != 0)
 		rv = tls_handshake_client(ctx);
 	else if ((ctx->flags & TLS_SERVER_CONN) != 0)
 		rv = tls_handshake_server(ctx);
+	else
+		tls_set_errorx(ctx, "handshake on invalid context");
 
 	if (rv == 0 &&
 	    (ctx->ssl_peer_cert = SSL_get_peer_certificate(ctx->ssl_conn)) &&
