@@ -1,4 +1,4 @@
-/* $OpenBSD: ech_err.c,v 1.3 2014/07/10 22:45:57 jsing Exp $ */
+/* $OpenBSD: ech_err.c,v 1.4 2015/09/13 10:46:20 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1999-2011 The OpenSSL Project.  All rights reserved.
  *
@@ -80,6 +80,7 @@ static ERR_STRING_DATA ECDH_str_functs[]= {
 
 static ERR_STRING_DATA ECDH_str_reasons[]= {
 	{ERR_REASON(ECDH_R_KDF_FAILED)           , "KDF failed"},
+	{ERR_REASON(ECDH_R_KEY_TRUNCATION), "key would be truncated"},
 	{ERR_REASON(ECDH_R_NON_FIPS_METHOD)      , "non fips method"},
 	{ERR_REASON(ECDH_R_NO_PRIVATE_VALUE)     , "no private value"},
 	{ERR_REASON(ECDH_R_POINT_ARITHMETIC_FAILURE), "point arithmetic failure"},
