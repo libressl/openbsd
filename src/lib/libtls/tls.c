@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.c,v 1.26 2015/09/12 19:54:31 jsing Exp $ */
+/* $OpenBSD: tls.c,v 1.27 2015/09/12 21:00:38 beck Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -380,7 +380,8 @@ tls_handshake(struct tls *ctx)
 {
 	int rv = -1;
 
-	if ((ctx->conninfo = calloc(1, sizeof(*ctx->conninfo))) == NULL)
+	if (ctx->conninfo == NULL &&
+	    (ctx->conninfo = calloc(1, sizeof(*ctx->conninfo))) == NULL)
 		goto out;
 
 	if ((ctx->flags & TLS_CLIENT) != 0)
