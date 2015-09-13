@@ -1,4 +1,4 @@
-/*	$OpenBSD: arc4random.c,v 1.52 2015/01/16 16:48:51 deraadt Exp $	*/
+/*	$OpenBSD: arc4random.c,v 1.53 2015/09/10 18:53:50 bcook Exp $	*/
 
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -186,6 +186,7 @@ arc4random(void)
 	_ARC4_UNLOCK();
 	return val;
 }
+DEF_WEAK(arc4random);
 
 void
 arc4random_buf(void *buf, size_t n)
@@ -194,3 +195,4 @@ arc4random_buf(void *buf, size_t n)
 	_rs_random_buf(buf, n);
 	_ARC4_UNLOCK();
 }
+DEF_WEAK(arc4random_buf);

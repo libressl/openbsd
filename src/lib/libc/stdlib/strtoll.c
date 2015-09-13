@@ -1,4 +1,4 @@
-/*	$OpenBSD: strtoll.c,v 1.7 2013/03/28 18:09:38 martynas Exp $ */
+/*	$OpenBSD: strtoll.c,v 1.8 2014/09/13 20:10:12 schwarze Exp $ */
 /*
  * Copyright (c) 1992 The Regents of the University of California.
  * All rights reserved.
@@ -151,5 +151,6 @@ strtoll(const char *nptr, char **endptr, int base)
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+DEF_STRONG(strtoll);
 
-__strong_alias(strtoq, strtoll);
+__weak_alias(strtoq, strtoll);
