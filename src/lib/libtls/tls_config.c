@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_config.c,v 1.11 2015/09/09 19:49:07 jsing Exp $ */
+/* $OpenBSD: tls_config.c,v 1.12 2015/09/10 09:10:42 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -309,10 +309,17 @@ tls_config_insecure_noverifyname(struct tls_config *config)
 }
 
 void
+tls_config_insecure_noverifytime(struct tls_config *config)
+{
+	config->verify_time = 0;
+}
+
+void
 tls_config_verify(struct tls_config *config)
 {
 	config->verify_cert = 1;
 	config->verify_name = 1;
+	config->verify_time = 1;
 }
 
 void
