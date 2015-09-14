@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: getservbyname.c,v 1.10 2005/08/06 20:30:03 espie Exp $ */
 /*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -57,6 +57,7 @@ gotname:
 	}
 	return (error);
 }
+DEF_WEAK(getservbyname_r);
 
 struct servent *
 getservbyname(const char *name, const char *proto)
@@ -68,3 +69,4 @@ getservbyname(const char *name, const char *proto)
 		return (NULL);
 	return (&serv);
 }
+DEF_WEAK(getservbyname);
