@@ -1,4 +1,4 @@
-/*	$OpenBSD: drand48.c,v 1.5 2014/12/09 19:50:26 deraadt Exp $ */
+/*	$OpenBSD: drand48.c,v 1.6 2015/08/27 04:33:31 guenther Exp $ */
 /*
  * Copyright (c) 1993 Martin Birgmeier
  * All rights reserved.
@@ -12,6 +12,7 @@
  * to anyone/anything when using this software.
  */
 
+#include <math.h>
 #include "rand48.h"
 
 double
