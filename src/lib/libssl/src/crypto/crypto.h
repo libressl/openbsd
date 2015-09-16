@@ -116,6 +116,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifndef HEADER_CRYPTO_H
 #define HEADER_CRYPTO_H
