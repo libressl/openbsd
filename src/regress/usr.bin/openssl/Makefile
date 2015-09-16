@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.1 2014/08/26 17:50:07 jsing Exp $
+#	$OpenBSD: Makefile,v 1.2 2014/12/28 14:01:33 jsing Exp $
 
 SUBDIR= options
 
@@ -47,7 +47,7 @@ ssl-enc-${ENC}.b64: ${CLEAR1} ${CLEAR2}.${ENC}.b64
 	cmp ${CLEAR1} ${CLEAR2}.${ENC}.b64
 
 REGRESS_TARGETS+=ssl-enc-${ENC} ssl-enc-${ENC}.b64
-CLEANFILES+=${CIPHER}.${ENC} ${CIPHER}.${ENC}.b64 ${CLEAR2}.${ENC} ${CLEAR2}.${ENC}.b64 .rnd
+CLEANFILES+=${CIPHER}.${ENC} ${CIPHER}.${ENC}.b64 ${CLEAR2}.${ENC} ${CLEAR2}.${ENC}.b64
 .endfor
 
 ssl-enc:
