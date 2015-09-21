@@ -165,10 +165,6 @@ getentropy(void *buf, size_t len)
 #ifdef FAIL_INSTEAD_OF_TRYING_FALLBACK
 	raise(SIGKILL);
 #endif
-	ret = getentropy_fallback(buf, len);
-	if (ret != -1)
-		return (ret);
-
 	errno = EIO;
 	return (ret);
 }
