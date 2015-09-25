@@ -1,8 +1,9 @@
-#	$OpenBSD: Makefile,v 1.20 2015/09/13 23:36:21 doug Exp $
+#	$OpenBSD: Makefile,v 1.21 2015/09/14 01:45:03 doug Exp $
 
 SUBDIR= \
 	aead \
 	aeswrap \
+	asn1 \
 	base64 \
 	bf \
 	bio \
