@@ -1,7 +1,7 @@
-#	$OpenBSD$
+#	$OpenBSD: Makefile,v 1.1 2015/09/25 16:12:30 jsing Exp $
 
 TESTS = \
-	asn1time
+	asn1time rfc5280time
 
 REGRESS_TARGETS= all_tests
 
