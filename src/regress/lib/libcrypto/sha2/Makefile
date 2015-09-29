@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.1 2014/05/02 19:27:06 miod Exp $
+#	$OpenBSD: Makefile,v 1.2 2014/08/26 17:50:07 jsing Exp $
 
 REGRESS_TARGETS=regress-sha2
 OPENSSL=/usr/bin/openssl
@@ -31,7 +31,7 @@ HASHES= \
 
 regress-sha2:
 .for hash input output in ${HASHES}
-	@(echo -n ${input} | ${OPENSSL} sha -${hash} | (read a b; \
+	@(echo -n ${input} | ${OPENSSL} ${hash} | (read a b; \
 	  test $$b == ${output} || \
 	  (echo wrong ${hash} hash of \"${input}\"; \
 	   echo expected: ${output}; \
