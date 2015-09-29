@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_client.c,v 1.27 2015/09/11 12:56:55 beck Exp $ */
+/* $OpenBSD: tls_client.c,v 1.28 2015/09/12 19:54:31 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -166,7 +166,10 @@ int
 tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
     const char *servername)
 {
-	union { struct in_addr ip4; struct in6_addr ip6; } addrbuf;
+	union {
+		struct in_addr ip4;
+		struct in6_addr ip6;
+	} addrbuf;
 	int rv = -1;
 
 	if ((ctx->flags & TLS_CLIENT) == 0) {
