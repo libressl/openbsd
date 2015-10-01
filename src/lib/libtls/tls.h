@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.h,v 1.23 2015/09/13 10:32:46 beck Exp $ */
+/* $OpenBSD: tls.h,v 1.24 2015/09/14 16:16:38 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -21,6 +21,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <sys/types.h>
 
 #include <stddef.h>
 #include <stdint.h>
