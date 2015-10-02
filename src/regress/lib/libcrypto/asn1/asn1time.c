@@ -1,4 +1,4 @@
-/* $OpenBSD: asn1time.c,v 1.1 2015/09/25 16:12:30 jsing Exp $ */
+/* $OpenBSD: asn1time.c,v 1.2 2015/09/25 17:46:32 jsing Exp $ */
 /*
  * Copyright (c) 2015 Joel Sing <jsing@openbsd.org>
  *
@@ -49,6 +49,9 @@ struct asn1_time_test asn1_invtime_tests[] = {
 	},
 	{
 		.str = "20150923032700.123",
+	},
+	{
+		.str = "20150923032700+1.09",
 	},
 	{
 		.str = "20150923032700+1100Z",
