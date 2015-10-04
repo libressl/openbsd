@@ -1,4 +1,4 @@
-/*	$OpenBSD$ */
+/*	$OpenBSD: recv.c,v 1.5 2005/08/06 20:30:03 espie Exp $ */
 /*
  * Copyright (c) 1988, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -38,3 +38,4 @@ recv(int s, void *buf, size_t len, int flags)
 {
 	return (recvfrom(s, buf, len, flags, NULL, 0));
 }
+DEF_WEAK(recv);
