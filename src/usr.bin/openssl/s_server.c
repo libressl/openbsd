@@ -1,4 +1,4 @@
-/* $OpenBSD: s_server.c,v 1.17 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: s_server.c,v 1.18 2015/09/11 20:06:35 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -147,7 +147,6 @@
 #endif
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 
 #include <assert.h>
