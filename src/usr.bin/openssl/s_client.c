@@ -1,4 +1,4 @@
-/* $OpenBSD: s_client.c,v 1.18 2015/09/10 16:01:06 jsing Exp $ */
+/* $OpenBSD: s_client.c,v 1.19 2015/09/11 14:30:23 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -136,7 +136,6 @@
  */
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 
 #include <netinet/in.h>
