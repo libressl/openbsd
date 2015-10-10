@@ -1,4 +1,4 @@
-/* $OpenBSD: speed.c,v 1.15 2015/09/14 01:45:03 doug Exp $ */
+/* $OpenBSD: speed.c,v 1.16 2015/09/20 13:39:13 miod Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -468,6 +468,11 @@ speed_main(int argc, char **argv)
 	int decrypt = 0;
 	int multi = 0;
 	const char *errstr = NULL;
+
+	if (single_execution) {
+		if (pledge("stdio proc", NULL) == -1)
+			perror("pledge");
+	}
 
 	usertime = -1;
 

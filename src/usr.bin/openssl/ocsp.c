@@ -1,4 +1,4 @@
-/* $OpenBSD: ocsp.c,v 1.4 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: ocsp.c,v 1.5 2015/10/03 03:39:19 deraadt Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -145,6 +145,11 @@ ocsp_main(int argc, char **argv)
 	int nmin = 0, ndays = -1;
 	const EVP_MD *cert_id_md = NULL;
 	const char *errstr = NULL;
+
+	if (single_execution) {
+		if (pledge("stdio inet rpath wpath cpath", NULL) == -1)
+			perror("pledge");
+	}
 
 	args = argv + 1;
 	reqnames = sk_OPENSSL_STRING_new_null();
