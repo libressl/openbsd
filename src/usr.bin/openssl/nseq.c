@@ -1,4 +1,4 @@
-/* $OpenBSD: nseq.c,v 1.3 2015/07/21 16:41:34 jsing Exp $ */
+/* $OpenBSD: nseq.c,v 1.4 2015/08/22 16:36:05 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -108,6 +108,11 @@ nseq_main(int argc, char **argv)
 	X509 *x509 = NULL;
 	NETSCAPE_CERT_SEQUENCE *seq = NULL;
 	int i, ret = 1;
+
+	if (single_execution) {
+		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+			perror("pledge");
+	}
 
 	memset(&nseq_config, 0, sizeof(nseq_config));
 
