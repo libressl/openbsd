@@ -1,4 +1,4 @@
-/* $OpenBSD: ecs_asn1.c,v 1.4 2015/02/10 04:01:26 jsing Exp $ */
+/* $OpenBSD: ecs_asn1.c,v 1.5 2015/07/24 15:51:49 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 2000-2002 The OpenSSL Project.  All rights reserved.
  *
@@ -85,7 +85,6 @@ const ASN1_ITEM ECDSA_SIG_it = {
 };
 
 DECLARE_ASN1_FUNCTIONS_const(ECDSA_SIG)
-DECLARE_ASN1_ENCODE_FUNCTIONS_const(ECDSA_SIG, ECDSA_SIG)
 
 ECDSA_SIG *
 d2i_ECDSA_SIG(ECDSA_SIG **a, const unsigned char **in, long len)
