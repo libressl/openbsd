@@ -1,4 +1,4 @@
-/* $OpenBSD: prime.c,v 1.8 2015/09/12 15:04:06 lteo Exp $ */
+/* $OpenBSD: prime.c,v 1.9 2015/10/10 22:28:51 doug Exp $ */
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
  *
@@ -119,8 +119,10 @@ prime_main(int argc, char **argv)
 	int ret = 1;
 
 	if (single_execution) {
-		if (pledge("stdio rpath", NULL) == -1)
+		if (pledge("stdio rpath", NULL) == -1) {
 			perror("pledge");
+			exit(1);
+		}
 	}
 
 	memset(&prime_config, 0, sizeof(prime_config));
