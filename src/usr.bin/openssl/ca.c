@@ -1,4 +1,4 @@
-/* $OpenBSD: ca.c,v 1.16 2015/09/21 13:31:26 bcook Exp $ */
+/* $OpenBSD: ca.c,v 1.17 2015/10/10 22:28:51 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -287,7 +287,7 @@ ca_main(int argc, char **argv)
 	DB_ATTR db_attr;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath tty", NULL) == -1)
 			perror("pledge");
 	}
 
