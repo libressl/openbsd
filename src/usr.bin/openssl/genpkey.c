@@ -1,4 +1,4 @@
-/* $OpenBSD: genpkey.c,v 1.5 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: genpkey.c,v 1.6 2015/10/10 22:28:51 doug Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006
  */
@@ -87,7 +87,7 @@ genpkey_main(int argc, char **argv)
 	int do_param = 0;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath tty", NULL) == -1)
 			perror("pledge");
 	}
 
