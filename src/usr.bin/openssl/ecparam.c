@@ -1,4 +1,4 @@
-/* $OpenBSD: ecparam.c,v 1.13 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: ecparam.c,v 1.14 2015/10/10 22:28:51 doug Exp $ */
 /*
  * Written by Nils Larsch for the OpenSSL project.
  */
@@ -260,8 +260,10 @@ ecparam_main(int argc, char **argv)
 	int i, ret = 1;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath", NULL) == -1) {
 			perror("pledge");
+			exit(1);
+		}
 	}
 
 	memset(&ecparam_config, 0, sizeof(ecparam_config));
