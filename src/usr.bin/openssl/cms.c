@@ -1,4 +1,4 @@
-/* $OpenBSD: cms.c,v 1.3 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: cms.c,v 1.4 2015/10/10 22:28:51 doug Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -136,7 +136,7 @@ cms_main(int argc, char **argv)
 	X509_VERIFY_PARAM *vpm = NULL;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath tty", NULL) == -1)
 			perror("pledge");
 	}
 

@@ -1,4 +1,4 @@
-/* $OpenBSD: genrsa.c,v 1.5 2015/09/11 14:30:23 bcook Exp $ */
+/* $OpenBSD: genrsa.c,v 1.6 2015/10/10 22:28:51 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -101,7 +101,7 @@ genrsa_main(int argc, char **argv)
 	RSA *rsa = NULL;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath tty", NULL) == -1)
 			perror("pledge");
 	}
 
