@@ -1,4 +1,4 @@
-/*	$OpenBSD: orientation_test.c,v 1.1 2009/11/21 09:56:10 guenther Exp $ */
+/*	$OpenBSD: sleep_test.c,v 1.1 2009/12/14 05:08:19 guenther Exp $ */
 
 /*
  * Copyright (c) 2009 Philip Guenther
@@ -41,6 +41,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 static void
