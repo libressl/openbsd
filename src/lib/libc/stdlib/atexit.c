@@ -1,4 +1,4 @@
-/*	$OpenBSD: atexit.c,v 1.21 2015/04/07 01:27:07 guenther Exp $ */
+/*	$OpenBSD: atexit.c,v 1.22 2015/10/25 18:01:24 guenther Exp $ */
 /*
  * Copyright (c) 2002 Daniel Hartmeier
  * All rights reserved.
@@ -40,6 +40,10 @@
 
 struct atexit *__atexit;
 static int restartloop;
+
+/* define and initialize the list */
+struct atfork_listhead _atfork_list = TAILQ_HEAD_INITIALIZER(_atfork_list);
+
 
 /*
  * Function pointers are stored in a linked list of pages. The list
