@@ -26,6 +26,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 #define TLS_API	20141031
 
