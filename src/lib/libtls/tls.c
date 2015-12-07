@@ -117,6 +117,36 @@ tls_set_errorx(struct tls *ctx, const char *fmt, ...)
 	return (rv);
 }
 
+int
+tls_set_error_libssl(struct tls *ctx, const char *fmt, ...)
+{
+	va_list ap;
+	int rv;
+	const char *msg = NULL;
+	char *old;
+	int err;
+
+	err = ERR_peek_error();
+	if (err != 0)
+		msg = ERR_reason_error_string(err);
+
+	va_start(ap, fmt);
+	rv = tls_set_verror(ctx, -1, fmt, ap);
+	va_end(ap);
+	if (rv != 0 || msg == NULL)
+		return rv;
+
+	old = ctx->errmsg;
+	ctx->errmsg = NULL;
+	if (asprintf(&ctx->errmsg, "%s: %s", old, msg) == -1) {
+		ctx->errmsg = old;
+		return 0;
+	}
+	free(old);
+
+	return 0;
+}
+
 struct tls *
 tls_new(void)
 {

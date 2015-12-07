@@ -110,6 +110,9 @@ int tls_set_error(struct tls *ctx, const char *fmt, ...)
 int tls_set_errorx(struct tls *ctx, const char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))
     __attribute__((__nonnull__ (2)));
+int tls_set_error_libssl(struct tls *ctx, const char *fmt, ...)
+    __attribute__((__format__ (printf, 2, 3)))
+    __attribute__((__nonnull__ (2)));
 int tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret,
     const char *prefix);
 int tls_get_conninfo(struct tls *ctx);
