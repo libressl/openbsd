@@ -40,6 +40,29 @@ extern "C" {
 
 #define TLS_WANT_POLLIN		-2
 #define TLS_WANT_POLLOUT	-3
+#define TLS_NO_OCSP		-4
+
+#define TLS_OCSP_RESPONSE_SUCCESSFUL		0
+#define TLS_OCSP_RESPONSE_MALFORMED		1
+#define TLS_OCSP_RESPONSE_INTERNALERR		2
+#define TLS_OCSP_RESPONSE_TRYLATER		3
+#define TLS_OCSP_RESPONSE_SIGREQUIRED		5
+#define TLS_OCSP_RESPONSE_UNAUTHORIZED		6
+
+#define TLS_OCSP_CERT_GOOD			0
+#define TLS_OCSP_CERT_REVOKED			1
+#define TLS_OCSP_CERT_UNKNOWN			2
+
+#define TLS_CRL_REASON_UNPSECIFIED		0
+#define TLS_CRL_REASON_KEY_COMPROMISE		1
+#define TLS_CRL_REASON_CA_COMPROMISE		2
+#define TLS_CRL_REASON_AFFILIATION_CHANGED	3
+#define TLS_CRL_REASON_SUPERSEDED		4
+#define TLS_CRL_REASON_CESSATION_OF_OPERATION	5
+#define TLS_CRL_REASON_CERTIFICATE_HOLD		6
+#define TLS_CRL_REASON_REMOVE_FROM_CRL		8
+#define TLS_CRL_REASON_PRIVILEGE_WITH_DRAWN	9
+#define TLS_CRL_REASON_AA_COMPROMISE		10
 
 struct tls;
 struct tls_config;
@@ -65,6 +88,8 @@ int tls_config_set_ecdhecurve(struct tls_config *_config, const char *_name);
 int tls_config_set_key_file(struct tls_config *_config, const char *_key_file);
 int tls_config_set_key_mem(struct tls_config *_config, const uint8_t *_key,
     size_t _len);
+int tls_config_set_ocsp_stapling_file(struct tls_config *_config, const char *_blob_file);
+int tls_config_set_ocsp_stapling_mem(struct tls_config *_config, const uint8_t *_blob, size_t _len);
 void tls_config_set_protocols(struct tls_config *_config, uint32_t _protocols);
 void tls_config_set_verify_depth(struct tls_config *_config, int _verify_depth);
 
@@ -115,6 +140,18 @@ const char * tls_conn_version(struct tls *ctx);
 const char * tls_conn_cipher(struct tls *ctx);
 
 uint8_t *tls_load_file(const char *_file, size_t *_len, char *_password);
+
+int tls_get_ocsp_info(struct tls *ctx, int *response_status, int *cert_status, int *crl_reason,
+		      time_t *this_update, time_t *next_update, time_t *revoction_time,
+		      const char **result_text);
+
+int tls_ocsp_check_peer_request(struct tls **ocsp_ctx_p, struct tls *target,
+			    char **ocsp_url, void **request_blob, size_t *request_size);
+
+int tls_ocsp_refresh_stapling_request(struct tls **ocsp_ctx_p, struct tls_config *config,
+		char **ocsp_url, void **request_blob, size_t *request_size);
+
+int tls_ocsp_process_response(struct tls *ctx, const void *response_blob, size_t size);
 
 #ifdef __cplusplus
 }

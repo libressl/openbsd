@@ -209,6 +209,11 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 	    (tls_configure_ssl_verify(ctx, SSL_VERIFY_PEER) == -1))
 		goto err;
 
+	if (SSL_CTX_set_tlsext_status_cb(ctx->ssl_ctx, tls_ocsp_verify_callback) != 1) {
+		tls_set_errorx(ctx, "ssl OCSP verification setup failure");
+		goto err;
+	}
+
 	if ((ctx->ssl_conn = SSL_new(ctx->ssl_ctx)) == NULL) {
 		tls_set_errorx(ctx, "ssl connection failure");
 		goto err;
@@ -220,6 +225,10 @@ tls_connect_fds(struct tls *ctx, int fd_read, int fd_write,
 	if (SSL_set_rfd(ctx->ssl_conn, fd_read) != 1 ||
 	    SSL_set_wfd(ctx->ssl_conn, fd_write) != 1) {
 		tls_set_errorx(ctx, "ssl file descriptor failure");
+		goto err;
+	}
+	if (SSL_set_tlsext_status_type(ctx->ssl_conn, TLSEXT_STATUSTYPE_ocsp) != 1) {
+		tls_set_errorx(ctx, "ssl OCSP extension setup failure");
 		goto err;
 	}
 

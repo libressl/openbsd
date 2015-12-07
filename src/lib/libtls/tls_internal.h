@@ -49,6 +49,9 @@ struct tls_config {
 	const char *key_file;
 	char *key_mem;
 	size_t key_len;
+	const char *ocsp_file;
+	char *ocsp_mem;
+	size_t ocsp_len;
 	uint32_t protocols;
 	int verify_cert;
 	int verify_client;
@@ -72,9 +75,13 @@ struct tls_conninfo {
 #define TLS_CLIENT		(1 << 0)
 #define TLS_SERVER		(1 << 1)
 #define TLS_SERVER_CONN		(1 << 2)
+#define TLS_OCSP_CLIENT		(1 << 3)
 
 #define TLS_EOF_NO_CLOSE_NOTIFY	(1 << 0)
 #define TLS_HANDSHAKE_COMPLETE	(1 << 1)
+
+struct tls_ocsp_query;
+struct tls_ocsp_info;
 
 struct tls {
 	struct tls_config *config;
@@ -91,6 +98,20 @@ struct tls {
 	SSL_CTX *ssl_ctx;
 	X509 *ssl_peer_cert;
 	struct tls_conninfo *conninfo;
+
+	const char *ocsp_result;
+	struct tls_ocsp_info *ocsp_info;
+
+	struct tls_ocsp_query *ocsp_query;
+};
+
+struct tls_ocsp_info {
+	int response_status;
+	int cert_status;
+	int crl_reason;
+	time_t this_update;
+	time_t next_update;
+	time_t revocation_time;
 };
 
 struct tls *tls_new(void);
@@ -117,6 +138,11 @@ int tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret,
     const char *prefix);
 int tls_get_conninfo(struct tls *ctx);
 void tls_free_conninfo(struct tls_conninfo *conninfo);
+
+int tls_ocsp_verify_callback(SSL *ssl, void *arg);
+int tls_ocsp_stapling_callback(SSL *ssl, void *arg);
+void tls_ocsp_client_free(struct tls *ctx);
+void tls_ocsp_info_free(struct tls_ocsp_info *info);
 
 int asn1_time_parse(const char *, size_t, struct tm *, int);
 

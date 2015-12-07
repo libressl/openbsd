@@ -362,6 +362,13 @@ tls_reset(struct tls *ctx)
 	tls_free_conninfo(ctx->conninfo);
 	free(ctx->conninfo);
 	ctx->conninfo = NULL;
+
+	tls_ocsp_info_free(ctx->ocsp_info);
+	ctx->ocsp_info = NULL;
+	ctx->ocsp_result = NULL;
+
+	if (ctx->flags & TLS_OCSP_CLIENT)
+		tls_ocsp_client_free(ctx);
 }
 
 int
