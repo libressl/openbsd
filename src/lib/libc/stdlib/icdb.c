@@ -1,4 +1,4 @@
-/* $OpenBSD: icdb.c,v 1.3 2015/11/25 15:49:50 guenther Exp $ */
+/* $OpenBSD: icdb.c,v 1.4 2015/12/10 18:06:06 tedu Exp $ */
 /*
  * Copyright (c) 2015 Ted Unangst <tedu@openbsd.org>
  *
@@ -214,7 +214,6 @@ int
 icdb_lookup(struct icdb *db, int keynum, const void *key, void *entry, uint32_t *idxp)
 {
 	struct icdbinfo *info = db->info;
-	uint32_t entrysize = info->entrysize;
 	uint32_t offset;
 	uint64_t hash;
 	uint32_t indexsize, idxmask, idxlen;
