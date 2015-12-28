@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.147 2015/12/16 14:23:33 beck Exp $ */
+/* $OpenBSD: netcat.c,v 1.148 2015/12/17 19:30:28 mmcc Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  * Copyright (c) 2015 Bob Beck.  All rights reserved.
@@ -34,7 +34,6 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <sys/uio.h>
 #include <sys/un.h>
 
@@ -53,6 +52,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <tls.h>
 #include "atomicio.h"
