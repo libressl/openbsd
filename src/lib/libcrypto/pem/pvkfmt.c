@@ -1,4 +1,4 @@
-/* $OpenBSD: pvkfmt.c,v 1.14 2015/09/10 15:56:25 jsing Exp $ */
+/* $OpenBSD: pvkfmt.c,v 1.15 2016/03/02 05:02:35 beck Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2005.
  */
@@ -179,6 +179,10 @@ do_blob_header(const unsigned char **in, unsigned int length,
 	p += 6;
 	*pmagic = read_ledword(&p);
 	*pbitlen = read_ledword(&p);
+	if (*pbitlen > 65536) {
+		PEMerr(PEM_F_DO_BLOB_HEADER, PEM_R_INCONSISTENT_HEADER);
+		return 0;
+	}
 	*pisdss = 0;
 	switch (*pmagic) {
 
