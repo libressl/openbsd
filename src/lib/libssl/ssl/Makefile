@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.55 2015/09/11 14:52:17 jsing Exp $
+# $OpenBSD: Makefile,v 1.56 2015/09/11 17:54:23 jsing Exp $
 
 LIB=	ssl
 
@@ -45,3 +45,7 @@ includes:
 	done;
 
 .include <bsd.lib.mk>
+
+beforeinstall:
+	nm -o lib${LIB}.a | egrep -w 'printf|fprintf' && \
+	    (echo please fix stdio usage in this library; false) || true
