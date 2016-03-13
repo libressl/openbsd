@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.181 2016/01/26 15:44:28 otto Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.182 2016/02/25 00:38:51 deraadt Exp $	*/
 /*
  * Copyright (c) 2008, 2010, 2011 Otto Moerbeek <otto@drijf.net>
  * Copyright (c) 2012 Matthew Dempsky <matthew@openbsd.org>
@@ -207,8 +207,6 @@ static char	*malloc_func;		/* current function */
 static int	malloc_active;		/* status of malloc */
 
 static u_char getrbyte(struct dir_info *d);
-
-extern char	*__progname;
 
 #ifdef MALLOC_STATS
 void malloc_dump(int);
