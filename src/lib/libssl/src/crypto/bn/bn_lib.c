@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_lib.c,v 1.34 2015/09/10 15:56:25 jsing Exp $ */
+/* $OpenBSD: bn_lib.c,v 1.35 2016/03/04 16:23:30 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -295,7 +295,7 @@ bn_expand_internal(const BIGNUM *b, int words)
 			 * The fact that the loop is unrolled
 			 * 4-wise is a tribute to Intel. It's
 			 * the one that doesn't have enough
-			 * registers to accomodate more data.
+			 * registers to accommodate more data.
 			 * I'd unroll it 8-wise otherwise:-)
 			 *
 			 *		<appro@fy.chalmers.se>
