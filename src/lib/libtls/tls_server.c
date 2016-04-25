@@ -93,6 +93,11 @@ tls_configure_server(struct tls *ctx)
 		SSL_CTX_set_options(ctx->ssl_ctx,
 		    SSL_OP_CIPHER_SERVER_PREFERENCE);
 
+	if (SSL_CTX_set_tlsext_status_cb(ctx->ssl_ctx, tls_ocsp_stapling_callback) != 1) {
+		tls_set_errorx(ctx, "ssl OCSP stapling setup failure");
+		goto err;
+	}
+
 	/*
 	 * Set session ID context to a random value.  We don't support
 	 * persistent caching of sessions so it is OK to set a temporary
