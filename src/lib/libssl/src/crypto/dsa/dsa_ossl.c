@@ -83,46 +83,6 @@ static DSA_METHOD openssl_dsa_meth = {
 	.finish = dsa_finish
 };
 
-/*
- * These macro wrappers replace attempts to use the dsa_mod_exp() and
- * bn_mod_exp() handlers in the DSA_METHOD structure. We avoid the problem of
- * having a the macro work as an expression by bundling an "err_instr". So;
- * 
- *     if (!dsa->meth->bn_mod_exp(dsa, r,dsa->g,&k,dsa->p,ctx,
- *                 dsa->method_mont_p)) goto err;
- *
- * can be replaced by;
- *
- *     DSA_BN_MOD_EXP(goto err, dsa, r, dsa->g, &k, dsa->p, ctx,
- *                 dsa->method_mont_p);
- */
-
-#define DSA_MOD_EXP(err_instr,dsa,rr,a1,p1,a2,p2,m,ctx,in_mont) \
-do { \
-	int _tmp_res53; \
-	if ((dsa)->meth->dsa_mod_exp) \
-		_tmp_res53 = (dsa)->meth->dsa_mod_exp((dsa), (rr), \
-		    (a1), (p1), (a2), (p2), (m), (ctx), (in_mont)); \
-	else \
-		_tmp_res53 = BN_mod_exp2_mont((rr), (a1), \
-		    (p1), (a2), (p2), (m), (ctx), (in_mont)); \
-	if (!_tmp_res53) \
-		err_instr; \
-} while(0)
-
-#define DSA_BN_MOD_EXP(err_instr,dsa,r,a,p,m,ctx,m_ctx) \
-do { \
-	int _tmp_res53; \
-	if ((dsa)->meth->bn_mod_exp) \
-		_tmp_res53 = (dsa)->meth->bn_mod_exp((dsa), (r), \
-		    (a), (p), (m), (ctx), (m_ctx)); \
-	else \
-		_tmp_res53 = BN_mod_exp_mont((r), (a), (p), (m), \
-		    (ctx), (m_ctx)); \
-	if (!_tmp_res53) \
-		err_instr; \
-} while(0)
-
 const DSA_METHOD *
 DSA_OpenSSL(void)
 {
@@ -285,8 +245,15 @@ dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 		BN_set_flags(K, BN_FLG_CONSTTIME);
 	}
 
-	DSA_BN_MOD_EXP(goto err, dsa, r, dsa->g, K, dsa->p, ctx,
-	    dsa->method_mont_p);
+	if (dsa->meth->bn_mod_exp != NULL) {
+		if (!dsa->meth->bn_mod_exp(dsa, r, dsa->g, K, dsa->p, ctx,
+									dsa->method_mont_p))
+			goto err;
+	} else {
+		if (!BN_mod_exp_mont(r, dsa->g, K, dsa->p, ctx, dsa->method_mont_p))
+			goto err;
+	}
+
 	if (!BN_mod(r,r,dsa->q,ctx))
 		goto err;
 
@@ -386,8 +353,16 @@ dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig, DSA *dsa)
 			goto err;
 	}
 
-	DSA_MOD_EXP(goto err, dsa, &t1, dsa->g, &u1, dsa->pub_key, &u2, dsa->p,
-	    ctx, mont);
+	if (dsa->meth->dsa_mod_exp != NULL) {
+		if (!dsa->meth->dsa_mod_exp(dsa, &t1, dsa->g, &u1, dsa->pub_key, &u2,
+									dsa->p, ctx, mont))
+			goto err;
+	} else {
+		if (!BN_mod_exp2_mont(&t1, dsa->g, &u1, dsa->pub_key, &u2, dsa->p, ctx,
+								mont))
+			goto err;
+	}
+		
 	/* BN_copy(&u1,&t1); */
 	/* let u1 = u1 mod q */
 	if (!BN_mod(&u1, &t1, dsa->q, ctx))
