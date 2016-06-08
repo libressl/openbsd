@@ -182,7 +182,7 @@ static int
 dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 {
 	BN_CTX *ctx;
-	BIGNUM k, kq, *K, *kinv = NULL, *r = NULL;
+	BIGNUM k, *kinv = NULL, *r = NULL;
 	int ret = 0;
 
 	if (!dsa->p || !dsa->q || !dsa->g) {
@@ -191,7 +191,6 @@ dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 	}
 
 	BN_init(&k);
-	BN_init(&kq);
 
 	if (ctx_in == NULL) {
 		if ((ctx = BN_CTX_new()) == NULL)
@@ -208,6 +207,8 @@ dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 			goto err;
 	} while (BN_is_zero(&k));
 
+	BN_set_flags(&k, BN_FLG_CONSTTIME);
+
 	if (dsa->flags & DSA_FLAG_CACHE_MONT_P) {
 		if (!BN_MONT_CTX_set_locked(&dsa->method_mont_p,
 		    CRYPTO_LOCK_DSA, dsa->p, ctx))
@@ -216,41 +217,28 @@ dsa_sign_setup(DSA *dsa, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
 
 	/* Compute r = (g^k mod p) mod q */
 
-	if ((dsa->flags & DSA_FLAG_NO_EXP_CONSTTIME) == 0) {
-		if (!BN_copy(&kq, &k))
+	/*
+	 * We do not want timing information to leak the length of k,
+	 * so we compute g^k using an equivalent exponent of fixed
+	 * length.
+	 *
+	 * (This is a kludge that we need because the BN_mod_exp_mont()
+	 * does not let us specify the desired timing behaviour.)
+	 */
+
+	if (!BN_add(&k, &k, dsa->q))
+		goto err;
+	if (BN_num_bits(&k) <= BN_num_bits(dsa->q)) {
+		if (!BN_add(&k, &k, dsa->q))
 			goto err;
-
-		/*
-		 * We do not want timing information to leak the length of k,
-		 * so we compute g^k using an equivalent exponent of fixed
-		 * length.
-		 *
-		 * (This is a kludge that we need because the BN_mod_exp_mont()
-		 * does not let us specify the desired timing behaviour.)
-		 */
-
-		if (!BN_add(&kq, &kq, dsa->q))
-			goto err;
-		if (BN_num_bits(&kq) <= BN_num_bits(dsa->q)) {
-			if (!BN_add(&kq, &kq, dsa->q))
-				goto err;
-		}
-
-		K = &kq;
-	} else {
-		K = &k;
-	}
-
-	if ((dsa->flags & DSA_FLAG_NO_EXP_CONSTTIME) == 0) {
-		BN_set_flags(K, BN_FLG_CONSTTIME);
 	}
 
 	if (dsa->meth->bn_mod_exp != NULL) {
-		if (!dsa->meth->bn_mod_exp(dsa, r, dsa->g, K, dsa->p, ctx,
-									dsa->method_mont_p))
+		if (!dsa->meth->bn_mod_exp(dsa, r, dsa->g, &k, dsa->p, ctx,
+					dsa->method_mont_p))
 			goto err;
 	} else {
-		if (!BN_mod_exp_mont(r, dsa->g, K, dsa->p, ctx, dsa->method_mont_p))
+		if (!BN_mod_exp_mont(r, dsa->g, &k, dsa->p, ctx, dsa->method_mont_p))
 			goto err;
 	}
 
@@ -275,7 +263,6 @@ err:
 	if (ctx_in == NULL)
 		BN_CTX_free(ctx);
 	BN_clear_free(&k);
-	BN_clear_free(&kq);
 	return ret;
 }
 
@@ -355,11 +342,11 @@ dsa_do_verify(const unsigned char *dgst, int dgst_len, DSA_SIG *sig, DSA *dsa)
 
 	if (dsa->meth->dsa_mod_exp != NULL) {
 		if (!dsa->meth->dsa_mod_exp(dsa, &t1, dsa->g, &u1, dsa->pub_key, &u2,
-									dsa->p, ctx, mont))
+						dsa->p, ctx, mont))
 			goto err;
 	} else {
 		if (!BN_mod_exp2_mont(&t1, dsa->g, &u1, dsa->pub_key, &u2, dsa->p, ctx,
-								mont))
+						mont))
 			goto err;
 	}
 		

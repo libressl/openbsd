@@ -104,18 +104,18 @@ dsa_builtin_keygen(DSA *dsa)
 		pub_key=dsa->pub_key;
 	
 	{
-		BIGNUM local_prk;
-		BIGNUM *prk;
+		BIGNUM *prk = BN_new();
 
-		if ((dsa->flags & DSA_FLAG_NO_EXP_CONSTTIME) == 0) {
-			BN_init(&local_prk);
-			prk = &local_prk;
-			BN_with_flags(prk, priv_key, BN_FLG_CONSTTIME);
-		} else
-			prk = priv_key;
-
-		if (!BN_mod_exp(pub_key, dsa->g, prk, dsa->p, ctx))
+		if (prk == NULL)
 			goto err;
+
+		BN_with_flags(prk, priv_key, BN_FLG_CONSTTIME);
+
+		if (!BN_mod_exp(pub_key, dsa->g, prk, dsa->p, ctx)) {
+			BN_free(prk);
+			goto err;
+		}
+		BN_free(prk);
 	}
 
 	dsa->priv_key = priv_key;
