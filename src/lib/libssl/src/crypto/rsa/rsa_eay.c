@@ -426,24 +426,26 @@ RSA_eay_private_encrypt(int flen, const unsigned char *from, unsigned char *to,
 		if (!rsa->meth->rsa_mod_exp(ret, f, rsa, ctx))
 			goto err;
 	} else {
-		BIGNUM local_d;
-		BIGNUM *d = NULL;
+		BIGNUM *d = BN_new();
 
-		if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-			BN_init(&local_d);
-			d = &local_d;
-			BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
-		} else
-			d = rsa->d;
+		if (d == NULL)
+			goto err;
+ 
+		BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
 
 		if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
 			if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n,
-			    CRYPTO_LOCK_RSA, rsa->n, ctx))
+			    CRYPTO_LOCK_RSA, rsa->n, ctx)) {
+				BN_free(d);
 				goto err;
+			}
 
 		if (!rsa->meth->bn_mod_exp(ret, f, d, rsa->n, ctx,
-		    rsa->_method_mod_n))
+		    rsa->_method_mod_n)) {
+			BN_free(d);
 			goto err;
+		}
+		BN_free(d);
 	}
 
 	if (blinding)
@@ -553,22 +555,26 @@ RSA_eay_private_decrypt(int flen, const unsigned char *from, unsigned char *to,
 		if (!rsa->meth->rsa_mod_exp(ret, f, rsa, ctx))
 			goto err;
 	} else {
-		BIGNUM local_d;
-		BIGNUM *d = NULL;
+		BIGNUM *d = BN_new();
 
-		if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-			d = &local_d;
-			BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
-		} else
-			d = rsa->d;
-
+		if (d == NULL)
+			goto err;
+		
+		BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
+		
 		if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
 			if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n,
-			    CRYPTO_LOCK_RSA, rsa->n, ctx))
+			    CRYPTO_LOCK_RSA, rsa->n, ctx)) {
+			    BN_free(d);
 				goto err;
+			}
+
 		if (!rsa->meth->bn_mod_exp(ret, f, d, rsa->n, ctx,
-		    rsa->_method_mod_n))
+		    rsa->_method_mod_n)) {
+		    BN_free(d);
 			goto err;
+		}
+		BN_free(d);
 	}
 
 	if (blinding)
@@ -723,8 +729,10 @@ static int
 RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 {
 	BIGNUM *r1, *m1, *vrfy;
-	BIGNUM local_dmp1, local_dmq1, local_c, local_r1;
-	BIGNUM *dmp1, *dmq1, *c, *pr1;
+	BIGNUM *dmp1 = BN_new();
+	BIGNUM *dmq1 = BN_new();
+	BIGNUM *pr1 = BN_new();
+	BIGNUM *c = BN_new();
 	int ret = 0;
 
 	BN_CTX_start(ctx);
@@ -737,34 +745,33 @@ RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 	}
 
 	{
-		BIGNUM local_p, local_q;
-		BIGNUM *p = NULL, *q = NULL;
+		BIGNUM *p = BN_new();
+		BIGNUM *q = BN_new();
 
 		/*
 		 * Make sure BN_mod_inverse in Montgomery intialization uses the
-		 * BN_FLG_CONSTTIME flag (unless RSA_FLAG_NO_CONSTTIME is set)
+		 * BN_FLG_CONSTTIME flag
 		 */
-		if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-			BN_init(&local_p);
-			p = &local_p;
-			BN_with_flags(p, rsa->p, BN_FLG_CONSTTIME);
-
-			BN_init(&local_q);
-			q = &local_q;
-			BN_with_flags(q, rsa->q, BN_FLG_CONSTTIME);
-		} else {
-			p = rsa->p;
-			q = rsa->q;
+		if (p == NULL || q == NULL) {
+			BN_free(p);
+			BN_free(q);
+			goto err;
 		}
+		BN_with_flags(p, rsa->p, BN_FLG_CONSTTIME);
+		BN_with_flags(q, rsa->q, BN_FLG_CONSTTIME);
 
 		if (rsa->flags & RSA_FLAG_CACHE_PRIVATE) {
-			if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_p,
-			    CRYPTO_LOCK_RSA, p, ctx))
+			if (!BN_MONT_CTX_set_locked
+				(&rsa->_method_mod_p,CRYPTO_LOCK_RSA, p, ctx) 
+				|| !BN_MONT_CTX_set_locked(&rsa->_method_mod_q,
+			    CRYPTO_LOCK_RSA, q, ctx)) {
+			    BN_free(p);
+			    BN_free(q);
 				goto err;
-			if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_q,
-			    CRYPTO_LOCK_RSA, q, ctx))
-				goto err;
+			}
 		}
+		BN_free(p);
+		BN_free(q);
 	}
 
 	if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
@@ -773,46 +780,55 @@ RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 			goto err;
 
 	/* compute I mod q */
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		c = &local_c;
-		BN_with_flags(c, I, BN_FLG_CONSTTIME);
-		if (!BN_mod(r1, c, rsa->q, ctx))
-			goto err;
-	} else {
-		if (!BN_mod(r1, I, rsa->q, ctx))
-			goto err;
+	if (c == NULL)
+		goto err;
+
+	BN_with_flags(c, I, BN_FLG_CONSTTIME);
+
+	if (!BN_mod(r1, c, rsa->q, ctx)) {
+		BN_free(c);
+		goto err;
 	}
 
 	/* compute r1^dmq1 mod q */
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		dmq1 = &local_dmq1;
-		BN_with_flags(dmq1, rsa->dmq1, BN_FLG_CONSTTIME);
-	} else
-		dmq1 = rsa->dmq1;
-	if (!rsa->meth->bn_mod_exp(m1, r1, dmq1, rsa->q, ctx,
-	    rsa->_method_mod_q))
+	if (dmq1 == NULL) {
+		BN_free(c);
 		goto err;
+	}
+	BN_with_flags(dmq1, rsa->dmq1, BN_FLG_CONSTTIME);
+
+	if (!rsa->meth->bn_mod_exp(m1, r1, dmq1, rsa->q, ctx,
+	    rsa->_method_mod_q)) {
+	    BN_free(c);
+	    BN_free(dmq1);
+		goto err;
+	}
+	BN_free(dmq1);
 
 	/* compute I mod p */
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		c = &local_c;
-		BN_with_flags(c, I, BN_FLG_CONSTTIME);
-		if (!BN_mod(r1, c, rsa->p, ctx))
-			goto err;
-	} else {
-		if (!BN_mod(r1, I, rsa->p, ctx))
-			goto err;
+	if (c == NULL)
+		goto err;
+
+	BN_with_flags(c, I, BN_FLG_CONSTTIME);
+	
+	if (!BN_mod(r1, c, rsa->p, ctx)) {
+		BN_free(c);
+		goto err;
 	}
+	BN_free(c);
 
 	/* compute r1^dmp1 mod p */
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		dmp1 = &local_dmp1;
-		BN_with_flags(dmp1, rsa->dmp1, BN_FLG_CONSTTIME);
-	} else
-		dmp1 = rsa->dmp1;
-	if (!rsa->meth->bn_mod_exp(r0, r1, dmp1, rsa->p, ctx,
-	    rsa->_method_mod_p))
+	if (dmp1 == NULL)
 		goto err;
+
+	BN_with_flags(dmp1, rsa->dmp1, BN_FLG_CONSTTIME);
+	
+	if (!rsa->meth->bn_mod_exp(r0, r1, dmp1, rsa->p, ctx,
+	    rsa->_method_mod_p)) {
+	    BN_free(dmp1);
+		goto err;
+	}
+	BN_free(dmp1);
 
 	if (!BN_sub(r0, r0, m1))
 		goto err;
@@ -828,13 +844,16 @@ RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 		goto err;
 
 	/* Turn BN_FLG_CONSTTIME flag on before division operation */
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		pr1 = &local_r1;
-		BN_with_flags(pr1, r1, BN_FLG_CONSTTIME);
-	} else
-		pr1 = r1;
-	if (!BN_mod(r0, pr1, rsa->p, ctx))
+	if (pr1 == NULL) 
 		goto err;
+
+	BN_with_flags(pr1, r1, BN_FLG_CONSTTIME);
+	
+	if (!BN_mod(r0, pr1, rsa->p, ctx)) {
+		BN_free(pr1);
+		goto err;
+	}
+	BN_free(pr1);
 
 	/*
 	 * If p < q it is occasionally possible for the correction of
@@ -876,17 +895,19 @@ RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
 			 * mod_exp and return that instead.
 			 */
 
-			BIGNUM local_d;
-			BIGNUM *d = NULL;
+			BIGNUM *d = BN_new();
 
-			if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-				d = &local_d;
-				BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
-			} else
-				d = rsa->d;
-			if (!rsa->meth->bn_mod_exp(r0, I, d, rsa->n, ctx,
-			    rsa->_method_mod_n))
+			if (d == NULL)
 				goto err;
+
+			BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
+
+			if (!rsa->meth->bn_mod_exp(r0, I, d, rsa->n, ctx,
+			    rsa->_method_mod_n)) {
+				BN_free(d);
+				goto err;
+			}
+			BN_free(d);
 		}
 	}
 	ret = 1;

@@ -169,8 +169,8 @@ err:
 BN_BLINDING *
 RSA_setup_blinding(RSA *rsa, BN_CTX *in_ctx)
 {
-	BIGNUM local_n;
-	BIGNUM *e, *n;
+	BIGNUM *e;
+	BIGNUM *n = BN_new();
 	BN_CTX *ctx;
 	BN_BLINDING *ret = NULL;
 
@@ -192,15 +192,16 @@ RSA_setup_blinding(RSA *rsa, BN_CTX *in_ctx)
 	} else
 		e = rsa->e;
 
-	if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
-		/* Set BN_FLG_CONSTTIME flag */
-		n = &local_n;
-		BN_with_flags(n, rsa->n, BN_FLG_CONSTTIME);
-	} else
-		n = rsa->n;
+	if (n == NULL)
+		goto err;
 
+	BN_with_flags(n, rsa->n, BN_FLG_CONSTTIME);
+	
 	ret = BN_BLINDING_create_param(NULL, e, n, ctx, rsa->meth->bn_mod_exp,
 	    rsa->_method_mod_n);
+
+	BN_free(n);
+
 	if (ret == NULL) {
 		RSAerr(RSA_F_RSA_SETUP_BLINDING, ERR_R_BN_LIB);
 		goto err;
