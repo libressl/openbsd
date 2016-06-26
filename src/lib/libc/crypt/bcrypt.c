@@ -1,4 +1,4 @@
-/*	$OpenBSD: bcrypt.c,v 1.54 2015/09/13 12:42:39 millert Exp $	*/
+/*	$OpenBSD: bcrypt.c,v 1.55 2015/09/13 15:33:48 guenther Exp $	*/
 
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
@@ -261,7 +261,7 @@ _bcrypt_autorounds(void)
 		duration *= 2;
 	}
 	/* too slow? speed it up. */
-	while (r > 4 && duration > 120000) {
+	while (r > 6 && duration > 120000) {
 		r -= 1;
 		duration /= 2;
 	}
