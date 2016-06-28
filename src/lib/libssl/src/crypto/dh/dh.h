@@ -78,12 +78,8 @@
 #endif
 
 #define DH_FLAG_CACHE_MONT_P     0x01
-#define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in DH
-                                       * implementation now uses constant time
-                                       * modular exponentiation for secret exponents
-                                       * by default. This flag causes the
-                                       * faster variable sliding window method to
-                                       * be used for all exponents.
+#define DH_FLAG_NO_EXP_CONSTTIME 0x00 /* Does nothing. Previously this switched off 
+                                       * constant time behaviour.
                                        */
 
 /* If this flag is set the DH method is FIPS compliant and can be used
