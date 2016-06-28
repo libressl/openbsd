@@ -393,6 +393,10 @@ tls_reset(struct tls *ctx)
 	tls_free_conninfo(ctx->conninfo);
 	free(ctx->conninfo);
 	ctx->conninfo = NULL;
+
+	ctx->cb_read = NULL;
+	ctx->cb_write = NULL;
+	ctx->cb_payload = NULL;
 }
 
 int
@@ -578,5 +582,60 @@ tls_close(struct tls *ctx)
  out:
 	/* Prevent callers from performing incorrect error handling */
 	errno = 0;
+	return (rv);
+}
+
+static int
+tls_bio_cb_write(BIO *h, const char *buf, int num, void *payload)
+{
+	int ret = 0;
+	struct tls *ctx = (struct tls *)payload;
+	ret = (ctx->cb_write)(ctx, (const void*)buf, (size_t)num, ctx->cb_payload);
+	return (ret);
+}
+
+static int
+tls_bio_cb_read(BIO *h, char *buf, int size, void *payload)
+{
+	int ret = 0;
+	struct tls *ctx = (struct tls *)payload;
+	ret = (ctx->cb_read)(ctx, (void*)buf, (size_t)size, ctx->cb_payload);
+	return (ret);
+}
+
+static BIO *
+tls_get_new_cb_bio(struct tls *ctx)
+{
+	BIO *bcb = NULL;
+	if (ctx->cb_read == NULL || ctx->cb_write == NULL)
+		tls_set_errorx(ctx, "no callbacks registered");
+	bcb = BIO_new(BIO_s_cb());
+	if (bcb == NULL) {
+		tls_set_errorx(ctx, "failed to create callback i/o");
+		return (NULL);
+	}
+	BIO_set_cb_write(bcb, tls_bio_cb_write);
+	BIO_set_cb_read(bcb, tls_bio_cb_read);
+	BIO_set_cb_payload(bcb, ctx);
+	return (bcb);
+}
+
+int
+tls_set_cbs(struct tls *ctx, tls_read_cb cb_read, tls_write_cb cb_write,
+    void *cb_payload)
+{
+	int rv = -1;
+	BIO *bcb;
+	ctx->cb_read = cb_read;
+	ctx->cb_write = cb_write;
+	ctx->cb_payload = cb_payload;
+	bcb = tls_get_new_cb_bio(ctx);
+	if (bcb == NULL) {
+		tls_set_errorx(ctx, "failed to create callback i/o");
+		goto err;
+	}
+	SSL_set_bio(ctx->ssl_conn, bcb, bcb);
+	rv = 0;
+err:
 	return (rv);
 }

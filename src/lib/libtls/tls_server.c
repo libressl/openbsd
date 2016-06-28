@@ -111,6 +111,49 @@ tls_configure_server(struct tls *ctx)
 }
 
 int
+tls_accept_cbs(struct tls *ctx, struct tls **cctx, tls_read_cb cb_read,
+    tls_write_cb cb_write, void *cb_payload)
+{
+	struct tls *conn_ctx = NULL;
+
+	if ((ctx->flags & TLS_SERVER) == 0) {
+		tls_set_errorx(ctx, "not a server context");
+		goto err;
+	}
+
+	if ((conn_ctx = tls_server_conn(ctx)) == NULL) {
+		tls_set_errorx(ctx, "connection context failure");
+		goto err;
+	}
+
+	if ((conn_ctx->ssl_conn = SSL_new(ctx->ssl_ctx)) == NULL) {
+		tls_set_errorx(ctx, "ssl failure");
+		goto err;
+	}
+	if (SSL_set_app_data(conn_ctx->ssl_conn, conn_ctx) != 1) {
+		tls_set_errorx(ctx, "ssl application data failure");
+		goto err;
+	}
+
+	if (tls_set_cbs(ctx, cb_read, cb_write, cb_payload) != 0) {
+		tls_set_errorx(ctx, "callback registration failure");
+		goto err;
+	}
+
+	*cctx = conn_ctx;
+
+	return (0);
+
+ err:
+	tls_free(conn_ctx);
+
+	*cctx = NULL;
+
+	return (-1);
+}
+
+
+int
 tls_accept_socket(struct tls *ctx, struct tls **cctx, int socket)
 {
 	return (tls_accept_fds(ctx, cctx, socket, socket));
