@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.2 2015/09/29 04:54:23 beck Exp $
+#	$OpenBSD: Makefile,v 1.1 2016/07/04 23:43:30 beck Exp $
 
 TESTS = \
 	ocsp_test
@@ -16,6 +16,7 @@ CLEANFILES+= ${TESTS}
 all_tests: ${TESTS}
 	@for test in $>; do \
 		./$$test www.amazon.com 443; \
+		./$$test cloudflare.com 443; \
 	done
 
 .include <bsd.regress.mk>
