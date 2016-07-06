@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.c,v 1.37 2016/04/28 17:05:59 jsing Exp $ */
+/* $OpenBSD: tls.c,v 1.38 2016/05/27 14:38:40 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -418,8 +418,11 @@ tls_ssl_error(struct tls *ctx, SSL *ssl_conn, int ssl_ret, const char *prefix)
 		if ((err = ERR_peek_error()) != 0) {
 			errstr = ERR_error_string(err, NULL);
 		} else if (ssl_ret == 0) {
-			ctx->state |= TLS_EOF_NO_CLOSE_NOTIFY;
-			return (0);
+			if ((ctx->state & TLS_HANDSHAKE_COMPLETE) != 0) {
+				ctx->state |= TLS_EOF_NO_CLOSE_NOTIFY;
+				return (0);
+			}
+			errstr = "unexpected EOF";
 		} else if (ssl_ret == -1) {
 			errstr = strerror(errno);
 		}
