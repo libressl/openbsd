@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.157 2016/07/01 00:29:14 bcook Exp $ */
+/* $OpenBSD: netcat.c,v 1.159 2016/07/07 14:09:44 jsing Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  * Copyright (c) 2015 Bob Beck.  All rights reserved.
@@ -469,7 +469,7 @@ main(int argc, char *argv[])
 			errx(1, "unable to set TLS key file %s", Kflag);
 		if (TLSopt & TLS_LEGACY) {
 			tls_config_set_protocols(tls_cfg, TLS_PROTOCOLS_ALL);
-			tls_config_set_ciphers(tls_cfg, "legacy");
+			tls_config_set_ciphers(tls_cfg, "all");
 		}
 		if (!lflag && (TLSopt & TLS_CCERT))
 			errx(1, "clientcert is only valid with -l");
