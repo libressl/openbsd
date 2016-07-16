@@ -1,4 +1,4 @@
-/* $OpenBSD: s23_srvr.c,v 1.45 2015/09/11 18:08:21 jsing Exp $ */
+/* $OpenBSD: s23_srvr.c,v 1.46 2015/10/25 15:49:04 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -351,6 +351,14 @@ ssl23_get_client_hello(SSL *s)
 	if (s->state == SSL23_ST_SR_CLNT_HELLO_B) {
 		/* we have SSLv3/TLSv1 in an SSLv2 header
 		 * (other cases skip this state) */
+
+		/*
+		 * Limit the support of "backward compatible" headers
+		 * only to "backward" versions of TLS. If we have moved
+		 * on to modernity, just say no.
+		 */
+		if (s->options & SSL_OP_NO_TLSv1)
+			goto unsupported;
 
 		type = 2;
 		p = s->packet;
