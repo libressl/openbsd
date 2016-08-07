@@ -1,4 +1,4 @@
-/*	$OpenBSD: getentropy_win.c,v 1.3 2014/11/11 13:54:33 bcook Exp $	*/
+/*	$OpenBSD: getentropy_win.c,v 1.4 2015/09/11 11:52:55 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2014, Theo de Raadt <deraadt@openbsd.org> 
@@ -17,7 +17,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Emulation of getentropy(2) as documented at:
- * http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man2/getentropy.2
+ * http://man.openbsd.org/getentropy.2
  */
 
 #include <windows.h>
