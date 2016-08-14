@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: lldiv.c,v 1.1 2006/01/13 17:58:09 millert Exp $	*/
 /*
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
@@ -48,3 +48,5 @@ lldiv(long long num, long long denom)
 	}
 	return (r);
 }
+
+__weak_alias(qdiv, lldiv);
