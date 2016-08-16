@@ -68,8 +68,10 @@
 .Nm tls_connect_fds ,
 .Nm tls_connect_servername ,
 .Nm tls_connect_socket ,
+.Nm tls_connect_cbs ,
 .Nm tls_accept_fds ,
 .Nm tls_accept_socket ,
+.Nm tls_accept_cbs ,
 .Nm tls_handshake ,
 .Nm tls_read ,
 .Nm tls_write ,
@@ -178,9 +180,13 @@
 .Ft "int"
 .Fn tls_connect_socket "struct tls *ctx" "int s" "const char *servername"
 .Ft "int"
+.Fn tls_connect_cbs "struct tls *ctx" "ssize_t (*tls_read_cb)(void *ctx, void *buf, size_t buflen, void *payload)" "ssize_t (*tls_write_cb)(void *ctx, const void *buf, size_t buflen, void *payload)" "void *cb_payload" "const char *servername"
+.Ft "int"
 .Fn tls_accept_fds "struct tls *tls" "struct tls **cctx" "int fd_read" "int fd_write"
 .Ft "int"
 .Fn tls_accept_socket "struct tls *tls" "struct tls **cctx" "int socket"
+.Ft "int"
+.Fn tls_accept_cbs "struct tls *ctx" "struct tls **cctx" "ssize_t (*tls_read_cb)(void *ctx, void *buf, size_t buflen, void *payload)" "ssize_t (*tls_write_cb)(void *ctx, const void *buf, size_t buflen, void *payload)" "void *cb_payload"
 .Ft "int"
 .Fn tls_handshake "struct tls *ctx"
 .Ft "ssize_t"
@@ -237,14 +243,18 @@ An already existing socket can be upgraded to a secure connection by calling
 .Fn tls_connect_socket .
 Alternatively, a secure connection can be established over a pair of existing
 file descriptors by calling
-.Fn tls_connect_fds .
+.Fn tls_connect_fds . Using
+.Fn tls_connect_cbs , read and write callbacks can be specified to handle the
+actual data transfer.
 .Pp
 A server can accept a new client connection by calling
 .Fn tls_accept_socket
 on an already established socket connection.
 Alternatively, a new client connection can be accepted over a pair of existing
 file descriptors by calling
-.Fn tls_accept_fds .
+.Fn tls_accept_fds .Using
+.Fn tls_accept_cbs , read and write callbacks can be specified to handle the
+actual data transfer.
 .Pp
 The TLS handshake can be completed by calling
 .Fn tls_handshake .

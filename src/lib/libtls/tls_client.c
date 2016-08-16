@@ -159,6 +159,80 @@ tls_connect_servername(struct tls *ctx, const char *host, const char *port,
 }
 
 int
+tls_connect_cbs(struct tls *ctx, tls_read_cb cb_read,
+    tls_write_cb cb_write, void *cb_payload, const char *servername)
+{
+	union tls_addr addrbuf;
+	int rv = -1;
+
+	if ((ctx->flags & TLS_CLIENT) == 0) {
+		tls_set_errorx(ctx, "not a client context");
+		goto err;
+	}
+
+	if (servername != NULL) {
+		if ((ctx->servername = strdup(servername)) == NULL) {
+			tls_set_errorx(ctx, "out of memory");
+			goto err;
+		}
+	}
+
+	if ((ctx->ssl_ctx = SSL_CTX_new(SSLv23_client_method())) == NULL) {
+		tls_set_errorx(ctx, "ssl context failure");
+		goto err;
+	}
+
+	if (tls_configure_ssl(ctx) != 0)
+		goto err;
+	if (tls_configure_keypair(ctx, ctx->ssl_ctx, ctx->config->keypair, 0) != 0)
+		goto err;
+
+	if (ctx->config->verify_name) {
+		if (servername == NULL) {
+			tls_set_errorx(ctx, "server name not specified");
+			goto err;
+		}
+	}
+
+	if (ctx->config->verify_cert &&
+	    (tls_configure_ssl_verify(ctx, SSL_VERIFY_PEER) == -1))
+		goto err;
+
+	if ((ctx->ssl_conn = SSL_new(ctx->ssl_ctx)) == NULL) {
+		tls_set_errorx(ctx, "ssl connection failure");
+		goto err;
+	}
+	if (SSL_set_app_data(ctx->ssl_conn, ctx) != 1) {
+		tls_set_errorx(ctx, "ssl application data failure");
+		goto err;
+	}
+
+	if (tls_set_cbs(ctx, cb_read, cb_write, cb_payload) != 0) {
+		tls_set_errorx(ctx, "callback registration failure");
+		goto err;
+	}
+
+	/*
+	 * RFC4366 (SNI): Literal IPv4 and IPv6 addresses are not
+	 * permitted in "HostName".
+	 */
+	if (servername != NULL &&
+	    inet_pton(AF_INET, servername, &addrbuf) != 1 &&
+	    inet_pton(AF_INET6, servername, &addrbuf) != 1) {
+		if (SSL_set_tlsext_host_name(ctx->ssl_conn, servername) == 0) {
+			tls_set_errorx(ctx, "server name indication failure");
+			goto err;
+		}
+	}
+
+	rv = 0;
+
+ err:
+	return (rv);
+
+}
+
+int
 tls_connect_socket(struct tls *ctx, int s, const char *servername)
 {
 	return tls_connect_fds(ctx, s, s, servername);

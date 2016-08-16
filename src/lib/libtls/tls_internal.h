@@ -106,6 +106,10 @@ struct tls {
 	X509 *ssl_peer_cert;
 
 	struct tls_conninfo *conninfo;
+
+	ssize_t (*cb_read)(void *_ctx, void *_buf, size_t _buflen, void *_payload);
+	ssize_t (*cb_write)(void *_ctx, const void *_buf, size_t _buflen, void *_payload);
+	void *cb_payload;
 };
 
 struct tls *tls_new(void);
@@ -125,6 +129,11 @@ int tls_handshake_server(struct tls *ctx);
 int tls_config_load_file(struct tls_error *error, const char *filetype,
     const char *filename, char **buf, size_t *len);
 int tls_host_port(const char *hostport, char **host, char **port);
+int tls_set_cbs(struct tls *ctx,
+    ssize_t (*cb_read)(void *_ctx, void *_buf, size_t _buflen, void *_payload),
+    ssize_t (*cb_write)(void *_ctx, const void *_buf, size_t _buflen, void *_payload),
+    void *cb_payload);
+
 
 int tls_error_set(struct tls_error *error, const char *fmt, ...)
     __attribute__((__format__ (printf, 2, 3)))
@@ -152,5 +161,11 @@ int tls_get_conninfo(struct tls *ctx);
 void tls_free_conninfo(struct tls_conninfo *conninfo);
 
 int asn1_time_parse(const char *, size_t, struct tm *, int);
+
+BIO_METHOD * BIO_s_cb(void);
+int BIO_set_cb_write(BIO *bi, int (*cb_write)(BIO *h, const char *buf, int num, void *payload));
+int BIO_set_cb_read(BIO *bi, int (*cb_read)(BIO *h, char *buf, int size, void *payload));
+int BIO_set_cb_payload(BIO *bi, void *payload);
+void *BIO_get_cb_payload(BIO *bi);
 
 #endif /* HEADER_TLS_INTERNAL_H */

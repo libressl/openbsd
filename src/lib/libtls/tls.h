@@ -44,6 +44,11 @@ extern "C" {
 struct tls;
 struct tls_config;
 
+typedef ssize_t (*tls_read_cb)(void *_ctx, void *_buf, size_t _buflen,
+    void *_payload);
+typedef ssize_t (*tls_write_cb)(void *_ctx, const void *_buf,
+    size_t _buflen, void *_payload);
+
 int tls_init(void);
 
 const char *tls_config_error(struct tls_config *_config);
@@ -97,12 +102,16 @@ void tls_free(struct tls *_ctx);
 int tls_accept_fds(struct tls *_ctx, struct tls **_cctx, int _fd_read,
     int _fd_write);
 int tls_accept_socket(struct tls *_ctx, struct tls **_cctx, int _socket);
+int tls_accept_cbs(struct tls *_ctx, struct tls **_cctx,
+    tls_read_cb _cb_read, tls_write_cb _cb_write, void *_cb_payload);
 int tls_connect(struct tls *_ctx, const char *_host, const char *_port);
 int tls_connect_fds(struct tls *_ctx, int _fd_read, int _fd_write,
     const char *_servername);
 int tls_connect_servername(struct tls *_ctx, const char *_host,
     const char *_port, const char *_servername);
 int tls_connect_socket(struct tls *_ctx, int _s, const char *_servername);
+int tls_connect_cbs(struct tls *_ctx, tls_read_cb _cb_read, tls_write_cb _cb_write,
+    void *_cb_payload, const char *_servername);
 int tls_handshake(struct tls *_ctx);
 ssize_t tls_read(struct tls *_ctx, void *_buf, size_t _buflen);
 ssize_t tls_write(struct tls *_ctx, const void *_buf, size_t _buflen);
