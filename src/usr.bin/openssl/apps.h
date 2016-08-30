@@ -1,4 +1,4 @@
-/* $OpenBSD: apps.h,v 1.16 2015/09/13 12:41:01 bcook Exp $ */
+/* $OpenBSD: apps.h,v 1.17 2015/10/10 22:28:51 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -310,6 +310,7 @@ struct option {
 		int (*func)(void);
 		long *lvalue;
 		int *value;
+		time_t *tvalue;
 	} opt;
 	const int value;
 };
