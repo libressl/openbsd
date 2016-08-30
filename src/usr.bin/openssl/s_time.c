@@ -1,4 +1,4 @@
-/* $OpenBSD: s_time.c,v 1.14 2015/10/17 15:00:11 doug Exp $ */
+/* $OpenBSD: s_time.c,v 1.15 2016/08/30 11:30:14 deraadt Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -194,7 +194,7 @@ struct option s_time_options[] = {
 		.name = "time",
 		.argname = "seconds",
 		.desc = "Duration to perform timing tests for (default 30)",
-		.type = OPTION_ARG_INT,
+		.type = OPTION_ARG_TIME,
 		.opt.tvalue = &s_time_config.maxtime,
 	},
 	{
