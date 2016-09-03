@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.31 2015/11/24 19:36:35 schwarze Exp $
+# $OpenBSD: Makefile,v 1.32 2016/03/30 06:38:42 jmc Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -228,7 +228,7 @@ maninstall:
 
 .endif
 
-.PATH: ${.CURDIR}/../../libssl/src/doc/crypto
+.PATH: ${.CURDIR}/../doc
 .SUFFIXES: .pod .1 .3 .7
 .for sect in 1 3 7
 .pod.${sect}:
