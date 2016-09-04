@@ -1,4 +1,4 @@
-/* $OpenBSD: icdb.c,v 1.5 2015/12/27 01:26:47 chl Exp $ */
+/* $OpenBSD: icdb.c,v 1.6 2016/05/30 03:06:58 guenther Exp $ */
 /*
  * Copyright (c) 2015 Ted Unangst <tedu@openbsd.org>
  *
@@ -114,7 +114,7 @@ roundup(uint32_t num)
 
 struct icdb *
 icdb_new(uint32_t version, uint32_t nentries, uint32_t entrysize,
-    uint32_t nkeys, uint32_t *keysizes, uint32_t *keyoffsets)
+    uint32_t nkeys, const uint32_t *keysizes, const uint32_t *keyoffsets)
 {
 	struct icdb *db;
 	struct icdbinfo *info;
