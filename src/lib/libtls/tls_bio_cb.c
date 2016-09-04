@@ -1,4 +1,4 @@
-/* $ID$ */
+/* $OpenBSD$ */
 /*
  * Copyright (c) 2016 Tobias Pape <tobias@netshed.de>
  *
