@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_eay.c,v 1.41 2016/06/30 02:02:06 bcook Exp $ */
+/* $OpenBSD: rsa_eay.c,v 1.42 2016/07/07 11:53:12 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -227,7 +227,7 @@ RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned char *to,
 		    CRYPTO_LOCK_RSA, rsa->n, ctx))
 			goto err;
 
-	if (!rsa->meth->bn_mod_exp(ret, f,rsa->e, rsa->n, ctx,
+	if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx,
 	    rsa->_method_mod_n))
 		goto err;
 
