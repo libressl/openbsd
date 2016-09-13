@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.h,v 1.36 2016/09/04 12:26:43 bcook Exp $ */
+/* $OpenBSD: tls.h,v 1.37 2016/09/04 14:15:44 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -44,9 +44,9 @@ extern "C" {
 struct tls;
 struct tls_config;
 
-typedef ssize_t (*tls_read_cb)(void *_ctx, void *_buf, size_t _buflen,
+typedef ssize_t (*tls_read_cb)(struct tls *_ctx, void *_buf, size_t _buflen,
     void *_cb_arg);
-typedef ssize_t (*tls_write_cb)(void *_ctx, const void *_buf,
+typedef ssize_t (*tls_write_cb)(struct tls *_ctx, const void *_buf,
     size_t _buflen, void *_cb_arg);
 
 int tls_init(void);
