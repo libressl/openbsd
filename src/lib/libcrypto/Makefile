@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.4 2016/09/04 17:59:26 jsing Exp $
+# $OpenBSD: Makefile,v 1.5 2016/09/11 14:31:02 natano Exp $
 
 LIB=	crypto
 
@@ -431,10 +431,11 @@ distribution:
 	${INSTALL} ${INSTALL_COPY} -o ${BINOWN} -g ${BINGRP} -m 444 \
 	   ${.CURDIR}/x509v3.cnf ${DESTDIR}/etc/ssl/x509v3.cnf
 
+all: ${PC_FILES}
 ${PC_FILES}: opensslv.h
 	/bin/sh ${.CURDIR}/generate_pkgconfig.sh -c ${.CURDIR} -o ${.OBJDIR}
 
-beforeinstall: ${PC_FILES}
+beforeinstall:
 	${INSTALL} ${INSTALL_COPY} -o root -g ${SHAREGRP} \
 	    -m ${SHAREMODE} ${.OBJDIR}/${PC_FILES} ${DESTDIR}/usr/lib/pkgconfig/
 
