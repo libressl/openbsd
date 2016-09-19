@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.23 2016/03/30 06:38:43 jmc Exp $
+#	$OpenBSD: Makefile,v 1.24 2016/09/04 12:26:43 bcook Exp $
 
 CFLAGS+= -Wall -Werror -Wimplicit
 CFLAGS+= -DLIBRESSL_INTERNAL
@@ -7,8 +7,8 @@ LIB=	tls
 
 DPADD=	${LIBCRYPTO} ${LIBSSL}
 
-LDADD+= -L${BSDOBJDIR}/lib/libcrypto/crypto -lcrypto
-LDADD+= -L${BSDOBJDIR}/lib/libssl/ssl -lssl
+LDADD+= -L${BSDOBJDIR}/lib/libcrypto -lcrypto
+LDADD+= -L${BSDOBJDIR}/lib/libssl -lssl
 
 HDRS=	tls.h
 
