@@ -1,4 +1,4 @@
-/*	$OpenBSD: setenv.c,v 1.17 2016/03/13 18:34:21 guenther Exp $ */
+/*	$OpenBSD: setenv.c,v 1.18 2016/04/25 21:36:04 millert Exp $ */
 /*
  * Copyright (c) 1987 Regents of the University of California.
  * All rights reserved.
@@ -141,7 +141,7 @@ setenv(const char *name, const char *value, int rewrite)
 		environ[cnt + 1] = NULL;
 	}
 	if (!(environ[offset] =			/* name + `=' + value */
-	    malloc((size_t)((int)(np - name) + l_value + 2))))
+	    malloc((int)(np - name) + l_value + 2)))
 		return (-1);
 	for (C = environ[offset]; (*C = *name++) && *C != '='; ++C)
 		;
