@@ -1,4 +1,4 @@
-/* $OpenBSD: t1_lib.c,v 1.87.2.1 2016/09/22 18:36:57 jsing Exp $ */
+/* $OpenBSD: t1_lib.c,v 1.87.2.2 2016/10/03 11:20:03 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2154,9 +2154,16 @@ tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
 	HMAC_CTX hctx;
 	EVP_CIPHER_CTX ctx;
 	SSL_CTX *tctx = s->initial_ctx;
-	/* Need at least keyname + iv + some encrypted data */
-	if (eticklen < 48)
+
+	/*
+	 * The API guarantees EVP_MAX_IV_LENGTH bytes of space for
+	 * the iv to tlsext_ticket_key_cb().  Since the total space
+	 * required for a session cookie is never less than this,
+	 * this check isn't too strict.  The exact check comes later.
+	 */
+	if (eticklen < 16 + EVP_MAX_IV_LENGTH)
 		return 2;
+
 	/* Initialize session ticket encryption and HMAC contexts */
 	HMAC_CTX_init(&hctx);
 	EVP_CIPHER_CTX_init(&ctx);
@@ -2165,10 +2172,12 @@ tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
 		int rv = tctx->tlsext_ticket_key_cb(s, nctick, nctick + 16,
 		    &ctx, &hctx, 0);
 		if (rv < 0) {
+			HMAC_CTX_cleanup(&hctx);
 			EVP_CIPHER_CTX_cleanup(&ctx);
 			return -1;
 		}
 		if (rv == 0) {
+			HMAC_CTX_cleanup(&hctx);
 			EVP_CIPHER_CTX_cleanup(&ctx);
 			return 2;
 		}
@@ -2183,15 +2192,26 @@ tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
 		EVP_DecryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL,
 		    tctx->tlsext_tick_aes_key, etick + 16);
 	}
-	/* Attempt to process session ticket, first conduct sanity and
+
+	/*
+	 * Attempt to process session ticket, first conduct sanity and
 	 * integrity checks on ticket.
 	 */
 	mlen = HMAC_size(&hctx);
 	if (mlen < 0) {
+		HMAC_CTX_cleanup(&hctx);
 		EVP_CIPHER_CTX_cleanup(&ctx);
 		return -1;
 	}
+
+	/* Sanity check ticket length: must exceed keyname + IV + HMAC */
+	if (eticklen < 16 + EVP_CIPHER_CTX_iv_length(&ctx) + mlen) {
+		HMAC_CTX_cleanup(&hctx);
+		EVP_CIPHER_CTX_cleanup(&ctx);
+		return 2;
+	}
 	eticklen -= mlen;
+
 	/* Check HMAC of encrypted ticket */
 	HMAC_Update(&hctx, etick, eticklen);
 	HMAC_Final(&hctx, tick_hmac, NULL);
@@ -2200,6 +2220,7 @@ tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
 		EVP_CIPHER_CTX_cleanup(&ctx);
 		return 2;
 	}
+
 	/* Attempt to decrypt session data */
 	/* Move p after IV to start of encrypted ticket, update length */
 	p = etick + 16 + EVP_CIPHER_CTX_iv_length(&ctx);
