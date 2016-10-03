@@ -1,4 +1,4 @@
-/* $OpenBSD: t1_lib.c,v 1.87.2.2 2016/10/03 11:20:03 bcook Exp $ */
+/* $OpenBSD: t1_lib.c,v 1.87.2.3 2016/10/03 11:24:28 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2205,7 +2205,7 @@ tls_decrypt_ticket(SSL *s, const unsigned char *etick, int eticklen,
 	}
 
 	/* Sanity check ticket length: must exceed keyname + IV + HMAC */
-	if (eticklen < 16 + EVP_CIPHER_CTX_iv_length(&ctx) + mlen) {
+	if (eticklen <= 16 + EVP_CIPHER_CTX_iv_length(&ctx) + mlen) {
 		HMAC_CTX_cleanup(&hctx);
 		EVP_CIPHER_CTX_cleanup(&ctx);
 		return 2;
