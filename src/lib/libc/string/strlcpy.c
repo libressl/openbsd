@@ -18,7 +18,6 @@
 
 #include <sys/types.h>
 #include <string.h>
-#include <stdint.h>
 
 /*
  * Copy string src to buffer dst of size dsize.  At most dsize-1
@@ -47,11 +46,6 @@ strlcpy(char *dst, const char *src, size_t dsize)
 			;
 	}
 
-	/*
-	 * Cast pointers to unsigned type before calculation, to avoid signed
-	 * overflow when the string ends where the MSB has changed.
-	 * Return value does not include NUL.
-	 */
-	return((uintptr_t)src - (uintptr_t)osrc - 1); 
+	return(src - osrc - 1);	/* count does not include NUL */
 }
 DEF_WEAK(strlcpy);
