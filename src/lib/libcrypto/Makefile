@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.6 2016/09/14 06:26:02 natano Exp $
+# $OpenBSD: Makefile,v 1.7 2016/09/23 21:49:30 natano Exp $
 
 LIB=	crypto
 
@@ -373,7 +373,9 @@ HDRS_GEN=\
 	${.CURDIR}/arch/${MACHINE_CPU}/opensslconf.h \
 	${.OBJDIR}/obj_mac.h
 
-includes: obj_mac.h
+prereq: obj_mac.h
+
+includes: prereq
 	@test -d ${DESTDIR}/usr/include/openssl || \
 	    mkdir ${DESTDIR}/usr/include/openssl
 	@for i in $(HDRS); do \
