@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_lib.c,v 1.119 2016/10/19 16:38:40 jsing Exp $ */
+/* $OpenBSD: ssl_lib.c,v 1.120 2016/11/02 10:45:02 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1106,7 +1106,7 @@ SSL_callback_ctrl(SSL *s, int cmd, void (*fp)(void))
 	}
 }
 
-LHASH_OF(SSL_SESSION) *
+struct lhash_st_SSL_SESSION *
 SSL_CTX_sessions(SSL_CTX *ctx)
 {
 	return (ctx->sessions);
