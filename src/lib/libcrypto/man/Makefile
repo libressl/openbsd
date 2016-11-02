@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.33 2016/09/03 12:42:47 beck Exp $
+# $OpenBSD: Makefile,v 1.34 2016/09/05 10:43:42 schwarze Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -56,6 +56,13 @@ MAN=	\
 	CONF_modules_load_file.3 \
 	CRYPTO_set_ex_data.3 \
 	CRYPTO_set_locking_callback.3 \
+	DES_set_key.3 \
+	DH_generate_key.3 \
+	DH_generate_parameters.3 \
+	DH_get_ex_new_index.3 \
+	DH_new.3 \
+	DH_set_method.3 \
+	DH_size.3 \
 	ECDSA_SIG_new.3 \
 	EVP_AEAD_CTX_init.3 \
 	UI_new.3 \
@@ -66,13 +73,6 @@ MAN=	\
 	lh_new.3 \
 
 GENMAN= \
-	DES_set_key.3 \
-	DH_generate_key.3 \
-	DH_generate_parameters.3 \
-	DH_get_ex_new_index.3 \
-	DH_new.3 \
-	DH_set_method.3 \
-	DH_size.3 \
 	DSA_SIG_new.3 \
 	DSA_do_sign.3 \
 	DSA_dup_DH.3 \
