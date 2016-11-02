@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.24 2016/09/04 12:26:43 bcook Exp $
+#	$OpenBSD: Makefile,v 1.25 2016/09/19 03:25:22 bcook Exp $
 
 CFLAGS+= -Wall -Werror -Wimplicit
 CFLAGS+= -DLIBRESSL_INTERNAL
@@ -20,6 +20,7 @@ SRCS=	tls.c \
 	tls_peer.c \
 	tls_server.c \
 	tls_util.c \
+	tls_ocsp.c \
 	tls_verify.c
 
 MAN=	tls_init.3
