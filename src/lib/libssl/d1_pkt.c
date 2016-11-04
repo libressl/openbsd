@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_pkt.c,v 1.47 2015/09/10 17:57:50 jsing Exp $ */
+/* $OpenBSD: d1_pkt.c,v 1.48 2015/09/11 18:08:21 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -125,6 +125,10 @@
 
 #include "pqueue.h"
 #include "bytestring.h"
+
+static int	do_dtls1_write(SSL *s, int type, const unsigned char *buf,
+		    unsigned int len);
+
 
 /* mod 128 saturating subtract of two 64-bit values in big-endian order */
 static int
