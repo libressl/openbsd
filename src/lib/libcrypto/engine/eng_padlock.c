@@ -1,4 +1,4 @@
-/* $OpenBSD: eng_padlock.c,v 1.13 2014/10/18 17:20:40 jsing Exp $ */
+/* $OpenBSD: eng_padlock.c,v 1.14 2015/02/07 13:19:15 doug Exp $ */
 /*
  * Support for VIA PadLock Advanced Cryptography Engine (ACE)
  * Written by Michal Ludvig <michal@logix.cz>
@@ -100,7 +100,7 @@
    In addition, because of the heavy use of inline assembler,
    compiler choice is limited to GCC and Microsoft C. */
 #undef COMPILE_HW_PADLOCK
-#if !defined(I386_ONLY) && !defined(OPENSSL_NO_INLINE_ASM)
+#if !defined(OPENSSL_NO_INLINE_ASM)
 # if (defined(__GNUC__) && (defined(__i386__) || defined(__i386)))
 #  define COMPILE_HW_PADLOCK
 # endif
