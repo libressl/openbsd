@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.45 2016/11/04 10:17:17 schwarze Exp $
+# $OpenBSD: Makefile,v 1.46 2016/11/04 15:29:03 schwarze Exp $
 
 .include <bsd.own.mk>		# for NOMAN
 
@@ -11,6 +11,7 @@ MAN=	\
 	ASN1_STRING_new.3 \
 	ASN1_STRING_print_ex.3 \
 	ASN1_generate_nconf.3 \
+	ASN1_time_parse.3 \
 	BF_set_key.3 \
 	BIO.3 \
 	BIO_ctrl.3 \
