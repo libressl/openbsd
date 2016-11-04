@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.7 2016/09/23 21:49:30 natano Exp $
+# $OpenBSD: Makefile,v 1.8 2016/10/16 19:28:44 tb Exp $
 
 LIB=	crypto
 
@@ -7,7 +7,6 @@ PC_FILES=libcrypto.pc
 
 CLEANFILES=${PC_FILES}
 
-SSL_SRC=	${.CURDIR}/../libssl
 LCRYPTO_SRC=	${.CURDIR}
 
 CFLAGS+= -Wall -Wundef -Werror
@@ -18,11 +17,9 @@ CFLAGS+= -DDSO_DLFCN -DHAVE_DLFCN_H -DHAVE_FUNOPEN
 .endif
 
 CFLAGS+= -DLIBRESSL_INTERNAL
-CFLAGS+= -DTERMIOS
 # Hardware engines
 CFLAGS+= -DOPENSSL_NO_HW_PADLOCK # XXX enable this?
 
-CFLAGS+= -I${SSL_SRC}
 CFLAGS+= -I${LCRYPTO_SRC}
 CFLAGS+= -I${LCRYPTO_SRC}/modes -I${LCRYPTO_SRC}/asn1 -I${LCRYPTO_SRC}/evp
 
