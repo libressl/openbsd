@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.22 2015/09/25 16:12:30 jsing Exp $
+#	$OpenBSD: Makefile,v 1.23 2016/07/04 23:43:30 beck Exp $
 
 SUBDIR= \
 	aead \
@@ -31,7 +31,6 @@ SUBDIR= \
 	pbkdf2 \
 	pkcs7 \
 	poly1305 \
-	pqueue \
 	rand \
 	rc2 \
 	rc4 \
