@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_clnt.c,v 1.55 2015/09/12 16:10:07 doug Exp $ */
+/* $OpenBSD: d1_clnt.c,v 1.56 2016/03/11 07:08:45 mmcc Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -130,7 +130,7 @@
 static const SSL_METHOD *dtls1_get_client_method(int ver);
 static int dtls1_get_hello_verify(SSL *s);
 
-const SSL_METHOD DTLSv1_client_method_data = {
+static const SSL_METHOD DTLSv1_client_method_data = {
 	.version = DTLS1_VERSION,
 	.ssl_new = dtls1_new,
 	.ssl_clear = dtls1_clear,
