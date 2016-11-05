@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.23 2016/07/04 23:43:30 beck Exp $
+#	$OpenBSD: Makefile,v 1.24 2016/11/04 19:45:12 jsing Exp $
 
 SUBDIR= \
 	aead \
@@ -11,6 +11,7 @@ SUBDIR= \
 	cast \
 	chacha \
 	cts128 \
+	curve25519 \
 	des \
 	dh \
 	dsa \
