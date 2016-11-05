@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: ssl_asn1.c,v 1.42 2016/11/04 15:09:29 jsing Exp $ */
 
 /*
  * Copyright (c) 2016 Joel Sing <jsing@openbsd.org>
@@ -231,7 +231,7 @@ d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp, long length)
 	if (s == NULL) {
 		if ((s = SSL_SESSION_new()) == NULL) {
 			SSLerr(SSL_F_D2I_SSL_SESSION, ERR_R_MALLOC_FAILURE);
-			goto err;
+			return (NULL);
 		}
 	}
 
