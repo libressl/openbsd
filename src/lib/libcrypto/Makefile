@@ -1,8 +1,12 @@
-# $OpenBSD: Makefile,v 1.10 2016/11/04 18:12:49 jsing Exp $
+# $OpenBSD: Makefile,v 1.11 2016/11/05 14:57:29 jsing Exp $
 
 LIB=	crypto
 
+.include <bsd.own.mk>
+.ifndef NOMAN
 SUBDIR= man
+.endif
+
 PC_FILES=libcrypto.pc
 
 CLEANFILES=${PC_FILES}
@@ -11,7 +15,6 @@ LCRYPTO_SRC=	${.CURDIR}
 
 CFLAGS+= -Wall -Wundef -Werror
 
-.include <bsd.own.mk>		# for 'NOPIC' definition
 .if !defined(NOPIC)
 CFLAGS+= -DDSO_DLFCN -DHAVE_DLFCN_H -DHAVE_FUNOPEN
 .endif
