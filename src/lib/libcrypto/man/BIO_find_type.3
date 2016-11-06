@@ -1,4 +1,6 @@
-.Dd $Mdocdate: July 17 2014 $
+.\"	$OpenBSD$
+.\"
+.Dd $Mdocdate: September 9 2015 $
 .Dt BIO_FIND_TYPE 3
 .Os
 .Sh NAME
@@ -92,14 +94,7 @@ chain or find multiple matches using
 Previous versions had to use:
 .Pp
 .Dl next = bio->next_bio;
-.Sh BUGS
-.Fn BIO_find_type
-in OpenSSL 0.9.5a and earlier could not be safely passed a
-.Dv NULL
-pointer for the
-.Fa b
-argument.
-.Sh EXAMPLE
+.Sh EXAMPLES
 Traverse a chain looking for digest BIOs:
 .Bd -literal -offset 2n
 BIO *btmp;
@@ -115,3 +110,10 @@ do {
 	btmp = BIO_next(btmp);
 } while(btmp);
 .Ed
+.Sh BUGS
+.Fn BIO_find_type
+in OpenSSL 0.9.5a and earlier could not be safely passed a
+.Dv NULL
+pointer for the
+.Fa b
+argument.

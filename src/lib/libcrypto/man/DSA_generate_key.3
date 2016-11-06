@@ -1,3 +1,5 @@
+.\"	$OpenBSD$
+.\"
 .Dd $Mdocdate: November 2 2016 $
 .Dt DSA_GENERATE_KEY 3
 .Os
@@ -19,7 +21,7 @@ It generates a new key pair and stores it in
 .Fa a->pub_key
 and
 .Fa a->priv_key .
-.Sh RETURN VALUE
+.Sh RETURN VALUES
 .Fn DSA_generate_key
 returns 1 on success or 0 otherwise.
 The error codes can be obtained by
