@@ -1,4 +1,4 @@
-.\"     $OpenBSD: nc.1,v 1.77 2016/11/05 15:13:26 beck Exp $
+.\"     $OpenBSD: nc.1,v 1.78 2016/11/05 16:03:09 jmc Exp $
 .\"
 .\" Copyright (c) 1996 David Sacerdote
 .\" All rights reserved.
@@ -231,8 +231,8 @@ Change IPv4 TOS value or TLS options.
 For TLS options
 .Ar keyword
 may be one of
-.Ar tlslegacy ,
-which allows legacy TLS protocols;
+.Ar tlsall,
+which allows the use of all supported TLS protocols and ciphers,
 .Ar noverify ,
 which disables certificate verification;
 .Ar noname ,
