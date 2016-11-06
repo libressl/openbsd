@@ -1,4 +1,6 @@
-.Dd $Mdocdate: July 24 2015 $
+.\"	$OpenBSD$
+.\"
+.Dd $Mdocdate: August 2 2015 $
 .Dt BIO_S_BIO 3
 .Os
 .Sh NAME
@@ -231,7 +233,7 @@ will be true.
 If the application then waits for data to become available
 on the underlying transport before flushing the write buffer,
 it will never succeed because the request was never sent.
-.Sh EXAMPLE
+.Sh EXAMPLES
 The BIO pair can be used to have full control
 over the network access of an application.
 The application can call
