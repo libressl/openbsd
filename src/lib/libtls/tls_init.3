@@ -1,4 +1,4 @@
-.\" $OpenBSD: tls_init.3,v 1.79 2016/11/05 15:45:41 jmc Exp $
+.\" $OpenBSD: tls_init.3,v 1.80 2016/11/05 18:30:02 bcook Exp $
 .\"
 .\" Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
 .\"
@@ -140,9 +140,9 @@
 .Fn tls_config_set_ocsp_staple_mem "struct tls_config *config" "const char *staple" "size_t len"
 .Ft "int"
 .Fn tls_config_set_ocsp_staple_file "struct tls_config *config" "const char *staple_file"
-.Ft "void"
+.Ft "int"
 .Fn tls_config_set_protocols "struct tls_config *config" "uint32_t protocols"
-.Ft "void"
+.Ft "int"
 .Fn tls_config_set_verify_depth "struct tls_config *config" "int verify_depth"
 .Ft "void"
 .Fn tls_config_prefer_ciphers_client "struct tls_config *config"
