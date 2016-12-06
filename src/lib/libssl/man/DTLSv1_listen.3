@@ -1,4 +1,4 @@
-.\"	$OpenBSD$
+.\"	$OpenBSD: DTLSv1_listen.3,v 1.1 2016/11/21 13:52:28 schwarze Exp $
 .\"	OpenSSL 7795475f Dec 18 13:18:31 2015 -0500
 .\"
 .\" This file was written by Matt Caswell <matt@openssl.org>.
@@ -177,7 +177,7 @@ Prior to OpenSSL 1.1.0 fatal and non-fatal errors both produce return
 codes <= 0 (in typical implementations user code treats all errors as
 non-fatal), whilst return codes >0 indicate success.
 .Sh SEE ALSO
-.Xr BIO 3 ,
+.Xr BIO_new 3 ,
 .Xr ssl 3 ,
 .Xr SSL_accept 3 ,
 .Xr SSL_get_error 3
