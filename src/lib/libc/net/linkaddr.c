@@ -1,4 +1,4 @@
-/*	$OpenBSD: linkaddr.c,v 1.6 2015/09/10 08:55:03 mpi Exp $ */
+/*	$OpenBSD: linkaddr.c,v 1.7 2016/12/06 22:32:58 millert Exp $ */
 /*-
  * Copyright (c) 1990, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -78,7 +78,7 @@ link_ntoa(const struct sockaddr_dl *sdl)
 			if (rem < 2)
 				break;
 			*out++ = hexlist[i];
-			rem++;
+			rem--;
 		}
 	}
 	*out = 0;
