@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.70 2016/12/10 22:30:54 schwarze Exp $
+# $OpenBSD: Makefile,v 1.71 2016/12/10 22:53:31 schwarze Exp $
 
 .include <bsd.own.mk>
 
@@ -219,7 +219,6 @@ MAN=	\
 	i2d_PKCS7_bio_stream.3 \
 	lh_new.3 \
 	lh_stats.3 \
-	rsa.3 \
 	x509.3
 
 all clean cleandir depend includes obj tags:
