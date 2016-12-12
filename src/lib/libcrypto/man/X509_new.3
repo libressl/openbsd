@@ -1,4 +1,4 @@
-.\"	$OpenBSD: X509_new.3,v 1.4 2016/12/05 18:26:16 schwarze Exp $
+.\"	$OpenBSD: X509_new.3,v 1.5 2016/12/05 19:41:46 jmc Exp $
 .\"	OpenSSL 3a59ad98 Dec 11 00:36:06 2015 +0000
 .\"
 .\" This file was written by Dr. Stephen Henson <steve@openssl.org>.
@@ -74,7 +74,7 @@ The X509 ASN.1 allocation routines allocate and free an
 structure, which represents an X509 certificate.
 .Pp
 .Fn X509_new
-allocates and initializes a X509 structure with reference count 1.
+allocates and initializes an X509 structure with reference count 1.
 .Pp
 .Fn X509_free
 decrements the reference count of the
