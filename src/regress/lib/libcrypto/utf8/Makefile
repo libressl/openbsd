@@ -1,8 +1,8 @@
-#	$OpenBSD: Makefile,v 1.4 2014/07/08 15:53:53 jsing Exp $
+#	$OpenBSD: Makefile,v 1.5 2016/09/02 17:02:56 beck Exp $
 
 PROG=	utf8test
 CPPFLAGS+=-I${.CURDIR}/../../../../lib/libcrypto/asn1
-LDADD=	-lcrypto
+LDADD=	${CRYPTO_INT}
 DPADD=	${LIBCRYPTO}
 WARNINGS=Yes
 CFLAGS+=	-DLIBRESSL_INTERNAL -Werror
