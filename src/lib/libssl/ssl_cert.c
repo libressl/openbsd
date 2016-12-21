@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_cert.c,v 1.51 2015/09/11 17:37:47 jsing Exp $ */
+/* $OpenBSD: ssl_cert.c,v 1.52 2016/03/11 07:08:45 mmcc Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -403,6 +403,7 @@ ssl_sess_cert_free(SESS_CERT *sc)
 
 	DH_free(sc->peer_dh_tmp);
 	EC_KEY_free(sc->peer_ecdh_tmp);
+	free(sc->peer_x25519_tmp);
 
 	free(sc);
 }
