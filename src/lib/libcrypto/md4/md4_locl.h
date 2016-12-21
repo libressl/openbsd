@@ -1,4 +1,4 @@
-/* $OpenBSD$ */
+/* $OpenBSD: md4_locl.h,v 1.9 2015/09/14 01:45:03 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -61,7 +61,11 @@
 #include <openssl/opensslconf.h>
 #include <openssl/md4.h>
 
+__BEGIN_HIDDEN_DECLS
+
 void md4_block_data_order (MD4_CTX *c, const void *p,size_t num);
+
+__END_HIDDEN_DECLS
 
 #define DATA_ORDER_IS_LITTLE_ENDIAN
 
