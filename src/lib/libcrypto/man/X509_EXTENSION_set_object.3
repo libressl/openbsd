@@ -1,4 +1,4 @@
-.\"	$OpenBSD: X509_EXTENSION_set_object.3,v 1.2 2016/12/15 15:13:54 schwarze Exp $
+.\"	$OpenBSD: X509_EXTENSION_set_object.3,v 1.3 2016/12/15 17:37:17 jmc Exp $
 .\"	OpenSSL bb9ad09e Jun 6 00:43:05 2016 -0400
 .\"
 .\" This file is a derived work.
@@ -265,8 +265,18 @@ returns an
 .Vt ASN1_OCTET_STRING
 pointer.
 .Sh SEE ALSO
+.Xr ACCESS_DESCRIPTION_new 3 ,
+.Xr AUTHORITY_KEYID_new 3 ,
+.Xr BASIC_CONSTRAINTS_new 3 ,
+.Xr DIST_POINT_new 3 ,
+.Xr EXTENDED_KEY_USAGE_new 3 ,
+.Xr NAME_CONSTRAINTS_new 3 ,
 .Xr OCSP_CRLID_new 3 ,
 .Xr OCSP_SERVICELOC_new 3 ,
+.Xr PKEY_USAGE_PERIOD_new 3 ,
+.Xr POLICYINFO_new 3 ,
+.Xr PROXY_POLICY_new 3 ,
+.Xr SXNET_new 3 ,
 .Xr X509V3_get_d2i 3 ,
 .Xr X509v3_get_ext_by_NID 3
 .Sh STANDARDS

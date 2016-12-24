@@ -1,4 +1,4 @@
-.\"	$OpenBSD: OCSP_REQUEST_new.3,v 1.4 2016/12/12 17:46:23 schwarze Exp $
+.\"	$OpenBSD: OCSP_REQUEST_new.3,v 1.5 2016/12/12 22:48:02 schwarze Exp $
 .\"	OpenSSL b97fdb57 Nov 11 09:33:09 2016 +0100
 .\"
 .\" This file is a derived work.
@@ -299,6 +299,7 @@ if (OCSP_REQUEST_add0_id(req, cid) == NULL)
 OCSP_REQUEST_free(req);
 .Ed
 .Sh SEE ALSO
+.Xr ACCESS_DESCRIPTION_new 3 ,
 .Xr OCSP_cert_to_id 3 ,
 .Xr OCSP_request_add1_nonce 3 ,
 .Xr OCSP_resp_find_status 3 ,
