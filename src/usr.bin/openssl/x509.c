@@ -1,4 +1,4 @@
-/* $OpenBSD: x509.c,v 1.11 2015/10/17 07:51:10 semarie Exp $ */
+/* $OpenBSD: x509.c,v 1.12 2015/10/17 15:00:11 doug Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -893,7 +893,7 @@ bad:
 		nx.header = &hdr;
 		nx.cert = x;
 
-		i = ASN1_item_i2d_bio(ASN1_ITEM_rptr(NETSCAPE_X509), out, &nx);
+		i = ASN1_item_i2d_bio(&NETSCAPE_X509_it, out, &nx);
 	} else {
 		BIO_printf(bio_err, "bad output format specified for outfile\n");
 		goto end;
