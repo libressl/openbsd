@@ -369,19 +369,19 @@ static int
 tls_ssl_cert_verify_cb(X509_STORE_CTX *x509_ctx, void *arg)
 {
 	struct tls *ctx = arg;
-	int x509_err, rv;
+	int x509_err;
 
 	if (ctx->config->verify_cert == 0)
 		return (1);
 
-	if ((rv = X509_verify_cert(x509_ctx)) < 0) {
+	if ((X509_verify_cert(x509_ctx)) < 0) {
 		tls_set_errorx(ctx, "X509 verify cert failed");
 		return (0);
 	}
-	if (rv == 1)
-		return 1;
 
 	x509_err = X509_STORE_CTX_get_error(x509_ctx);
+	if (x509_err == X509_V_OK)
+		return (1);
 
 	tls_set_errorx(ctx, "certificate verification failed: %s",
 	    X509_verify_cert_error_string(x509_err));
