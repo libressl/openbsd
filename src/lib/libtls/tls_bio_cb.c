@@ -180,7 +180,6 @@ tls_get_new_cb_bio(struct tls *ctx)
 		tls_set_errorx(ctx, "no callbacks registered");
 		return (NULL);
 	}
-
 	if ((bio = BIO_new(bio_s_cb())) == NULL) {
 		tls_set_errorx(ctx, "failed to create callback i/o");
 		return (NULL);
@@ -205,10 +204,8 @@ tls_set_cbs(struct tls *ctx, tls_read_cb read_cb, tls_write_cb write_cb,
 	ctx->write_cb = write_cb;
 	ctx->cb_arg = cb_arg;
 
-	if ((bio = tls_get_new_cb_bio(ctx)) == NULL) {
-		tls_set_errorx(ctx, "failed to create callback i/o");
+	if ((bio = tls_get_new_cb_bio(ctx)) == NULL)
 		goto err;
-	}
 
 	SSL_set_bio(ctx->ssl_conn, bio, bio);
 
