@@ -1,4 +1,4 @@
-/* $OpenBSD: ocsp.c,v 1.7 2015/10/17 15:00:11 doug Exp $ */
+/* $OpenBSD: ocsp.c,v 1.8 2016/04/26 09:37:59 semarie Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -664,11 +664,11 @@ done_resp:
 	i = OCSP_response_status(resp);
 
 	if (i != OCSP_RESPONSE_STATUS_SUCCESSFUL) {
-		BIO_printf(out, "Responder Error: %s (%d)\n",
+		BIO_printf(bio_err, "Responder Error: %s (%d)\n",
 		    OCSP_response_status_str(i), i);
 		if (ignore_err)
 			goto redo_accept;
-		ret = 0;
+		ret = 1;
 		goto end;
 	}
 	if (resp_text)
