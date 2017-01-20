@@ -1,4 +1,4 @@
-/* $OpenBSD: ocsp.c,v 1.8 2016/04/26 09:37:59 semarie Exp $ */
+/* $OpenBSD: ocsp.c,v 1.9 2017/01/19 07:01:37 beck Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -147,7 +147,7 @@ ocsp_main(int argc, char **argv)
 	const char *errstr = NULL;
 
 	if (single_execution) {
-		if (pledge("stdio inet dns rpath wpath cpath", NULL) == -1) {
+		if (pledge("stdio inet dns rpath wpath cpath tty", NULL) == -1) {
 			perror("pledge");
 			exit(1);
 		}
