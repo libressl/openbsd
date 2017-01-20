@@ -1,4 +1,4 @@
-/* $OpenBSD: x509.c,v 1.12 2015/10/17 15:00:11 doug Exp $ */
+/* $OpenBSD: x509.c,v 1.13 2016/12/30 16:28:53 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -199,7 +199,7 @@ x509_main(int argc, char **argv)
 	const char *errstr = NULL;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath tty", NULL) == -1) {
+		if (pledge("stdio cpath wpath rpath tty", NULL) == -1) {
 			perror("pledge");
 			exit(1);
 		}

@@ -1,4 +1,4 @@
-/* $OpenBSD: pkcs12.c,v 1.7 2015/10/17 15:00:11 doug Exp $ */
+/* $OpenBSD: pkcs12.c,v 1.8 2016/12/30 15:59:58 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project.
  */
@@ -125,7 +125,7 @@ pkcs12_main(int argc, char **argv)
 	char *CApath = NULL, *CAfile = NULL;
 
 	if (single_execution) {
-		if (pledge("stdio rpath wpath cpath tty", NULL) == -1) {
+		if (pledge("stdio cpath wpath rpath tty", NULL) == -1) {
 			perror("pledge");
 			exit(1);
 		}
