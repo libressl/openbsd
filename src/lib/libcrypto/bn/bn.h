@@ -1,4 +1,4 @@
-/* $OpenBSD: bn.h,v 1.32 2016/12/21 15:49:29 jsing Exp $ */
+/* $OpenBSD: bn.h,v 1.33 2017/01/21 09:38:58 beck Exp $ */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -387,9 +387,11 @@ void	BN_set_negative(BIGNUM *b, int n);
  */
 #define BN_is_negative(a) ((a)->neg != 0)
 
+#ifndef LIBRESSL_INTERNAL
 int	BN_div(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m, const BIGNUM *d,
     BN_CTX *ctx);
 #define BN_mod(rem,m,d,ctx) BN_div(NULL,(rem),(m),(d),(ctx))
+#endif
 int	BN_nnmod(BIGNUM *r, const BIGNUM *m, const BIGNUM *d, BN_CTX *ctx);
 int	BN_mod_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m, BN_CTX *ctx);
 int	BN_mod_add_quick(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m);

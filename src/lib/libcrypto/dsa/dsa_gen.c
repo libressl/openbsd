@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_gen.c,v 1.22 2015/07/15 18:34:37 miod Exp $ */
+/* $OpenBSD: dsa_gen.c,v 1.23 2017/01/21 09:38:59 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -271,7 +271,7 @@ dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits, const EVP_MD *evpmd,
 			/* step 9 */
 			if (!BN_lshift1(r0, q))
 				goto err;
-			if (!BN_mod(c, X, r0, ctx))
+			if (!BN_mod_ct(c, X, r0, ctx))
 				goto err;
 			if (!BN_sub(r0, c, BN_value_one()))
 				goto err;
@@ -306,7 +306,7 @@ end:
 	/* Set r0=(p-1)/q */
 	if (!BN_sub(test, p, BN_value_one()))
 		goto err;
-	if (!BN_div(r0, NULL, test, q, ctx))
+	if (!BN_div_ct(r0, NULL, test, q, ctx))
 		goto err;
 
 	if (!BN_set_word(test, h))
