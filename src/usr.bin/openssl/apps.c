@@ -1,4 +1,4 @@
-/* $OpenBSD: apps.c,v 1.40 2016/09/04 09:00:14 guenther Exp $ */
+/* $OpenBSD: apps.c,v 1.41 2016/12/30 16:28:53 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -1467,7 +1467,7 @@ load_index(char *dbfile, DB_ATTR *db_attr)
 		BIO_printf(bio_err, "attr filename too long\n");
 		goto err;
 	}
-		
+
 	dbattr_conf = NCONF_new(NULL);
 	if (NCONF_load(dbattr_conf, attrpath, &errorline) <= 0) {
 		if (errorline > 0) {
