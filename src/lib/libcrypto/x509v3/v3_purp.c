@@ -1,4 +1,4 @@
-/* $OpenBSD: v3_purp.c,v 1.26 2015/02/10 13:28:17 jsing Exp $ */
+/* $OpenBSD: v3_purp.c,v 1.27 2016/11/08 20:01:06 miod Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2001.
  */
@@ -325,8 +325,24 @@ nid_cmp(const int *a, const int *b)
 	return *a - *b;
 }
 
-DECLARE_OBJ_BSEARCH_CMP_FN(int, int, nid);
-IMPLEMENT_OBJ_BSEARCH_CMP_FN(int, int, nid);
+static int nid_cmp_BSEARCH_CMP_FN(const void *, const void *);
+static int nid_cmp(int const *, int const *);
+static int *OBJ_bsearch_nid(int *key, int const *base, int num);
+
+static int
+nid_cmp_BSEARCH_CMP_FN(const void *a_, const void *b_)
+{
+	int const *a = a_;
+	int const *b = b_;
+	return nid_cmp(a, b);
+}
+
+static int *
+OBJ_bsearch_nid(int *key, int const *base, int num)
+{
+	return (int *)OBJ_bsearch_(key, base, num, sizeof(int),
+	    nid_cmp_BSEARCH_CMP_FN);
+}
 
 int
 X509_supported_extension(X509_EXTENSION *ex)
