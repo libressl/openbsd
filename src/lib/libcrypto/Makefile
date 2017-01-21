@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.12 2016/11/05 15:01:54 schwarze Exp $
+# $OpenBSD: Makefile,v 1.13 2016/12/21 15:49:29 jsing Exp $
 
 LIB=	crypto
 
@@ -24,7 +24,8 @@ CFLAGS+= -DLIBRESSL_INTERNAL
 CFLAGS+= -DOPENSSL_NO_HW_PADLOCK # XXX enable this?
 
 CFLAGS+= -I${LCRYPTO_SRC}
-CFLAGS+= -I${LCRYPTO_SRC}/modes -I${LCRYPTO_SRC}/asn1 -I${LCRYPTO_SRC}/evp
+CFLAGS+= -I${LCRYPTO_SRC}/asn1 -I${LCRYPTO_SRC}/bn -I${LCRYPTO_SRC}/evp
+CFLAGS+= -I${LCRYPTO_SRC}/modes
 
 VERSION_SCRIPT=	Symbols.map
 SYMBOL_LIST=	${.CURDIR}/Symbols.list
