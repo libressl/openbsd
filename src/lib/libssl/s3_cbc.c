@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_cbc.c,v 1.13 2016/11/06 17:21:04 jsing Exp $ */
+/* $OpenBSD: s3_cbc.c,v 1.14 2016/11/08 21:25:01 miod Exp $ */
 /* ====================================================================
  * Copyright (c) 2012 The OpenSSL Project.  All rights reserved.
  *
@@ -135,7 +135,7 @@ tls1_cbc_remove_padding(const SSL* s, SSL3_RECORD *rec, unsigned block_size,
 
 	padding_length = rec->data[rec->length - 1];
 
-	if (EVP_CIPHER_flags(s->enc_read_ctx->cipher) & EVP_CIPH_FLAG_AEAD_CIPHER) {
+	if (EVP_CIPHER_flags(s->internal->enc_read_ctx->cipher) & EVP_CIPH_FLAG_AEAD_CIPHER) {
 		/* padding is already verified */
 		rec->length -= padding_length + 1;
 		return 1;
