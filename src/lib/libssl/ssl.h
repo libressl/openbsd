@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl.h,v 1.117 2017/01/23 10:22:06 jsing Exp $ */
+/* $OpenBSD: ssl.h,v 1.118 2017/01/23 13:36:13 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -672,9 +672,6 @@ struct ssl_ctx_st {
 
 	/* Default values to use in SSL structures follow (these are copied by SSL_new) */
 
-	unsigned long options;
-	unsigned long mode;
-
 	STACK_OF(X509) *extra_certs;
 
 	int verify_mode;
@@ -852,10 +849,10 @@ struct ssl_st {
 	long verify_result;
 
 	int references;
-	unsigned long options; /* protocol behaviour */
-	unsigned long mode; /* API behaviour */
+
 	int client_version;	/* what was passed, used for
 				 * SSLv3/TLS rollback check */
+
 	unsigned int max_send_fragment;
 
 	char *tlsext_hostname;
