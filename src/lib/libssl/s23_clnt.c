@@ -1,4 +1,4 @@
-/* $OpenBSD: s23_clnt.c,v 1.53 2017/01/23 06:45:30 beck Exp $ */
+/* $OpenBSD: s23_clnt.c,v 1.54 2017/01/23 08:48:44 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -433,7 +433,7 @@ ssl23_get_server_hello(SSL *s)
 		s->s3->rbuf.left = n;
 		s->s3->rbuf.offset = 0;
 
-		s->internal->handshake_func = s->method->ssl_connect;
+		s->internal->handshake_func = s->method->internal->ssl_connect;
 	} else {
 		SSLerr(SSL_F_SSL23_GET_SERVER_HELLO, SSL_R_UNKNOWN_PROTOCOL);
 		goto err;

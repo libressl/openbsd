@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_lib.c,v 1.35 2017/01/22 03:50:45 jsing Exp $ */
+/* $OpenBSD: d1_lib.c,v 1.36 2017/01/22 07:16:38 beck Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -141,7 +141,7 @@ dtls1_new(SSL *s)
 	}
 
 	s->d1 = d1;
-	s->method->ssl_clear(s);
+	s->method->internal->ssl_clear(s);
 	return (1);
 }
 
