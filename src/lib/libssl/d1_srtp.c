@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_srtp.c,v 1.16 2017/01/23 05:13:02 jsing Exp $ */
+/* $OpenBSD: d1_srtp.c,v 1.17 2017/01/23 06:45:30 beck Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -371,8 +371,7 @@ ssl_parse_clienthello_use_srtp_ext(SSL *s, const unsigned char *d, int len,
 	ret = 0;
 
 done:
-	if (clnt)
-		sk_SRTP_PROTECTION_PROFILE_free(clnt);
+	sk_SRTP_PROTECTION_PROFILE_free(clnt);
 
 	return ret;
 }
