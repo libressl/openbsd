@@ -1,4 +1,9 @@
-#	$OpenBSD: Makefile,v 1.28 2016/11/04 19:01:54 jsing Exp $
+#	$OpenBSD: Makefile,v 1.29 2016/11/05 08:12:22 jsing Exp $
+
+.include <bsd.own.mk>
+.ifndef NOMAN
+SUBDIR=	man
+.endif
 
 CFLAGS+= -Wall -Werror -Wimplicit
 CFLAGS+= -DLIBRESSL_INTERNAL
@@ -29,8 +34,6 @@ SRCS=	tls.c \
 	tls_util.c \
 	tls_ocsp.c \
 	tls_verify.c
-
-MAN=	tls_init.3
 
 includes:
 	@cd ${.CURDIR}; for i in $(HDRS); do \
