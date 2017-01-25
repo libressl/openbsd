@@ -1,4 +1,4 @@
-/* $OpenBSD: bn_x931p.c,v 1.8 2015/04/29 00:11:12 doug Exp $ */
+/* $OpenBSD: bn_x931p.c,v 1.9 2017/01/21 11:00:46 beck Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2005.
  */
@@ -171,7 +171,7 @@ BN_X931_derive_prime_ex(BIGNUM *p, BIGNUM *p1, BIGNUM *p2, const BIGNUM *Xp,
 			goto err;
 		if (!BN_sub_word(pm1, 1))
 			goto err;
-		if (!BN_gcd(t, pm1, e, ctx))
+		if (!BN_gcd_ct(t, pm1, e, ctx))
 			goto err;
 		if (BN_is_one(t)
 		/* X9.31 specifies 8 MR and 1 Lucas test or any prime test

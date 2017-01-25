@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_chk.c,v 1.10 2017/01/21 10:38:29 beck Exp $ */
+/* $OpenBSD: rsa_chk.c,v 1.11 2017/01/21 11:00:47 beck Exp $ */
 /* ====================================================================
  * Copyright (c) 1999 The OpenSSL Project.  All rights reserved.
  *
@@ -129,7 +129,7 @@ RSA_check_key(const RSA *key)
 		ret = -1;
 		goto err;
 	}
-	r = BN_gcd(m, i, j, ctx);
+	r = BN_gcd_ct(m, i, j, ctx);
 	if (!r) {
 		ret = -1;
 		goto err;
