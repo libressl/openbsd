@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_internal.h,v 1.50 2016/11/05 15:13:26 beck Exp $ */
+/* $OpenBSD: tls_internal.h,v 1.51 2017/01/24 01:48:05 claudio Exp $ */
 /*
  * Copyright (c) 2014 Jeremie Courreges-Anglas <jca@openbsd.org>
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
@@ -118,6 +118,7 @@ struct tls_conninfo {
 
 #define TLS_EOF_NO_CLOSE_NOTIFY	(1 << 0)
 #define TLS_HANDSHAKE_COMPLETE	(1 << 1)
+#define TLS_SSL_NEEDS_SHUTDOWN  (1 << 2)
 
 struct tls_ocsp_result {
 	const char *result_msg;
