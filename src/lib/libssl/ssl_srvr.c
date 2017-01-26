@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_srvr.c,v 1.153 2017/01/24 14:57:31 jsing Exp $ */
+/* $OpenBSD: s3_srvr.c,v 1.154 2017/01/26 05:31:25 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *

@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_clnt.c,v 1.174 2017/01/24 15:11:55 jsing Exp $ */
+/* $OpenBSD: s3_clnt.c,v 1.175 2017/01/26 05:31:25 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *

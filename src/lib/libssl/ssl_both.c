@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_both.c,v 1.56 2017/01/23 14:35:42 jsing Exp $ */
+/* $OpenBSD: s3_both.c,v 1.57 2017/01/26 05:31:25 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *

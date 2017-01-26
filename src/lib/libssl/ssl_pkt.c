@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_pkt.c,v 1.69 2017/01/25 06:13:02 jsing Exp $ */
+/* $OpenBSD: s3_pkt.c,v 1.70 2017/01/26 05:31:25 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
