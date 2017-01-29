@@ -1,4 +1,4 @@
-/* $OpenBSD: x_info.c,v 1.15 2015/02/10 11:22:21 jsing Exp $ */
+/* $OpenBSD: x_info.c,v 1.16 2016/03/11 07:08:44 mmcc Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -70,7 +70,7 @@ X509_INFO_new(void)
 
 	ret = malloc(sizeof(X509_INFO));
 	if (ret == NULL) {
-		ASN1err(ASN1_F_X509_INFO_NEW, ERR_R_MALLOC_FAILURE);
+		ASN1error(ERR_R_MALLOC_FAILURE);
 		return (NULL);
 	}
 

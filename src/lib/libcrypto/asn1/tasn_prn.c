@@ -1,4 +1,4 @@
-/* $OpenBSD: tasn_prn.c,v 1.14 2015/12/23 01:50:26 mmcc Exp $ */
+/* $OpenBSD: tasn_prn.c,v 1.15 2016/12/30 16:04:34 jsing Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2000.
  */
@@ -87,7 +87,7 @@ ASN1_PCTX_new(void)
 	ASN1_PCTX *ret;
 	ret = malloc(sizeof(ASN1_PCTX));
 	if (ret == NULL) {
-		ASN1err(ASN1_F_ASN1_PCTX_NEW, ERR_R_MALLOC_FAILURE);
+		ASN1error(ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
 	ret->flags = 0;
