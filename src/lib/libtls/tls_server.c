@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_server.c,v 1.33 2017/01/24 01:48:05 claudio Exp $ */
+/* $OpenBSD: tls_server.c,v 1.34 2017/01/26 12:56:37 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -236,6 +236,8 @@ tls_configure_server_ssl(struct tls *ctx, SSL_CTX **ssl_ctx,
 		tls_set_errorx(ctx, "ssl context failure");
 		goto err;
 	}
+
+	SSL_CTX_set_options(*ssl_ctx, SSL_OP_NO_CLIENT_RENEGOTIATION);
 
 	if (SSL_CTX_set_tlsext_servername_callback(*ssl_ctx,
 	    tls_servername_cb) != 1) {
