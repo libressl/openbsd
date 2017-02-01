@@ -16,6 +16,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <sys/stat.h>
 
 #include <err.h>
@@ -76,7 +77,9 @@ host_dns(const char *s, struct addr vec[MAX_SERVERS_DNS])
 	error = getaddrinfo(s, NULL, &hints, &res0);
 
 	if (error == EAI_AGAIN ||
+#ifdef EAI_NODATA
 	    error == EAI_NODATA ||
+#endif
 	    error == EAI_NONAME)
 		return(0);
 
