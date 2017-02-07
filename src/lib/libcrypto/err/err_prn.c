@@ -80,8 +80,8 @@ ERR_print_errors_cb(int (*cb)(const char *str, size_t len, void *u), void *u)
 	while ((l = ERR_get_error_line_data(&file, &line, &data,
 	    &flags)) != 0) {
 		ERR_error_string_n(l, buf, sizeof buf);
-		(void) snprintf(buf2, sizeof(buf2), "%lu:%s:%s\n", es,
-		    buf, (flags & ERR_TXT_STRING) ? data : "");
+		(void) snprintf(buf2, sizeof(buf2), "%lu:%s:%s:%d:%s\n", es,
+		    buf, file, line, (flags & ERR_TXT_STRING) ? data : "");
 		if (cb(buf2, strlen(buf2), u) <= 0)
 			break; /* abort outputting the error report */
 	}

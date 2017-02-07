@@ -862,9 +862,8 @@ void
 ERR_error_string_n(unsigned long e, char *buf, size_t len)
 {
 	char lsbuf[30], fsbuf[30], rsbuf[30];
-	const char *ls, *fs, *rs, *file, *data;
-	int l, f, r, ret, line, flags;
-
+	const char *ls, *fs, *rs;
+	int l, f, r, ret;
 
 	l = ERR_GET_LIB(e);
 	f = ERR_GET_FUNC(e);
@@ -887,19 +886,7 @@ ERR_error_string_n(unsigned long e, char *buf, size_t len)
 		rs = rsbuf;
 	}
 
-	if (ERR_get_error_line_data(&file, &line, &data, &flags) != 0) {
-		const char *filename;
-
-		if ((filename = strrchr(file, '/')) != NULL)
-			filename++;
-		else
-			filename = file;
-
-		ret = snprintf(buf, len, "error:%08lX:%s:%s:%s:%s:%d", e, ls,
-		    fs, rs, filename, line);
-	} else
-		ret = snprintf(buf, len, "error:%08lX:%s:%s:%s", e, ls, fs, rs);
-
+	ret = snprintf(buf, len, "error:%08lX:%s:%s:%s", e, ls, fs, rs);
 	if (ret == -1)
 		return;	/* can't happen, and can't do better if it does */
 	if (ret >= len) {
