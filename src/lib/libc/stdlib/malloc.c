@@ -1,4 +1,4 @@
-/*	$OpenBSD: malloc.c,v 1.213 2017/02/01 06:17:42 otto Exp $	*/
+/*	$OpenBSD: malloc.c,v 1.214 2017/02/02 10:35:34 otto Exp $	*/
 /*
  * Copyright (c) 2008, 2010, 2011, 2016 Otto Moerbeek <otto@drijf.net>
  * Copyright (c) 2012 Matthew Dempsky <matthew@openbsd.org>
@@ -278,7 +278,7 @@ wrterror(struct dir_info *d, char *msg, ...)
 
 	iov[0].iov_base = pidbuf;
 	snprintf(pidbuf, sizeof(pidbuf), "%s(%d) in %s(): ", __progname,
-	    getpid(), d->func ? d->func : "unknown");
+	    getpid(), (d != NULL && d->func) ? d->func : "unknown");
 	iov[0].iov_len = strlen(pidbuf);
 	iov[1].iov_base = buf;
 	va_start(ap, msg);
