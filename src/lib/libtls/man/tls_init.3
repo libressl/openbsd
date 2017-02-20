@@ -1,4 +1,4 @@
-.\" $OpenBSD: tls_init.3,v 1.3 2017/01/28 00:59:36 schwarze Exp $
+.\" $OpenBSD: tls_init.3,v 1.4 2017/02/20 13:09:15 schwarze Exp $
 .\"
 .\" Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
 .\" Copyright (c) 2016 Joel Sing <jsing@openbsd.org>
@@ -16,7 +16,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: January 28 2017 $
+.Dd $Mdocdate: February 20 2017 $
 .Dt TLS_INIT 3
 .Os
 .Sh NAME
@@ -112,7 +112,7 @@ on error or an out of memory condition.
 .Fn tls_config_error
 returns
 .Dv NULL
-if no error occured with
+if no error occurred with
 .Fa config
 at all, or if memory allocation failed while trying to assemble the
 string describing the most recent error related to
