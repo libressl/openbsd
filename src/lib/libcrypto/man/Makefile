@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.113 2017/01/30 01:29:31 schwarze Exp $
+# $OpenBSD: Makefile,v 1.114 2017/01/31 05:40:26 schwarze Exp $
 
 .include <bsd.own.mk>
 
@@ -92,6 +92,7 @@ MAN=	\
 	EC_POINT_new.3 \
 	ERR.3 \
 	ERR_GET_LIB.3 \
+	ERR_asprintf_error_data.3 \
 	ERR_clear_error.3 \
 	ERR_error_string.3 \
 	ERR_get_error.3 \
