@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_lib.c,v 1.156 2017/02/07 02:08:38 beck Exp $ */
+/* $OpenBSD: ssl_lib.c,v 1.157 2017/02/15 14:56:42 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1864,15 +1864,6 @@ SSL_CTX_new(const SSL_METHOD *meth)
 	ret->param = X509_VERIFY_PARAM_new();
 	if (!ret->param)
 		goto err;
-
-	if ((ret->internal->md5 = EVP_get_digestbyname("ssl3-md5")) == NULL) {
-		SSLerrorx(SSL_R_UNABLE_TO_LOAD_SSL3_MD5_ROUTINES);
-		goto err2;
-	}
-	if ((ret->internal->sha1 = EVP_get_digestbyname("ssl3-sha1")) == NULL) {
-		SSLerrorx(SSL_R_UNABLE_TO_LOAD_SSL3_SHA1_ROUTINES);
-		goto err2;
-	}
 
 	if ((ret->internal->client_CA = sk_X509_NAME_new_null()) == NULL)
 		goto err;
