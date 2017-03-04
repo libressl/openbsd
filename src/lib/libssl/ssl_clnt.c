@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_clnt.c,v 1.6 2017/02/28 14:08:49 jsing Exp $ */
+/* $OpenBSD: ssl_clnt.c,v 1.7 2017/03/01 14:01:24 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -2539,7 +2539,7 @@ ssl3_send_client_certificate(SSL *s)
 	}
 
 	/* SSL3_ST_CW_CERT_D */
-	return (ssl3_do_write(s, SSL3_RT_HANDSHAKE));
+	return (ssl3_handshake_write(s));
 
  err:
 	CBB_cleanup(&cbb);
