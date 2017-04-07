@@ -110,7 +110,7 @@ struct tls_conninfo {
 	char *issuer;
 	char *subject;
 
-	u_int8_t *peer_cert;
+	uint8_t *peer_cert;
 	size_t peer_cert_len;
 
 	time_t notbefore;
