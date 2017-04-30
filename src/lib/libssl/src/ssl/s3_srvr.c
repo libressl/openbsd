@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_srvr.c,v 1.126.2.1 2016/10/03 11:23:13 bcook Exp $ */
+/* $OpenBSD: s3_srvr.c,v 1.126.2.2 2017/04/30 00:06:09 jsing Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -721,7 +721,7 @@ ssl3_send_hello_request(SSL *s)
 int
 ssl3_get_client_hello(SSL *s)
 {
-	int i, j, ok, al, ret = -1;
+	int i, j, ok, al, ret = -1, cookie_valid = 0;
 	unsigned int cookie_len;
 	long n;
 	unsigned long id;
@@ -887,7 +887,7 @@ ssl3_get_client_hello(SSL *s)
 				goto f_err;
 			}
 
-			ret = 2;
+			cookie_valid = 1;
 		}
 
 		p += cookie_len;
@@ -1070,8 +1070,8 @@ ssl3_get_client_hello(SSL *s)
 		goto err;
 	}
 
-	if (ret < 0)
-		ret = 1;
+	ret = cookie_valid ? 2 : 1;
+
 	if (0) {
 truncated:
 		al = SSL_AD_DECODE_ERROR;
