@@ -194,6 +194,11 @@ gotdata(char *buf, size_t len)
 }
 
 #ifdef SYS_getrandom
+
+#ifndef GRND_NONBLOCK
+#define GRND_NONBLOCK	0x0001
+#endif
+
 static int
 getentropy_getrandom(void *buf, size_t len)
 {
