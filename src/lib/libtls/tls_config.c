@@ -124,6 +124,7 @@ tls_config_new(void)
 	return (config);
 
  err:
+	tls_keypair_free(config->keypair);
 	tls_config_free(config);
 	return (NULL);
 }
