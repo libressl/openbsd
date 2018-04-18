@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_keypair.c,v 1.5 2018/02/10 04:57:35 jsing Exp $ */
+/* $OpenBSD: tls_keypair.c,v 1.5.2.1 2018/04/18 16:29:11 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -29,7 +29,7 @@ tls_keypair_new(void)
 	return calloc(1, sizeof(struct tls_keypair));
 }
 
-static void
+void
 tls_keypair_clear_key(struct tls_keypair *keypair)
 {
 	freezero(keypair->key_mem, keypair->key_len);
