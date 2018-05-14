@@ -469,6 +469,7 @@ BIGNUM *BN_mod_sqrt(BIGNUM *ret,
     const BIGNUM *a, const BIGNUM *n, BN_CTX *ctx);
 
 void	BN_consttime_swap(BN_ULONG swap, BIGNUM *a, BIGNUM *b, int nwords);
+int BN_swap_ct(BN_ULONG swap, BIGNUM *a, BIGNUM *b, int nwords);
 
 /* Deprecated versions */
 #ifndef OPENSSL_NO_DEPRECATED
