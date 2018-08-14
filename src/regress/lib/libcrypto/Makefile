@@ -43,6 +43,7 @@ SUBDIR= \
 	sha2 \
 	sha256 \
 	sha512 \
+	sm3 \
 	utf8 \
 	wycheproof \
 	x509
