@@ -1,4 +1,4 @@
-/* $OpenBSD: dsa_ossl.c,v 1.30.2.1 2018/06/13 15:08:08 jsing Exp $ */
+/* $OpenBSD: dsa_ossl.c,v 1.30.2.2 2018/11/17 18:46:43 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -94,16 +94,17 @@ DSA_OpenSSL(void)
 static DSA_SIG *
 dsa_do_sign(const unsigned char *dgst, int dlen, DSA *dsa)
 {
-	BIGNUM *kinv = NULL, *r = NULL, *s = NULL;
-	BIGNUM m;
-	BIGNUM xr;
+	BIGNUM b, bm, bxr, binv, m, *kinv = NULL, *r = NULL, *s = NULL;
 	BN_CTX *ctx = NULL;
 	int reason = ERR_R_BN_LIB;
 	DSA_SIG *ret = NULL;
 	int noredo = 0;
 
+	BN_init(&b);
+	BN_init(&binv);
+	BN_init(&bm);
+	BN_init(&bxr);
 	BN_init(&m);
-	BN_init(&xr);
 
 	if (!dsa->p || !dsa->q || !dsa->g) {
 		reason = DSA_R_MISSING_PARAMETERS;
@@ -139,10 +140,36 @@ redo:
 	if (BN_bin2bn(dgst,dlen,&m) == NULL)
 		goto err;
 
-	/* Compute  s = inv(k) (m + xr) mod q */
-	if (!BN_mod_mul(&xr, dsa->priv_key, r, dsa->q, ctx))	/* s = xr */
+	/*
+	 * Compute:
+	 *
+	 *  s = inv(k)(m + xr) mod q
+	 *
+	 * In order to reduce the possibility of a side-channel attack, the
+	 * following is calculated using a blinding value:
+	 *
+	 *  s = inv(k)inv(b)(bm + bxr) mod q
+	 *
+	 * Where b is a random value in the range [1, q-1].
+	 */
+	if (!BN_sub(&bm, dsa->q, BN_value_one()))
 		goto err;
-	if (!BN_mod_add(s, &xr, &m, dsa->q, ctx))		/* s = m + xr */
+	if (!BN_rand_range(&b, &bm))
+		goto err;
+	if (!BN_add(&b, &b, BN_value_one()))
+		goto err;
+	if (BN_mod_inverse_ct(&binv, &b, dsa->q, ctx) == NULL)
+		goto err;
+
+	if (!BN_mod_mul(&bxr, &b, dsa->priv_key, dsa->q, ctx))	/* bx */
+		goto err;
+	if (!BN_mod_mul(&bxr, &bxr, r, dsa->q, ctx))		/* bxr */
+		goto err;
+	if (!BN_mod_mul(&bm, &b, &m, dsa->q, ctx))		/* bm */
+		goto err;
+	if (!BN_mod_add(s, &bxr, &bm, dsa->q, ctx))		/* s = bm + bxr */
+		goto err;
+	if (!BN_mod_mul(s, s, &binv, dsa->q, ctx))		/* s = m + xr */
 		goto err;
 	if (!BN_mod_mul(s, s, kinv, dsa->q, ctx))
 		goto err;
@@ -171,8 +198,11 @@ err:
 		BN_free(s);
 	}
 	BN_CTX_free(ctx);
+	BN_clear_free(&b);
+	BN_clear_free(&bm);
+	BN_clear_free(&bxr);
+	BN_clear_free(&binv);
 	BN_clear_free(&m);
-	BN_clear_free(&xr);
 	BN_clear_free(kinv);
 	return ret;
 }
