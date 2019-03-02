@@ -322,6 +322,13 @@ FUNCTION functions[] = {
 	{ FUNC_TYPE_CIPHER, "rc4", enc_main },
 	{ FUNC_TYPE_CIPHER, "rc4-40", enc_main },
 #endif
+#ifndef OPENSSL_NO_SM4
+	{ FUNC_TYPE_CIPHER, "sm4", enc_main },
+	{ FUNC_TYPE_CIPHER, "sm4-ecb", enc_main },
+	{ FUNC_TYPE_CIPHER, "sm4-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "sm4-ofb", enc_main },
+	{ FUNC_TYPE_CIPHER, "sm4-cfb", enc_main },
+#endif
 #ifdef ZLIB
 	{ FUNC_TYPE_CIPHER, "zlib", enc_main },
 #endif

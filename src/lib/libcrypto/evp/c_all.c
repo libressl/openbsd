@@ -227,6 +227,16 @@ OpenSSL_add_all_ciphers_internal(void)
 	EVP_add_cipher(EVP_gost2814789_cfb64());
 	EVP_add_cipher(EVP_gost2814789_cnt());
 #endif
+
+#ifndef OPENSSL_NO_SM4
+	EVP_add_cipher(EVP_sm4_ecb());
+	EVP_add_cipher(EVP_sm4_cbc());
+	EVP_add_cipher(EVP_sm4_cfb());
+	EVP_add_cipher(EVP_sm4_ofb());
+	EVP_add_cipher(EVP_sm4_ctr());
+	EVP_add_cipher_alias(SN_sm4_cbc, "SM4");
+	EVP_add_cipher_alias(SN_sm4_cbc, "sm4");
+#endif
 }
 
 void

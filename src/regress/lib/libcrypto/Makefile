@@ -43,6 +43,7 @@ SUBDIR += sha2
 SUBDIR += sha256
 SUBDIR += sha512
 SUBDIR += sm3
+SUBDIR += sm4
 SUBDIR += utf8
 SUBDIR += wycheproof
 SUBDIR += x509
