@@ -237,6 +237,9 @@ SRCS+= rsa_pmeth.c rsa_crpt.c rsa_meth.c
 # sha/
 SRCS+= sha1dgst.c sha1_one.c sha256.c sha512.c
 
+# sm2/
+SRCS+= sm2_crypt.c sm2_err.c sm2_sign.c sm2_za.c
+
 # sm3/
 SRCS+= sm3.c
 

@@ -1231,6 +1231,7 @@ ERR_load_PKCS12_strings
 ERR_load_PKCS7_strings
 ERR_load_RAND_strings
 ERR_load_RSA_strings
+ERR_load_SM2_strings
 ERR_load_TS_strings
 ERR_load_UI_strings
 ERR_load_X509V3_strings
@@ -2379,6 +2380,15 @@ SHA512_Final
 SHA512_Init
 SHA512_Transform
 SHA512_Update
+SM2_ciphertext_size
+SM2_compute_userid_digest
+SM2_decrypt
+SM2_do_sign
+SM2_do_verify
+SM2_encrypt
+SM2_plaintext_size
+SM2_sign
+SM2_verify
 SM3_Final
 SM3_Init
 SM3_Update

@@ -154,6 +154,9 @@ ERR_load_crypto_strings_internal(void)
 #ifndef OPENSSL_NO_GOST
 	ERR_load_GOST_strings();
 #endif
+#ifndef OPENSSL_NO_SM2
+	ERR_load_SM2_strings();
+#endif
 #endif
 }
 

@@ -113,6 +113,7 @@
 #define EVP_PKEY_CMAC	NID_cmac
 #define EVP_PKEY_GOSTR12_256 NID_id_tc26_gost3410_2012_256
 #define EVP_PKEY_GOSTR12_512 NID_id_tc26_gost3410_2012_512
+#define EVP_PKEY_SM2	NID_sm2
 
 #ifdef	__cplusplus
 extern "C" {

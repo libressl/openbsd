@@ -1306,6 +1306,10 @@ sm-scheme 104 5         : SM4-CFB1      : sm4-cfb1
 sm-scheme 104 6         : SM4-CFB8      : sm4-cfb8
 sm-scheme 104 7         : SM4-CTR       : sm4-ctr
 
+# Definitions for SM2
+
+sm-scheme 301           : SM2           : sm2
+
 # There is no OID that just denotes "HMAC" oddly enough...
 
 			: HMAC				: hmac
