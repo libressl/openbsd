@@ -18,6 +18,7 @@
 #define HEADER_SM2_H
 
 #include <openssl/ec.h>
+#include <openssl/ecdsa.h>
 
 /* The default user id as specified in GM/T 0009-2012 */
 #define SM2_DEFAULT_USERID "1234567812345678"
