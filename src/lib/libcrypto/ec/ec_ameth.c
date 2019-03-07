@@ -618,40 +618,33 @@ const EVP_PKEY_ASN1_METHOD eckey_asn1_meth = {
 
 #if !defined(OPENSSL_NO_SM2)
 const EVP_PKEY_ASN1_METHOD sm2_asn1_meth = {
-	EVP_PKEY_SM2,
-	EVP_PKEY_SM2,
-	0,
-	"SM2",
-	"OpenSSL SM2 algorithm",
+	.pkey_id = EVP_PKEY_SM2,
+	.pkey_base_id = EVP_PKEY_SM2,
+	.pem_str = "SM2",
+	.info = "OpenSSL SM2 algorithm",
 
-	eckey_pub_decode,
-	eckey_pub_encode,
-	eckey_pub_cmp,
-	eckey_pub_print,
+	.pub_decode = eckey_pub_decode,
+	.pub_encode = eckey_pub_encode,
+	.pub_cmp = eckey_pub_cmp,
+	.pub_print = eckey_pub_print,
 
-	eckey_priv_decode,
-	eckey_priv_encode,
-	eckey_priv_print,
+	.priv_decode = eckey_priv_decode,
+	.priv_encode = eckey_priv_encode,
+	.priv_print = eckey_priv_print,
 
-	int_ec_size,
-	ec_bits,
-	ec_security_bits,
+	.pkey_size = int_ec_size,
+	.pkey_bits = ec_bits,
 
-	eckey_param_decode,
-	eckey_param_encode,
-	ec_missing_parameters,
-	ec_copy_parameters,
-	ec_cmp_parameters,
-	eckey_param_print,
-	0,
+	.param_decode = eckey_param_decode,
+	.param_encode = eckey_param_encode,
+	.param_missing = ec_missing_parameters,
+	.param_copy = ec_copy_parameters,
+	.param_cmp = ec_cmp_parameters,
+	.param_print = eckey_param_print,
 
-	int_ec_free,
-	ec_pkey_ctrl,
-	old_ec_priv_decode,
-	old_ec_priv_encode,
-
-	0, 0, 0,
-
-	ec_pkey_check
+	.pkey_free = int_ec_free,
+	.pkey_ctrl = ec_pkey_ctrl,
+	.old_priv_decode = old_ec_priv_decode,
+	.old_priv_encode = old_ec_priv_encode,
 };
 #endif
