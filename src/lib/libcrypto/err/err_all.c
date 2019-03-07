@@ -103,6 +103,9 @@
 #ifndef OPENSSL_NO_GOST
 #include <openssl/gost.h>
 #endif
+#ifndef OPENSSL_NO_SM2
+#include <openssl/sm2.h>
+#endif
 
 void ERR_load_ERR_strings_internal(void);
 
