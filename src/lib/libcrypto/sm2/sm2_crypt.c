@@ -22,7 +22,12 @@
 #include <string.h>
 
 typedef struct SM2_Ciphertext_st SM2_Ciphertext;
-DECLARE_ASN1_FUNCTIONS(SM2_Ciphertext)
+
+SM2_Ciphertext *SM2_Ciphertext_new(void);
+void SM2_Ciphertext_free(SM2_Ciphertext *a);
+SM2_Ciphertext *d2i_SM2_Ciphertext(SM2_Ciphertext **a, const unsigned char **in, long len);
+int i2d_SM2_Ciphertext(SM2_Ciphertext *a, unsigned char **out);
+extern const ASN1_ITEM SM2_Ciphertext_it;
 
 struct SM2_Ciphertext_st {
 	BIGNUM *C1x;
@@ -31,14 +36,70 @@ struct SM2_Ciphertext_st {
 	ASN1_OCTET_STRING *C2;
 };
 
-ASN1_SEQUENCE(SM2_Ciphertext) = {
-	ASN1_SIMPLE(SM2_Ciphertext, C1x, BIGNUM),
-	ASN1_SIMPLE(SM2_Ciphertext, C1y, BIGNUM),
-	ASN1_SIMPLE(SM2_Ciphertext, C3, ASN1_OCTET_STRING),
-	ASN1_SIMPLE(SM2_Ciphertext, C2, ASN1_OCTET_STRING),
-} ASN1_SEQUENCE_END(SM2_Ciphertext)
+static const ASN1_TEMPLATE SM2_Ciphertext_seq_tt[] = {
+	{
+		.flags = 0,
+		.tag = 0,
+		.offset = offsetof(SM2_Ciphertext, C1x),
+		.field_name = "C1x",
+		.item = &BIGNUM_it,
+	},
+	{
+		.flags = 0,
+		.tag = 0,
+		.offset = offsetof(SM2_Ciphertext, C1y),
+		.field_name = "C1y",
+		.item = &BIGNUM_it,
+	},
+	{
+		.flags = 0,
+		.tag = 0,
+		.offset = offsetof(SM2_Ciphertext, C3),
+		.field_name = "C3",
+		.item = &ASN1_OCTET_STRING_it,
+	},
+	{
+		.flags = 0,
+		.tag = 0,
+		.offset = offsetof(SM2_Ciphertext, C2),
+		.field_name = "C2",
+		.item = &ASN1_OCTET_STRING_it,
+	},
+};
 
-IMPLEMENT_ASN1_FUNCTIONS(SM2_Ciphertext)
+const ASN1_ITEM SM2_Ciphertext_it = {
+	.itype = ASN1_ITYPE_SEQUENCE,
+	.utype = V_ASN1_SEQUENCE,
+	.templates = SM2_Ciphertext_seq_tt,
+	.tcount = sizeof(SM2_Ciphertext_seq_tt) / sizeof(ASN1_TEMPLATE),
+	.funcs = NULL,
+	.size = sizeof(SM2_Ciphertext),
+	.sname = "SM2_Ciphertext",
+};
+
+SM2_Ciphertext *
+d2i_SM2_Ciphertext(SM2_Ciphertext **a, const unsigned char **in, long len)
+{
+	return (SM2_Ciphertext *) ASN1_item_d2i((ASN1_VALUE **)a, in, len, &SM2_Ciphertext_it);
+}
+
+int
+i2d_SM2_Ciphertext(SM2_Ciphertext *a, unsigned char **out)
+{
+	return ASN1_item_i2d((ASN1_VALUE *)a, out, &SM2_Ciphertext_it);
+}
+
+SM2_Ciphertext *
+SM2_Ciphertext_new(void)
+{
+	return (SM2_Ciphertext *)ASN1_item_new(&SM2_Ciphertext_it);
+}
+
+void
+SM2_Ciphertext_free(SM2_Ciphertext *a)
+{
+	ASN1_item_free((ASN1_VALUE *)a, &SM2_Ciphertext_it);
+}
 
 static size_t EC_field_size(const EC_GROUP *group)
 {
