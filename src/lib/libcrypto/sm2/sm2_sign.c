@@ -287,7 +287,7 @@ int SM2_sign(int type, const unsigned char *dgst, int dgstlen,
 	if (type != NID_sm3)
 		goto done;
 
-	if (dgstlen != 32)          /* expected length of SM3 hash */
+	if (dgstlen != 32)			/* expected length of SM3 hash */
 		goto done;
 
 	e = BN_bin2bn(dgst, dgstlen, NULL);

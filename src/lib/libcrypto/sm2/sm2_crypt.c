@@ -144,11 +144,20 @@ int SM2_encrypt(const EC_KEY *key,
 	BIGNUM *x2 = NULL;
 	BIGNUM *y2 = NULL;
 	BIGNUM *order = NULL;
-
-	EVP_MD_CTX *hash = EVP_MD_CTX_new();
-
+	EVP_MD_CTX *hash = NULL;
 	struct SM2_Ciphertext_st ctext_struct;
-	const EC_GROUP *group = EC_KEY_get0_group(key);
+	const EC_GROUP *group = NULL;
+	const EC_POINT *P = NULL;
+	EC_POINT *kG = NULL;
+	EC_POINT *kP = NULL;
+	uint8_t *msg_mask = NULL;
+	uint8_t *x2y2 = NULL;
+	uint8_t *C3 = NULL;
+	size_t field_size = 0;
+	size_t C3_size = 0;
+
+	hash = EVP_MD_CTX_new();
+	group = EC_KEY_get0_group(key);
 	
 	if ((order = BN_new()) == NULL)
 		goto done;
@@ -156,28 +165,21 @@ int SM2_encrypt(const EC_KEY *key,
 	if (!EC_GROUP_get_order(group, order, NULL))
 		goto done;
 
-	const EC_POINT *P = EC_KEY_get0_public_key(key);
-	EC_POINT *kG = NULL;
-	EC_POINT *kP = NULL;
-	uint8_t *msg_mask = NULL;
-
-	uint8_t *x2y2 = NULL;
-	uint8_t *C3 = NULL;
-
-	const size_t field_size = EC_field_size(group);
-	const size_t C3_size = EVP_MD_size(digest);
+	P = EC_KEY_get0_public_key(key);
+	field_size = EC_field_size(group);
+	C3_size = EVP_MD_size(digest);
 
 	if (field_size == 0 || C3_size == 0)
-	   goto done;
+		goto done;
 
 	kG = EC_POINT_new(group);
 	kP = EC_POINT_new(group);
 	if (kG == NULL || kP == NULL)
-	   goto done;
+		goto done;
 
 	ctx = BN_CTX_new();
 	if (ctx == NULL)
-	   goto done;
+		goto done;
 
 	BN_CTX_start(ctx);
 	k = BN_CTX_get(ctx);
@@ -193,7 +195,7 @@ int SM2_encrypt(const EC_KEY *key,
 	C3 = calloc(1, C3_size);
 
 	if (x2y2 == NULL || C3 == NULL)
-	   goto done;
+		goto done;
 
 	memset(ciphertext_buf, 0, *ciphertext_len);
 
@@ -221,7 +223,7 @@ int SM2_encrypt(const EC_KEY *key,
 
 	msg_mask = calloc(1, msg_len);
 	if (msg_mask == NULL)
-	   goto done;
+		goto done;
 
 	/* X9.63 with no salt happens to match the KDF used in SM2 */
 	if (ECDH_KDF_X9_62(msg_mask, msg_len, x2y2, 2 * field_size, NULL, 0, digest) == 0)
@@ -280,28 +282,28 @@ int SM2_decrypt(const EC_KEY *key,
 	int i;
 	size_t x2size = 0;
 	size_t y2size = 0;
-
 	BN_CTX *ctx = NULL;
-	const EC_GROUP *group = EC_KEY_get0_group(key);
+	const EC_GROUP *group = NULL;
 	EC_POINT *C1 = NULL;
 	struct SM2_Ciphertext_st *sm2_ctext = NULL;
 	BIGNUM *x2 = NULL;
 	BIGNUM *y2 = NULL;
-
 	uint8_t *x2y2 = NULL;
 	uint8_t *computed_C3 = NULL;
-
-	const size_t field_size = EC_field_size(group);
-	const int hash_size = EVP_MD_size(digest);
-
+	size_t field_size = 0;
+	int hash_size = 0;
 	uint8_t *msg_mask = NULL;
 	const uint8_t *C2 = NULL;
 	const uint8_t *C3 = NULL;
 	int msg_len = 0;
 	EVP_MD_CTX *hash = NULL;
 
+	group = EC_KEY_get0_group(key);
+	field_size = EC_field_size(group);
+	hash_size = EVP_MD_size(digest);
+
 	if (field_size == 0 || hash_size == 0)
-	   goto done;
+		goto done;
 
 	memset(ptext_buf, 0xFF, *ptext_len);
 
@@ -319,21 +321,21 @@ int SM2_decrypt(const EC_KEY *key,
 
 	ctx = BN_CTX_new();
 	if (ctx == NULL)
-	   goto done;
+		goto done;
 
 	BN_CTX_start(ctx);
 	x2 = BN_CTX_get(ctx);
 	y2 = BN_CTX_get(ctx);
 
 	if(y2 == NULL)
-	   goto done;
+		goto done;
 
 	msg_mask = calloc(1, msg_len);
 	x2y2 = calloc(1, 2 * field_size);
 	computed_C3 = calloc(1, hash_size);
 
-	if(msg_mask == NULL || x2y2 == NULL || computed_C3 == NULL)
-	   goto done;
+	if (msg_mask == NULL || x2y2 == NULL || computed_C3 == NULL)
+		goto done;
 
 	C1 = EC_POINT_new(group);
 	if (C1 == NULL)

@@ -33,7 +33,7 @@ static const ERR_STRING_DATA SM2_str_reasons[] = {
 	{ERR_REASON(SM2_R_BUFFER_TOO_SMALL), "buffer too small"},
 	{ERR_REASON(SM2_R_COORDINATES_OUT_OF_RANGE), "coordinates out of range"},
 	{ERR_REASON(SM2_R_CURVE_DOES_NOT_SUPPORT_ECDH), "curve does not support ecdh"},
-	{ERR_REASON(SM2_R_CURVE_DOES_NOTs_SUPPORT_SIGNING), "curve does not support signing"},
+	{ERR_REASON(SM2_R_CURVE_DOES_NOT_SUPPORT_SIGNING), "curve does not support signing"},
 	{ERR_REASON(SM2_R_D2I_ECPKPARAMETERS_FAILURE), "d2i ecpkparameters failure"},
 	{ERR_REASON(SM2_R_DECODE_ERROR), "decode error"},
 	{ERR_REASON(SM2_R_DISCRIMINANT_IS_ZERO), "discriminant is zero"},

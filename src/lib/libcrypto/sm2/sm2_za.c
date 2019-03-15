@@ -78,7 +78,7 @@ int SM2_compute_userid_digest(uint8_t *out,
 
 	uid_len = strlen(user_id);
 
-	if (uid_len >= 8192)        /* too large */
+	if (uid_len >= 8192)		/* too large */
 		goto done;
 
 	entla = (unsigned short)(8 * uid_len);
