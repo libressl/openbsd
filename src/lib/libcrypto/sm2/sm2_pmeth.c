@@ -34,7 +34,7 @@ static int pkey_sm2_init(EVP_PKEY_CTX *ctx)
 {
 	SM2_PKEY_CTX *dctx;
 
-	dctx = OPENSSL_zalloc(sizeof(*dctx));
+	dctx = calloc(1, sizeof(*dctx));
 	if (dctx == NULL)
 		return 0;
 
@@ -63,7 +63,7 @@ static void pkey_sm2_cleanup(EVP_PKEY_CTX *ctx)
 	SM2_PKEY_CTX *dctx = ctx->data;
 	if (dctx) {
 		EC_GROUP_free(dctx->gen_group);
-		OPENSSL_free(dctx);
+		free(dctx);
 	}
 }
 

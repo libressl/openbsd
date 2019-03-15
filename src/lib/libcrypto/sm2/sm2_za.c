@@ -41,6 +41,7 @@ int SM2_compute_userid_digest(uint8_t *out,
 	BIGNUM *yA = NULL;
 
 	int p_bytes = 0;
+	int bytes = 0;
 	uint8_t *buf = NULL;
 	size_t uid_len = 0;
 	uint16_t entla = 0;
@@ -96,31 +97,54 @@ int SM2_compute_userid_digest(uint8_t *out,
 		goto done;
 
 	p_bytes = BN_num_bytes(p);
-	buf = OPENSSL_zalloc(p_bytes);
+	buf = calloc(1, p_bytes);
 
-	BN_bn2binpad(a, buf, p_bytes);
+	bytes = BN_num_bytes(a);
+	if (bytes > p_bytes)
+		goto done;
+	BN_bn2bin(a, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
-	BN_bn2binpad(b, buf, p_bytes);
+	bytes = BN_num_bytes(b);
+	if (bytes > p_bytes)
+		goto done;
+	memset(buf, 0, p_bytes - bytes);
+	BN_bn2bin(b, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
 	EC_POINT_get_affine_coordinates_GFp(group,
 										EC_GROUP_get0_generator(group),
 										xG, yG, ctx);
-	BN_bn2binpad(xG, buf, p_bytes);
+	bytes = BN_num_bytes(xG);
+	if (bytes > p_bytes)
+		goto done;
+	memset(buf, 0, p_bytes - bytes);
+	BN_bn2bin(xG, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
-	BN_bn2binpad(yG, buf, p_bytes);
+	bytes = BN_num_bytes(yG);
+	if (bytes > p_bytes)
+		goto done;
+	memset(buf, 0, p_bytes - bytes);
+	BN_bn2bin(yG, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
 
 	EC_POINT_get_affine_coordinates_GFp(group,
 										EC_KEY_get0_public_key(key),
 										xA, yA, ctx);
-	BN_bn2binpad(xA, buf, p_bytes);
+	bytes = BN_num_bytes(xA);
+	if (bytes > p_bytes)
+		goto done;
+	memset(buf, 0, p_bytes - bytes);
+	BN_bn2bin(xA, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
-	BN_bn2binpad(yA, buf, p_bytes);
+	bytes = BN_num_bytes(yA);
+	if (bytes > p_bytes)
+		goto done;
+	memset(buf, 0, p_bytes - bytes);
+	BN_bn2bin(yA, buf + p_bytes - bytes);
 	if (EVP_DigestUpdate(hash, buf, p_bytes) == 0)
 		goto done;
 
@@ -130,7 +154,7 @@ int SM2_compute_userid_digest(uint8_t *out,
 	rc = 1;
 
  done:
-	OPENSSL_free(buf);
+	free(buf);
 	BN_CTX_free(ctx);
 	EVP_MD_CTX_free(hash);
 	return rc;

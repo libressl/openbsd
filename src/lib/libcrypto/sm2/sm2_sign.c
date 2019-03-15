@@ -26,7 +26,7 @@ static BIGNUM *compute_msg_hash(const EVP_MD *digest,
 {
 	EVP_MD_CTX *hash = EVP_MD_CTX_new();
 	const int md_size = EVP_MD_size(digest);
-	uint8_t *za = OPENSSL_zalloc(md_size);
+	uint8_t *za = calloc(1, md_size);
 	BIGNUM *e = NULL;
 
 	if (za == NULL)
@@ -54,7 +54,7 @@ static BIGNUM *compute_msg_hash(const EVP_MD *digest,
 	e = BN_bin2bn(za, md_size, NULL);
 
  done:
-	OPENSSL_free(za);
+	free(za);
 	EVP_MD_CTX_free(hash);
 	return e;
 }
@@ -64,8 +64,8 @@ ECDSA_SIG *SM2_sig_gen(const EC_KEY *key, const BIGNUM *e)
 {
 	const BIGNUM *dA = EC_KEY_get0_private_key(key);
 	const EC_GROUP *group = EC_KEY_get0_group(key);
-	const BIGNUM *order = EC_GROUP_get0_order(group);
 
+	BIGNUM *order = NULL;
 	ECDSA_SIG *sig = NULL;
 	EC_POINT *kG = NULL;
 	BN_CTX *ctx = NULL;
@@ -75,6 +75,12 @@ ECDSA_SIG *SM2_sig_gen(const EC_KEY *key, const BIGNUM *e)
 	BIGNUM *s = NULL;
 	BIGNUM *x1 = NULL;
 	BIGNUM *tmp = NULL;
+	
+	if ((order = BN_new()) == NULL)
+		goto done;
+
+	if (!EC_GROUP_get_order(group, order, NULL))
+		goto done;
 
 	kG = EC_POINT_new(group);
 	if (kG == NULL)
@@ -102,7 +108,7 @@ ECDSA_SIG *SM2_sig_gen(const EC_KEY *key, const BIGNUM *e)
 		goto done;
 
 	for (;;) {
-		BN_priv_rand_range(k, order);
+		BN_rand_range(k, order);
 
 		if (EC_POINT_mul(group, kG, k, NULL, NULL, ctx) == 0)
 			goto done;
@@ -147,6 +153,7 @@ ECDSA_SIG *SM2_sig_gen(const EC_KEY *key, const BIGNUM *e)
 		BN_free(s);
 	}
 
+	BN_free(order);
 	BN_CTX_free(ctx);
 	EC_POINT_free(kG);
 	return sig;
@@ -158,14 +165,18 @@ int SM2_sig_verify(const EC_KEY *key, const ECDSA_SIG *sig, const BIGNUM *e)
 {
 	int ret = 0;
 	const EC_GROUP *group = EC_KEY_get0_group(key);
-	const BIGNUM *order = EC_GROUP_get0_order(group);
+	BIGNUM *order = NULL;
 	BN_CTX *ctx = NULL;
 	EC_POINT *pt = NULL;
-
 	BIGNUM *t = NULL;
 	BIGNUM *x1 = NULL;
 	const BIGNUM *r = NULL;
 	const BIGNUM *s = NULL;
+
+	if ((order = BN_new()) == NULL)
+		goto done;
+	if (!EC_GROUP_get_order(group, order, NULL))
+		goto done;
 
 	ctx = BN_CTX_new();
 	if (ctx == NULL)
@@ -223,6 +234,7 @@ int SM2_sig_verify(const EC_KEY *key, const ECDSA_SIG *sig, const BIGNUM *e)
 		ret = 1;
 
  done:
+	BN_free(order);
 	EC_POINT_free(pt);
 	BN_CTX_free(ctx);
 	return ret;
@@ -322,7 +334,7 @@ int SM2_verify(int type, const unsigned char *dgst, int dgstlen,
 	ret = SM2_sig_verify(eckey, s, e);
 
  done:
-	OPENSSL_free(der);
+	free(der);
 	BN_free(e);
 	ECDSA_SIG_free(s);
 	return ret;

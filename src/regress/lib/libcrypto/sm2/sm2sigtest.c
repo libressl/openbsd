@@ -70,7 +70,7 @@ static int start_fake_rand(const char *hex_bytes)
 
 static int restore_rand(void)
 {
-	OPENSSL_free(fake_rand_bytes);
+	free(fake_rand_bytes);
 	fake_rand_bytes = NULL;
 	fake_rand_bytes_offset = 0;
 	if (!TEST_true(RAND_set_rand_method(saved_rand)))

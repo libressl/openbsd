@@ -27,7 +27,6 @@ SM2_Ciphertext *SM2_Ciphertext_new(void);
 void SM2_Ciphertext_free(SM2_Ciphertext *a);
 SM2_Ciphertext *d2i_SM2_Ciphertext(SM2_Ciphertext **a, const unsigned char **in, long len);
 int i2d_SM2_Ciphertext(SM2_Ciphertext *a, unsigned char **out);
-extern const ASN1_ITEM SM2_Ciphertext_it;
 
 struct SM2_Ciphertext_st {
 	BIGNUM *C1x;
@@ -136,18 +135,27 @@ int SM2_encrypt(const EC_KEY *key,
 {
 	int rc = 0;
 	size_t i;
+	int x2size = 0;
+	int y2size = 0;
 	BN_CTX *ctx = NULL;
 	BIGNUM *k = NULL;
 	BIGNUM *x1 = NULL;
 	BIGNUM *y1 = NULL;
 	BIGNUM *x2 = NULL;
 	BIGNUM *y2 = NULL;
+	BIGNUM *order = NULL;
 
 	EVP_MD_CTX *hash = EVP_MD_CTX_new();
 
 	struct SM2_Ciphertext_st ctext_struct;
 	const EC_GROUP *group = EC_KEY_get0_group(key);
-	const BIGNUM *order = EC_GROUP_get0_order(group);
+	
+	if ((order = BN_new()) == NULL)
+		goto done;
+
+	if (!EC_GROUP_get_order(group, order, NULL))
+		goto done;
+
 	const EC_POINT *P = EC_KEY_get0_public_key(key);
 	EC_POINT *kG = NULL;
 	EC_POINT *kP = NULL;
@@ -181,15 +189,15 @@ int SM2_encrypt(const EC_KEY *key,
 	if (y2 == NULL)
 	   goto done;
 
-	x2y2 = OPENSSL_zalloc(2 * field_size);
-	C3 = OPENSSL_zalloc(C3_size);
+	x2y2 = calloc(1, 2 * field_size);
+	C3 = calloc(1, C3_size);
 
 	if (x2y2 == NULL || C3 == NULL)
 	   goto done;
 
 	memset(ciphertext_buf, 0, *ciphertext_len);
 
-	BN_priv_rand_range(k, order);
+	BN_rand_range(k, order);
 
 	if (EC_POINT_mul(group, kG, k, NULL, NULL, ctx) == 0)
 		goto done;
@@ -203,10 +211,15 @@ int SM2_encrypt(const EC_KEY *key,
 	if (EC_POINT_get_affine_coordinates_GFp(group, kP, x2, y2, ctx) == 0)
 		goto done;
 
-	BN_bn2binpad(x2, x2y2, field_size);
-	BN_bn2binpad(y2, x2y2 + field_size, field_size);
+	x2size = BN_num_bytes(x2);
+	y2size = BN_num_bytes(y2);
+	if ((x2size > field_size) || (y2size > field_size))
+		goto done;
 
-	msg_mask = OPENSSL_zalloc(msg_len);
+	BN_bn2bin(x2, x2y2 + field_size - x2size);
+	BN_bn2bin(y2, x2y2 + 2 * field_size - y2size);
+
+	msg_mask = calloc(1, msg_len);
 	if (msg_mask == NULL)
 	   goto done;
 
@@ -247,13 +260,14 @@ int SM2_encrypt(const EC_KEY *key,
 	rc = 1;
 
  done:
-	OPENSSL_free(msg_mask);
-	OPENSSL_free(x2y2);
-	OPENSSL_free(C3);
+	free(msg_mask);
+	free(x2y2);
+	free(C3);
 	EVP_MD_CTX_free(hash);
 	BN_CTX_free(ctx);
 	EC_POINT_free(kG);
 	EC_POINT_free(kP);
+	BN_free(order);
 	return rc;
 }
 
@@ -264,6 +278,8 @@ int SM2_decrypt(const EC_KEY *key,
 {
 	int rc = 0;
 	int i;
+	size_t x2size = 0;
+	size_t y2size = 0;
 
 	BN_CTX *ctx = NULL;
 	const EC_GROUP *group = EC_KEY_get0_group(key);
@@ -312,9 +328,9 @@ int SM2_decrypt(const EC_KEY *key,
 	if(y2 == NULL)
 	   goto done;
 
-	msg_mask = OPENSSL_zalloc(msg_len);
-	x2y2 = OPENSSL_zalloc(2 * field_size);
-	computed_C3 = OPENSSL_zalloc(hash_size);
+	msg_mask = calloc(1, msg_len);
+	x2y2 = calloc(1, 2 * field_size);
+	computed_C3 = calloc(1, hash_size);
 
 	if(msg_mask == NULL || x2y2 == NULL || computed_C3 == NULL)
 	   goto done;
@@ -327,18 +343,21 @@ int SM2_decrypt(const EC_KEY *key,
 		(group, C1, sm2_ctext->C1x, sm2_ctext->C1y, ctx) == 0)
 		goto done;
 
-	if (EC_POINT_mul(group, C1, NULL, C1, EC_KEY_get0_private_key(key), ctx) ==
-		0)
+	if (EC_POINT_mul(group, C1, NULL, C1, EC_KEY_get0_private_key(key), ctx) == 0)
 		goto done;
 
 	if (EC_POINT_get_affine_coordinates_GFp(group, C1, x2, y2, ctx) == 0)
 		goto done;
 
-	BN_bn2binpad(x2, x2y2, field_size);
-	BN_bn2binpad(y2, x2y2 + field_size, field_size);
+	x2size = BN_num_bytes(x2);
+	y2size = BN_num_bytes(y2);
+	if ((x2size > field_size) || (y2size > field_size))
+		goto done;
 
-	if (ECDH_KDF_X9_62(msg_mask, msg_len, x2y2, 2 * field_size, NULL, 0, digest)
-		== 0)
+	BN_bn2bin(x2, x2y2 + field_size - x2size);
+	BN_bn2bin(y2, x2y2 + 2 * field_size - y2size);
+
+	if (ECDH_KDF_X9_62(msg_mask, msg_len, x2y2, 2 * field_size, NULL, 0, digest) == 0)
 		goto done;
 
 	for (i = 0; i != msg_len; ++i)
@@ -374,9 +393,9 @@ int SM2_decrypt(const EC_KEY *key,
 	if (rc == 0)
 		memset(ptext_buf, 0, *ptext_len);
 
-	OPENSSL_free(msg_mask);
-	OPENSSL_free(x2y2);
-	OPENSSL_free(computed_C3);
+	free(msg_mask);
+	free(x2y2);
+	free(computed_C3);
 	EC_POINT_free(C1);
 	BN_CTX_free(ctx);
 	SM2_Ciphertext_free(sm2_ctext);

@@ -70,7 +70,7 @@ static int start_fake_rand(const char *hex_bytes)
 
 static int restore_rand(void)
 {
-	OPENSSL_free(fake_rand_bytes);
+	free(fake_rand_bytes);
 	fake_rand_bytes = NULL;
 	fake_rand_bytes_offset = 0;
 	if (!TEST_true(RAND_set_rand_method(saved_rand)))
@@ -166,7 +166,7 @@ static int test_sm2(const EC_GROUP *group,
 	EC_POINT_free(pt);
 
 	ctext_len = SM2_ciphertext_size(key, digest, msg_len);
-	ctext = OPENSSL_zalloc(ctext_len);
+	ctext = calloc(1, ctext_len);
 	if (ctext == NULL)
 		goto done;
 
@@ -179,7 +179,7 @@ static int test_sm2(const EC_GROUP *group,
 	if (rc == 0)
 		goto done;
 
-	recovered = OPENSSL_zalloc(msg_len);
+	recovered = calloc(1, msg_len);
 	if (recovered == NULL)
 		goto done;
 	rc = SM2_decrypt(key, digest, ctext, ctext_len, recovered, &recovered_len);
@@ -192,9 +192,9 @@ static int test_sm2(const EC_GROUP *group,
 	rc = 1;
  done:
 
-	OPENSSL_free(ctext);
-	OPENSSL_free(recovered);
-	OPENSSL_free(expected);
+	free(ctext);
+	free(recovered);
+	free(expected);
 	EC_KEY_free(key);
 	return rc;
 }
