@@ -196,7 +196,7 @@ typedef struct err_state_st {
 #define ERR_LIB_HMAC		48
 #define ERR_LIB_JPAKE		49
 #define ERR_LIB_GOST		50
-#define ERR_LIB_SM2			51
+#define ERR_LIB_SM2		51
 
 #define ERR_LIB_USER		128
 
@@ -272,7 +272,7 @@ typedef struct err_state_st {
 #define HMACerror(r) ERR_PUT_error(ERR_LIB_HMAC,(0xfff),(r),__FILE__,__LINE__)
 #define JPAKEerror(r) ERR_PUT_error(ERR_LIB_JPAKE,(0xfff),(r),__FILE__,__LINE__)
 #define GOSTerror(r) ERR_PUT_error(ERR_LIB_GOST,(0xfff),(r),__FILE__,__LINE__)
-#define SM2error(r) ERR_PUT_error(ERR_LIB_GOST,(0xfff),(r),__FILE__,__LINE__)
+#define SM2error(r) ERR_PUT_error(ERR_LIB_SM2,(0xfff),(r),__FILE__,__LINE__)
 #endif
 
 #define ERR_PACK(l,f,r)		(((((unsigned long)l)&0xffL)<<24L)| \

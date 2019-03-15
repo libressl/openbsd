@@ -16,7 +16,7 @@
 #define ERR_FUNC(func) ERR_PACK(ERR_LIB_SM2,func,0)
 #define ERR_REASON(reason) ERR_PACK(ERR_LIB_SM2,0,reason)
 
-static const ERR_STRING_DATA SM2_str_functs[] = {
+static ERR_STRING_DATA SM2_str_functs[] = {
 	{ERR_FUNC(SM2_F_PKEY_SM2_CTRL), "pkey_sm2_ctrl"},
 	{ERR_FUNC(SM2_F_PKEY_SM2_CTRL_STR), "pkey_sm2_ctrl_str"},
 	{ERR_FUNC(SM2_F_PKEY_SM2_KEYGEN), "pkey_sm2_keygen"},
@@ -25,7 +25,7 @@ static const ERR_STRING_DATA SM2_str_functs[] = {
 	{0, NULL}
 };
 
-static const ERR_STRING_DATA SM2_str_reasons[] = {
+static ERR_STRING_DATA SM2_str_reasons[] = {
 	{ERR_REASON(SM2_R_ASN1_ERROR), "asn1 error"},
 	{ERR_REASON(SM2_R_ASN5_ERROR), "asn5 error"},
 	{ERR_REASON(SM2_R_BAD_SIGNATURE), "bad signature"},
@@ -91,12 +91,13 @@ static const ERR_STRING_DATA SM2_str_reasons[] = {
 
 #endif
 
-void ERR_load_SM2_strings(void)
+void
+ERR_load_SM2_strings(void)
 {
 #ifndef OPENSSL_NO_ERR
 	if (ERR_func_error_string(SM2_str_functs[0].error) == NULL) {
-		ERR_load_strings_const(SM2_str_functs);
-		ERR_load_strings_const(SM2_str_reasons);
+		ERR_load_strings(0, SM2_str_functs);
+		ERR_load_strings(0, SM2_str_reasons);
 	}
 #endif
 }

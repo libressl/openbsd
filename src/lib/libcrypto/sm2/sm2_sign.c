@@ -14,10 +14,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <string.h>
+
 #include <openssl/sm2.h>
 #include <openssl/evp.h>
 #include <openssl/bn.h>
-#include <string.h>
 
 static BIGNUM *compute_msg_hash(const EVP_MD *digest,
 								const EC_KEY *key,

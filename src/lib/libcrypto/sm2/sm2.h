@@ -17,6 +17,8 @@
 #ifndef HEADER_SM2_H
 #define HEADER_SM2_H
 
+#include <openssl/opensslconf.h>
+
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 
