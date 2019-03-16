@@ -128,6 +128,54 @@ size_t SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest, size_t msg_l
 		EVP_MD_size(digest) + msg_len;
 }
 
+int
+SM2_kdf(uint8_t *key, size_t key_len, uint8_t *secret, size_t secret_len, const EVP_MD *digest)
+{
+	int rc = 0;
+	uint32_t ctr = 1;
+	uint8_t ctr_buf[4] = {0};
+	EVP_MD_CTX *hash = NULL;
+	uint8_t *hash_buf = NULL;
+	size_t hlen = 0;
+	size_t hadd = 0;
+
+	if ((hash = EVP_MD_CTX_new()) == NULL)
+		goto done;
+
+	EVP_MD_CTX_init(hash);
+	hlen = EVP_MD_size(digest);
+	if ((hash_buf = malloc(hlen)) == NULL)
+		goto done;
+
+	while ((key_len > 0) && (ctr != 0)) {
+		if (EVP_DigestInit_ex(hash, digest, NULL) == 0)
+			goto done;
+		if (EVP_DigestUpdate(hash, secret, secret_len) == 0)
+			goto done;
+		/* big-endian counter representation */
+		ctr_buf[0] = (ctr >> 24) & 0xff;
+		ctr_buf[1] = (ctr >> 16) & 0xff;
+		ctr_buf[2] = (ctr >> 8) & 0xff;
+		ctr_buf[3] = ctr & 0xff;
+		ctr++;
+		if (EVP_DigestUpdate(hash, ctr_buf, 4) == 0)
+			goto done;
+		if (EVP_DigestFinal(hash, hash_buf, NULL) == 0)
+			goto done;
+		hadd = key_len > hlen ? hlen : key_len;
+		memcpy(key, hash_buf, hadd);
+		memset(hash_buf, 0, hlen);
+		key_len -= hadd;
+		key += hadd;
+	}
+
+	rc = 1;
+done:
+	free(hash_buf);
+	EVP_MD_CTX_free(hash);
+	return rc;
+}
+
 int SM2_encrypt(const EC_KEY *key,
 				const EVP_MD *digest,
 				const uint8_t *msg,
@@ -225,8 +273,7 @@ int SM2_encrypt(const EC_KEY *key,
 	if (msg_mask == NULL)
 		goto done;
 
-	/* X9.63 with no salt happens to match the KDF used in SM2 */
-	if (ECDH_KDF_X9_62(msg_mask, msg_len, x2y2, 2 * field_size, NULL, 0, digest) == 0)
+	if (SM2_kdf(msg_mask, msg_len, x2y2, 2 * field_size, digest) == 0)
 		goto done;
 
 	for (i = 0; i != msg_len; ++i)
@@ -359,7 +406,7 @@ int SM2_decrypt(const EC_KEY *key,
 	BN_bn2bin(x2, x2y2 + field_size - x2size);
 	BN_bn2bin(y2, x2y2 + 2 * field_size - y2size);
 
-	if (ECDH_KDF_X9_62(msg_mask, msg_len, x2y2, 2 * field_size, NULL, 0, digest) == 0)
+	if (SM2_kdf(msg_mask, msg_len, x2y2, 2 * field_size, digest) == 0)
 		goto done;
 
 	for (i = 0; i != msg_len; ++i)
