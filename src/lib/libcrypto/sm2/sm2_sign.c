@@ -20,6 +20,8 @@
 #include <openssl/evp.h>
 #include <openssl/bn.h>
 
+#include "sm2_locl.h"
+
 static BIGNUM *compute_msg_hash(const EVP_MD *digest,
 								const EC_KEY *key,
 								const char *user_id,

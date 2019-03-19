@@ -325,6 +325,7 @@ SRCS+= pcy_cache.c pcy_node.c pcy_data.c pcy_map.c pcy_tree.c pcy_lib.c
 	${LCRYPTO_SRC}/ripemd \
 	${LCRYPTO_SRC}/rsa \
 	${LCRYPTO_SRC}/sha \
+	${LCRYPTO_SRC}/sm2 \
 	${LCRYPTO_SRC}/sm3 \
 	${LCRYPTO_SRC}/sm4 \
 	${LCRYPTO_SRC}/stack \
@@ -387,6 +388,7 @@ HDRS=\
 	${LCRYPTO_SRC}/ripemd/ripemd.h \
 	${LCRYPTO_SRC}/rsa/rsa.h \
 	${LCRYPTO_SRC}/sha/sha.h \
+	${LCRYPTO_SRC}/sm2/sm2.h \
 	${LCRYPTO_SRC}/sm3/sm3.h \
 	${LCRYPTO_SRC}/sm4/sm4.h \
 	${LCRYPTO_SRC}/stack/safestack.h \

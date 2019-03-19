@@ -21,6 +21,8 @@
 #include <openssl/asn1t.h>
 #include <string.h>
 
+#include "sm2_locl.h"
+
 typedef struct SM2_Ciphertext_st SM2_Ciphertext;
 
 SM2_Ciphertext *SM2_Ciphertext_new(void);

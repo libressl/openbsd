@@ -23,6 +23,7 @@
 #include <openssl/evp.h>
 
 #include "evp_locl.h"
+#include "sm2_locl.h"
 
 /* SM2 pkey context structure */
 

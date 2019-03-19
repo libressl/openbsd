@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 }
 #else
 #include <openssl/sm2.h>
+#include "sm2_locl.h"
 
 static EC_GROUP *create_EC_group(const char *p_hex, const char *a_hex,
 								 const char *b_hex, const char *x_hex,

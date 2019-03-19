@@ -2381,10 +2381,7 @@ SHA512_Init
 SHA512_Transform
 SHA512_Update
 SM2_ciphertext_size
-SM2_compute_userid_digest
 SM2_decrypt
-SM2_do_sign
-SM2_do_verify
 SM2_encrypt
 SM2_plaintext_size
 SM2_sign
