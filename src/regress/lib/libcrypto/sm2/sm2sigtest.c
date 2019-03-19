@@ -24,11 +24,15 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#include "testutil.h"
 
-#ifndef OPENSSL_NO_SM2
-
-# include <openssl/sm2.h>
+#ifdef OPENSSL_NO_SM2
+int main(int argc, char *argv[])
+{
+    printf("No SM2 support\n");
+    return (0);
+}
+#else
+#include <openssl/sm2.h>
 
 static RAND_METHOD fake_rand;
 static const RAND_METHOD *saved_rand;
@@ -51,19 +55,23 @@ static int get_faked_bytes(unsigned char *buf, int num)
 
 static int start_fake_rand(const char *hex_bytes)
 {
+	BIGNUM *data = NULL;
 	/* save old rand method */
-	if (!TEST_ptr(saved_rand = RAND_get_rand_method()))
+	if ((saved_rand = RAND_get_rand_method()) == NULL)
 		return 0;
 
 	fake_rand = *saved_rand;
 	/* use own random function */
 	fake_rand.bytes = get_faked_bytes;
 
-	fake_rand_bytes = OPENSSL_hexstr2buf(hex_bytes, NULL);
+	BN_hex2bn(&data, hex_bytes);
+	fake_rand_bytes = malloc(BN_num_bytes(data));
+	BN_bn2bin(data, fake_rand_bytes);
+	BN_free(data);
 	fake_rand_bytes_offset = 0;
 
 	/* set new RAND_METHOD */
-	if (!TEST_true(RAND_set_rand_method(&fake_rand)))
+	if (!RAND_set_rand_method(&fake_rand))
 		return 0;
 	return 1;
 }
@@ -73,7 +81,7 @@ static int restore_rand(void)
 	free(fake_rand_bytes);
 	fake_rand_bytes = NULL;
 	fake_rand_bytes_offset = 0;
-	if (!TEST_true(RAND_set_rand_method(saved_rand)))
+	if (!RAND_set_rand_method(saved_rand))
 		return 0;
 	return 1;
 }
@@ -201,7 +209,7 @@ static int test_sm2(const EC_GROUP *group,
 	return ok;
 }
 
-static int sm2_sig_test(void)
+int main(int argc, char **argv)
 {
 	int rc = 0;
 	/* From draft-shen-sm2-ecdsa-02 */
@@ -216,7 +224,7 @@ static int sm2_sig_test(void)
 		 "1");
 
 	if (test_group == NULL)
-		return 0;
+		return 1;
 
 	rc = test_sm2(test_group,
 					"ALICE123@YAHOO.COM",
@@ -228,17 +236,10 @@ static int sm2_sig_test(void)
 
 	EC_GROUP_free(test_group);
 
-	return rc;
+	if (rc <= 0)
+		return 1;
+
+	return 0;
 }
 
 #endif
-
-int setup_tests(void)
-{
-#ifdef OPENSSL_NO_SM2
-	TEST_note("SM2 is disabled.");
-#else
-	ADD_TEST(sm2_sig_test);
-#endif
-	return 1;
-}
