@@ -242,8 +242,12 @@ static int pkey_ecies_encrypt(EVP_PKEY_CTX *ctx,
 # if defined(OPENSSL_NO_SM2)
 		ret = -1;
 # else
-		ret = SM2_encrypt(ec, EVP_get_digestbynid(md_type),
-						  in, inlen, out, outlen);
+		if (out == NULL) {
+			*outlen = SM2_ciphertext_size(ec, EVP_get_digestbynid(md_type), inlen);
+			ret = 1;
+		} else {
+			ret = SM2_encrypt(ec, EVP_get_digestbynid(md_type), in, inlen, out, outlen);
+		}
 # endif
 	} else {
 		/* standard ECIES not implemented */
@@ -273,8 +277,11 @@ static int pkey_ecies_decrypt(EVP_PKEY_CTX *ctx,
 # if defined(OPENSSL_NO_SM2)
 		ret = -1;
 # else
-		ret = SM2_decrypt(ec, EVP_get_digestbynid(md_type),
-						  in, inlen, out, outlen);
+		if (out == NULL) {
+			*outlen = SM2_plaintext_size(ec, EVP_get_digestbynid(md_type), inlen);
+			ret = 1;
+		}
+		ret = SM2_decrypt(ec, EVP_get_digestbynid(md_type), in, inlen, out, outlen);
 # endif
 	} else {
 		/* standard ECIES not implemented */
@@ -400,6 +407,10 @@ const EVP_PKEY_METHOD ec_pkey_meth = {
 	.sign = pkey_ec_sign,
 
 	.verify = pkey_ec_verify,
+
+	.encrypt = pkey_ecies_encrypt,
+
+	.decrypt = pkey_ecies_decrypt,
 
 	.derive = pkey_ec_derive,
 
