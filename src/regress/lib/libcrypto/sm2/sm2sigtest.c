@@ -34,58 +34,6 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/sm2.h>
 
-static RAND_METHOD fake_rand;
-static const RAND_METHOD *saved_rand;
-
-static uint8_t *fake_rand_bytes = NULL;
-static size_t fake_rand_bytes_offset = 0;
-
-static int get_faked_bytes(unsigned char *buf, int num)
-{
-	int i;
-
-	if (fake_rand_bytes == NULL)
-		return saved_rand->bytes(buf, num);
-
-	for (i = 0; i != num; ++i)
-		buf[i] = fake_rand_bytes[fake_rand_bytes_offset + i];
-	fake_rand_bytes_offset += num;
-	return 1;
-}
-
-static int start_fake_rand(const char *hex_bytes)
-{
-	BIGNUM *data = NULL;
-	/* save old rand method */
-	if ((saved_rand = RAND_get_rand_method()) == NULL)
-		return 0;
-
-	fake_rand = *saved_rand;
-	/* use own random function */
-	fake_rand.bytes = get_faked_bytes;
-
-	BN_hex2bn(&data, hex_bytes);
-	fake_rand_bytes = malloc(BN_num_bytes(data));
-	BN_bn2bin(data, fake_rand_bytes);
-	BN_free(data);
-	fake_rand_bytes_offset = 0;
-
-	/* set new RAND_METHOD */
-	if (!RAND_set_rand_method(&fake_rand))
-		return 0;
-	return 1;
-}
-
-static int restore_rand(void)
-{
-	free(fake_rand_bytes);
-	fake_rand_bytes = NULL;
-	fake_rand_bytes_offset = 0;
-	if (!RAND_set_rand_method(saved_rand))
-		return 0;
-	return 1;
-}
-
 static EC_GROUP *create_EC_group(const char *p_hex, const char *a_hex,
 								 const char *b_hex, const char *x_hex,
 								 const char *y_hex, const char *order_hex,
@@ -145,7 +93,7 @@ static int test_sm2(const EC_GROUP *group,
 					const char *userid,
 					const char *privkey_hex,
 					const char *message,
-					const char *k_hex, const char *r_hex, const char *s_hex)
+					const char *r_hex, const char *s_hex)
 {
 	const size_t msg_len = strlen(message);
 	int ok = -1;
@@ -168,9 +116,7 @@ static int test_sm2(const EC_GROUP *group,
 	EC_POINT_mul(group, pt, priv, NULL, NULL, NULL);
 	EC_KEY_set_public_key(key, pt);
 
-	start_fake_rand(k_hex);
 	sig = SM2_do_sign(key, EVP_sm3(), userid, (const uint8_t *)message, msg_len);
-	restore_rand();
 
 	if (sig == NULL)
 		return 0;
@@ -230,7 +176,6 @@ int main(int argc, char **argv)
 					"ALICE123@YAHOO.COM",
 					"128B2FA8BD433C6C068C8D803DFF79792A519A55171B1B650C23661D15897263",
 					"message digest",
-					"006CB28D99385C175C94F94E934817663FC176D925DD72B727260DBAAE1FB2F96F",
 					"40F1EC59F793D9F49E09DCEF49130D4194F79FB1EED2CAA55BACDB49C4E755D1",
 					"6FC6DAC32C5D5CF10C77DFB20F7C2EB667A457872FB09EC56327A67EC7DEEBE7");
 

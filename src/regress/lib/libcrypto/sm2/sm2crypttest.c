@@ -34,58 +34,6 @@ int main(int argc, char *argv[])
 #else
 #include <openssl/sm2.h>
 
-static RAND_METHOD fake_rand;
-static const RAND_METHOD *saved_rand;
-
-static uint8_t *fake_rand_bytes = NULL;
-static size_t fake_rand_bytes_offset = 0;
-
-static int get_faked_bytes(unsigned char *buf, int num)
-{
-	int i;
-
-	if (fake_rand_bytes == NULL)
-		return saved_rand->bytes(buf, num);
-
-	for (i = 0; i != num; ++i)
-		buf[i] = fake_rand_bytes[fake_rand_bytes_offset + i];
-	fake_rand_bytes_offset += num;
-	return 1;
-}
-
-static int start_fake_rand(const char *hex_bytes)
-{
-	BIGNUM *data = NULL;
-	/* save old rand method */
-	if ((saved_rand = RAND_get_rand_method()) == NULL)
-		return 0;
-
-	fake_rand = *saved_rand;
-	/* use own random function */
-	fake_rand.bytes = get_faked_bytes;
-
-	BN_hex2bn(&data, hex_bytes);
-	fake_rand_bytes = malloc(BN_num_bytes(data));
-	BN_bn2bin(data, fake_rand_bytes);
-	BN_free(data);
-	fake_rand_bytes_offset = 0;
-
-	/* set new RAND_METHOD */
-	if (!RAND_set_rand_method(&fake_rand))
-		return 0;
-	return 1;
-}
-
-static int restore_rand(void)
-{
-	free(fake_rand_bytes);
-	fake_rand_bytes = NULL;
-	fake_rand_bytes_offset = 0;
-	if (!RAND_set_rand_method(saved_rand))
-		return 0;
-	return 1;
-}
-
 static EC_GROUP *create_EC_group(const char *p_hex, const char *a_hex,
 								 const char *b_hex, const char *x_hex,
 								 const char *y_hex, const char *order_hex,
@@ -144,7 +92,7 @@ static int test_sm2(const EC_GROUP *group,
 					const EVP_MD *digest,
 					const char *privkey_hex,
 					const char *message,
-					const char *k_hex, const char *ctext_hex)
+					const char *ctext_hex)
 {
 	const size_t msg_len = strlen(message);
 
@@ -181,10 +129,7 @@ static int test_sm2(const EC_GROUP *group,
 	if (ctext == NULL)
 		goto done;
 
-	start_fake_rand(k_hex);
-	rc = SM2_encrypt(key, digest,
-					 (const uint8_t *)message, msg_len, ctext, &ctext_len);
-	restore_rand();
+	rc = SM2_encrypt(key, digest, (const uint8_t *)message, msg_len, ctext, &ctext_len);
 
 	if ((rc == 0) || (memcmp(ctext, expected, ctext_len) != 0))
 		goto done;
@@ -232,7 +177,6 @@ main(int argc, char **argv)
 				  EVP_sm3(),
 				  "1649AB77A00637BD5E2EFE283FBF353534AA7F7CB89463F208DDBC2920BB0DA0",
 				  "encryption standard",
-				  "004C62EEFD6ECFC2B95B92FD6C3D9575148AFA17425546D49018E5388D49DD7B4F",
 				  "307B0220245C26FB68B1DDDDB12C4B6BF9F2B6D5FE60A383B0D18D1C4144ABF1"
 				  "7F6252E7022076CB9264C2A7E88E52B19903FDC47378F605E36811F5C07423A2"
 				  "4B84400F01B804209C3D7360C30156FAB7C80A0276712DA9D8094A634B766D3A"
@@ -246,8 +190,10 @@ main(int argc, char **argv)
 				  EVP_sha256(),
 				  "1649AB77A00637BD5E2EFE283FBF353534AA7F7CB89463F208DDBC2920BB0DA0",
 				  "encryption standard",
-				  "004C62EEFD6ECFC2B95B92FD6C3D9575148AFA17425546D49018E5388D49DD7B4F",
-				  "307B0220245C26FB68B1DDDDB12C4B6BF9F2B6D5FE60A383B0D18D1C4144ABF17F6252E7022076CB9264C2A7E88E52B19903FDC47378F605E36811F5C07423A24B84400F01B80420BE89139D07853100EFA763F60CBE30099EA3DF7F8F364F9D10A5E988E3C5AAFC0413229E6C9AEE2BB92CAD649FE2C035689785DA33");
+				  "307B0220245C26FB68B1DDDDB12C4B6BF9F2B6D5FE60A383B0D18D1C4144ABF1"
+				  "7F6252E7022076CB9264C2A7E88E52B19903FDC47378F605E36811F5C07423A2"
+				  "4B84400F01B80420BE89139D07853100EFA763F60CBE30099EA3DF7F8F364F9D"
+				  "10A5E988E3C5AAFC0413229E6C9AEE2BB92CAD649FE2C035689785DA33");
 	if (rc == 0)
 		return 1;
 
