@@ -160,9 +160,7 @@ int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
 	const EVP_PKEY_METHOD *pmeth;
 
 	if (id == -1) {
-		if (!pkey || !pkey->ameth)
-			return NULL;
-		id = pkey->ameth->pkey_id;
+		id = pkey->type;
 	}
 #ifndef OPENSSL_NO_ENGINE
 	if (pkey && pkey->engine)

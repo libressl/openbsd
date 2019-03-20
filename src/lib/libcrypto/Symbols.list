@@ -1487,6 +1487,7 @@ EVP_PKEY_set1_EC_KEY
 EVP_PKEY_set1_RSA
 EVP_PKEY_set_type
 EVP_PKEY_set_type_str
+EVP_PKEY_set_alias_type
 EVP_PKEY_sign
 EVP_PKEY_sign_init
 EVP_PKEY_size

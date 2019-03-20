@@ -901,6 +901,7 @@ int EVP_PKEY_bits(const EVP_PKEY *pkey);
 int EVP_PKEY_size(const EVP_PKEY *pkey);
 int EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
 int EVP_PKEY_set_type_str(EVP_PKEY *pkey, const char *str, int len);
+int EVP_PKEY_set_alias_type(EVP_PKEY *pkey, int type);
 int EVP_PKEY_assign(EVP_PKEY *pkey, int type, void *key);
 void *EVP_PKEY_get0(const EVP_PKEY *pkey);
 const unsigned char *EVP_PKEY_get0_hmac(const EVP_PKEY *pkey, size_t *len);
