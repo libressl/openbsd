@@ -76,6 +76,9 @@ void ERR_load_SM2_strings(void);
 # define SM2_F_PKEY_SM2_KEYGEN                            276
 # define SM2_F_PKEY_SM2_PARAMGEN                          277
 # define SM2_F_PKEY_SM2_SIGN                              278
+# define SM2_F_PKEY_SM2_VERIFY                            279
+# define SM2_F_PKEY_SM2_ENCRYPT                           280
+# define SM2_F_PKEY_SM2_DECRYPT                           281
 
 /* Reason codes. */
 # define SM2_R_ASN1_ERROR                                 115
@@ -88,6 +91,7 @@ void ERR_load_SM2_strings(void);
 # define SM2_R_CURVE_DOES_NOT_SUPPORT_SIGNING             159
 # define SM2_R_D2I_ECPKPARAMETERS_FAILURE                 117
 # define SM2_R_DECODE_ERROR                               142
+# define SM2_R_DIGEST_FAILURE                             163
 # define SM2_R_DISCRIMINANT_IS_ZERO                       118
 # define SM2_R_EC_GROUP_NEW_BY_NAME_FAILURE               119
 # define SM2_R_FIELD_TOO_LARGE                            143
@@ -111,6 +115,7 @@ void ERR_load_SM2_strings(void);
 # define SM2_R_INVALID_PENTANOMIAL_BASIS                  132
 # define SM2_R_INVALID_PRIVATE_KEY                        123
 # define SM2_R_INVALID_TRINOMIAL_BASIS                    137
+# define SM2_R_KDF_FAILURE                                162
 # define SM2_R_KDF_PARAMETER_ERROR                        148
 # define SM2_R_KEYS_NOT_SET                               140
 # define SM2_R_MISSING_PARAMETERS                         124

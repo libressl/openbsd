@@ -17,11 +17,7 @@
 #define ERR_REASON(reason) ERR_PACK(ERR_LIB_SM2,0,reason)
 
 static ERR_STRING_DATA SM2_str_functs[] = {
-	{ERR_FUNC(SM2_F_PKEY_SM2_CTRL), "pkey_sm2_ctrl"},
-	{ERR_FUNC(SM2_F_PKEY_SM2_CTRL_STR), "pkey_sm2_ctrl_str"},
-	{ERR_FUNC(SM2_F_PKEY_SM2_KEYGEN), "pkey_sm2_keygen"},
-	{ERR_FUNC(SM2_F_PKEY_SM2_PARAMGEN), "pkey_sm2_paramgen"},
-	{ERR_FUNC(SM2_F_PKEY_SM2_SIGN), "pkey_sm2_sign"},
+	{ERR_FUNC(0xfff), "CRYPTO_internal"},
 	{0, NULL}
 };
 
@@ -36,6 +32,7 @@ static ERR_STRING_DATA SM2_str_reasons[] = {
 	{ERR_REASON(SM2_R_CURVE_DOES_NOT_SUPPORT_SIGNING), "curve does not support signing"},
 	{ERR_REASON(SM2_R_D2I_ECPKPARAMETERS_FAILURE), "d2i ecpkparameters failure"},
 	{ERR_REASON(SM2_R_DECODE_ERROR), "decode error"},
+	{ERR_REASON(SM2_R_DIGEST_FAILURE), "digest calculation failure"},
 	{ERR_REASON(SM2_R_DISCRIMINANT_IS_ZERO), "discriminant is zero"},
 	{ERR_REASON(SM2_R_EC_GROUP_NEW_BY_NAME_FAILURE), "ec group new by name failure"},
 	{ERR_REASON(SM2_R_FIELD_TOO_LARGE), "field too large"},
@@ -59,6 +56,7 @@ static ERR_STRING_DATA SM2_str_reasons[] = {
 	{ERR_REASON(SM2_R_INVALID_PENTANOMIAL_BASIS), "invalid pentanomial basis"},
 	{ERR_REASON(SM2_R_INVALID_PRIVATE_KEY), "invalid private key"},
 	{ERR_REASON(SM2_R_INVALID_TRINOMIAL_BASIS), "invalid trinomial basis"},
+	{ERR_REASON(SM2_R_KDF_FAILURE), "kdf calculation failure"},
 	{ERR_REASON(SM2_R_KDF_PARAMETER_ERROR), "kdf parameter error"},
 	{ERR_REASON(SM2_R_KEYS_NOT_SET), "keys not set"},
 	{ERR_REASON(SM2_R_MISSING_PARAMETERS), "missing parameters"},
