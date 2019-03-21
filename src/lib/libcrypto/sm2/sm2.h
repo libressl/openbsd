@@ -45,11 +45,11 @@ int SM2_verify(int type, const unsigned char *dgst, int dgstlen,
 /*
  * SM2 encryption
  */
-size_t SM2_ciphertext_size(const EC_KEY *key,
-						   const EVP_MD *digest,
-						   size_t msg_len);
+int SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest,
+						size_t msg_len, size_t *c_size);
 
-size_t SM2_plaintext_size(const EC_KEY *key, const EVP_MD *digest, size_t msg_len);
+int SM2_plaintext_size(const EC_KEY *key, const EVP_MD *digest,
+					   size_t msg_len, size_t *pl_size);
 
 int SM2_encrypt(const EC_KEY *key,
 				const EVP_MD *digest,

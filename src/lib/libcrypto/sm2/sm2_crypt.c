@@ -125,23 +125,57 @@ static size_t EC_field_size(const EC_GROUP *group)
 	return field_size;
 }
 
-size_t SM2_plaintext_size(const EC_KEY *key, const EVP_MD *digest, size_t msg_len)
+int
+SM2_plaintext_size(const EC_KEY *key, const EVP_MD *digest,
+				   size_t msg_len, size_t *pl_size)
 {
-	const size_t field_size = EC_field_size(EC_KEY_get0_group(key));
-	const size_t md_size = EVP_MD_size(digest);
+	size_t field_size = 0;
+	int md_size = 0;
+	size_t overhead = 0;
 
-	const size_t overhead = 10 + 2 * field_size + md_size;
-	if (msg_len <= overhead)
+	field_size = EC_field_size(EC_KEY_get0_group(key));
+	if (!field_size) {
+		SM2error(SM2_R_INVALID_FIELD);
 		return 0;
+	}
 
-	return msg_len - overhead;
+	md_size = EVP_MD_size(digest);
+	if (md_size <= 0) {
+		SM2error(SM2_R_INVALID_DIGEST);
+		return 0;
+	}
+
+	overhead = 10 + 2 * field_size + md_size;
+	if (msg_len <= overhead) {
+		SM2error(SM2_R_INVALID_ARGUMENT);
+		return 0;
+	}
+
+	*pl_size = msg_len - overhead;
+	return 1;
 }
 
-size_t SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest, size_t msg_len)
+int
+SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest,
+					size_t msg_len, size_t *c_size)
 {
-	const size_t field_size = EC_field_size(EC_KEY_get0_group(key));
-	const size_t md_size = EVP_MD_size(digest);
-	return 10 + 2 * field_size + md_size + msg_len;
+	size_t field_size = 0;
+	int md_size = 0;
+
+	field_size = EC_field_size(EC_KEY_get0_group(key));
+	if (!field_size) {
+		SM2error(SM2_R_INVALID_FIELD);
+		return 0;
+	}
+
+	md_size = EVP_MD_size(digest);
+	if (md_size <= 0) {
+		SM2error(SM2_R_INVALID_DIGEST);
+		return 0;
+	}
+
+	*c_size = 10 + 2 * field_size + md_size + msg_len;
+	return 1;
 }
 
 int

@@ -125,7 +125,8 @@ static int test_sm2(const EC_GROUP *group,
 	BN_free(priv);
 	EC_POINT_free(pt);
 
-	ctext_len = SM2_ciphertext_size(key, digest, msg_len);
+	if (!SM2_ciphertext_size(key, digest, msg_len, &ctext_len))
+		goto done;
 	ctext = calloc(1, ctext_len);
 	if (ctext == NULL)
 		goto done;
