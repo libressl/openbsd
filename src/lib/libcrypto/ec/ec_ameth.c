@@ -619,32 +619,7 @@ const EVP_PKEY_ASN1_METHOD eckey_asn1_meth = {
 #if !defined(OPENSSL_NO_SM2)
 const EVP_PKEY_ASN1_METHOD sm2_asn1_meth = {
 	.pkey_id = EVP_PKEY_SM2,
-	.pkey_base_id = EVP_PKEY_SM2,
-	.pem_str = "SM2",
-	.info = "OpenSSL SM2 algorithm",
-
-	.pub_decode = eckey_pub_decode,
-	.pub_encode = eckey_pub_encode,
-	.pub_cmp = eckey_pub_cmp,
-	.pub_print = eckey_pub_print,
-
-	.priv_decode = eckey_priv_decode,
-	.priv_encode = eckey_priv_encode,
-	.priv_print = eckey_priv_print,
-
-	.pkey_size = int_ec_size,
-	.pkey_bits = ec_bits,
-
-	.param_decode = eckey_param_decode,
-	.param_encode = eckey_param_encode,
-	.param_missing = ec_missing_parameters,
-	.param_copy = ec_copy_parameters,
-	.param_cmp = ec_cmp_parameters,
-	.param_print = eckey_param_print,
-
-	.pkey_free = int_ec_free,
-	.pkey_ctrl = ec_pkey_ctrl,
-	.old_priv_decode = old_ec_priv_decode,
-	.old_priv_encode = old_ec_priv_encode,
+	.pkey_base_id = EVP_PKEY_EC,
+	.pkey_flags = ASN1_PKEY_ALIAS
 };
 #endif

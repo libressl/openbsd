@@ -38,11 +38,24 @@ static int pkey_sm2_init(EVP_PKEY_CTX *ctx)
 	SM2_PKEY_CTX *dctx;
 
 	dctx = calloc(1, sizeof(*dctx));
-	if (dctx == NULL)
+	if (dctx == NULL) {
+		SM2error(ERR_R_MALLOC_FAILURE);
 		return 0;
+	}
 
 	ctx->data = dctx;
 	return 1;
+}
+
+static void pkey_sm2_cleanup(EVP_PKEY_CTX *ctx)
+{
+	SM2_PKEY_CTX *dctx = ctx->data;
+
+	if (dctx) {
+		EC_GROUP_free(dctx->gen_group);
+		free(dctx);
+		ctx->data = NULL;
+	}
 }
 
 static int pkey_sm2_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
@@ -54,50 +67,43 @@ static int pkey_sm2_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	dctx = dst->data;
 	if (sctx->gen_group) {
 		dctx->gen_group = EC_GROUP_dup(sctx->gen_group);
-		if (!dctx->gen_group)
+		if (!dctx->gen_group) {
+			pkey_sm2_cleanup(dst);
 			return 0;
+		}
 	}
 	dctx->md = sctx->md;
-	return 1;
-}
 
-static void pkey_sm2_cleanup(EVP_PKEY_CTX *ctx)
-{
-	SM2_PKEY_CTX *dctx = ctx->data;
-	if (dctx) {
-		EC_GROUP_free(dctx->gen_group);
-		free(dctx);
-	}
+	return 1;
 }
 
 static int pkey_sm2_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
 						const unsigned char *tbs, size_t tbslen)
 {
-	SM2_PKEY_CTX *dctx = ctx->data;
+	int ret;
+	unsigned int sltmp;
 	EC_KEY *ec = ctx->pkey->pkey.ec;
-	ECDSA_SIG* der_sig = NULL;
-	const EVP_MD* md = NULL;
-	const char* user_id = NULL;
+	const int sig_sz = ECDSA_size(ctx->pkey->pkey.ec);
 
-	if (!sig) {
-		/* ECDSA and SM2 signatures have the same size */
-		*siglen = ECDSA_size(ec);
+	if (sig_sz <= 0) {
+		return 0;
+	}
+
+	if (sig == NULL) {
+		*siglen = (size_t) sig_sz;
 		return 1;
-	} else if (*siglen < (size_t)ECDSA_size(ec)) {
+	}
+
+	if (*siglen < (size_t)sig_sz) {
 		SM2error(SM2_R_BUFFER_TOO_SMALL);
 		return 0;
 	}
 
-	md = (dctx->md) ? dctx->md : EVP_sm3();
-	user_id = (dctx->user_id) ? dctx->user_id : SM2_DEFAULT_USERID;
-	der_sig = SM2_do_sign(ec, md, user_id, tbs, tbslen);
+	ret = SM2_sign(tbs, tbslen, sig, &sltmp, ec);
 
-	if(der_sig == NULL)
-		return 0;
-
-	// Now ASN.1 encode ...
-	*siglen = i2d_ECDSA_SIG(der_sig, &sig);
-
+	if (ret <= 0)
+		return ret;
+	*siglen = (size_t)sltmp;
 	return 1;
 }
 
@@ -105,24 +111,52 @@ static int pkey_sm2_verify(EVP_PKEY_CTX *ctx,
 						  const unsigned char *sig, size_t siglen,
 						  const unsigned char *tbs, size_t tbslen)
 {
-	int ret, type;
-	SM2_PKEY_CTX *dctx = ctx->data;
 	EC_KEY *ec = ctx->pkey->pkey.ec;
 
-	if (dctx->md)
-		type = EVP_MD_type(dctx->md);
-	else
-		type = NID_sm3;
+	return SM2_verify(tbs, tbslen, sig, siglen, ec);
+}
 
-	ret = ECDSA_verify(type, tbs, tbslen, sig, siglen, ec);
+static int pkey_sm2_encrypt(EVP_PKEY_CTX *ctx,
+							unsigned char *out, size_t *outlen,
+							const unsigned char *in, size_t inlen)
+{
+	EC_KEY *ec = ctx->pkey->pkey.ec;
+	SM2_PKEY_CTX *dctx = ctx->data;
+	const EVP_MD *md = (dctx->md == NULL) ? EVP_sm3() : dctx->md;
 
-	return ret;
+	if (out == NULL) {
+		if (!SM2_ciphertext_size(ec, md, inlen, outlen))
+			return -1;
+		else
+			return 1;
+	}
+
+	return SM2_encrypt(ec, md, in, inlen, out, outlen);
+}
+
+static int pkey_sm2_decrypt(EVP_PKEY_CTX *ctx,
+							unsigned char *out, size_t *outlen,
+							const unsigned char *in, size_t inlen)
+{
+	EC_KEY *ec = ctx->pkey->pkey.ec;
+	SM2_PKEY_CTX *dctx = ctx->data;
+	const EVP_MD *md = (dctx->md == NULL) ? EVP_sm3() : dctx->md;
+
+	if (out == NULL) {
+		if (!SM2_plaintext_size(ec, md, inlen, outlen))
+			return -1;
+		else
+			return 1;
+	}
+
+	return SM2_decrypt(ec, md, in, inlen, out, outlen);
 }
 
 static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 {
 	SM2_PKEY_CTX *dctx = ctx->data;
-	EC_GROUP *group;
+	EC_GROUP *group = NULL;
+
 	switch (type) {
 	case EVP_PKEY_CTRL_EC_PARAMGEN_CURVE_NID:
 		group = EC_GROUP_new_by_curve_name(p1);
@@ -135,21 +169,7 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 		return 1;
 
 	case EVP_PKEY_CTRL_MD:
-		{
-		int md_type = EVP_MD_type((const EVP_MD *)p2);
-		if (md_type != NID_sm3 &&
-			md_type != NID_sha256) {
-			SM2error(SM2_R_INVALID_DIGEST_TYPE);
-			return 0;
-		}
 		dctx->md = p2;
-		return 1;
-		}
-
-	/* Default behaviour is OK */
-	case EVP_PKEY_CTRL_DIGESTINIT:
-	case EVP_PKEY_CTRL_PKCS7_SIGN:
-	case EVP_PKEY_CTRL_CMS_SIGN:
 		return 1;
 
 	default:
@@ -159,85 +179,36 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 }
 
 static int pkey_sm2_ctrl_str(EVP_PKEY_CTX *ctx,
-							const char *type, const char *value)
+							 const char *type, const char *value)
 {
 	if (strcmp(type, "ec_paramgen_curve") == 0) {
-		int nid;
-		nid = EC_curve_nist2nid(value);
-		if (nid == NID_undef)
-			nid = OBJ_sn2nid(value);
-		if (nid == NID_undef)
-			nid = OBJ_ln2nid(value);
-		if (nid == NID_undef) {
+		int nid = NID_undef;
+
+		if (((nid = EC_curve_nist2nid(value)) == NID_undef)
+			&& ((nid = OBJ_sn2nid(value)) == NID_undef)
+			&& ((nid = OBJ_ln2nid(value)) == NID_undef)) {
 			SM2error(SM2_R_INVALID_CURVE);
 			return 0;
 		}
 		return EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid);
-	} else if(strcmp(type, "user_id") == 0) {
-		SM2_PKEY_CTX *dctx = ctx->data;
-		free(dctx->user_id);
-		dctx->user_id = strdup(value);
 	}
+
 	return -2;
-}
-
-static int pkey_sm2_paramgen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
-{
-	EC_KEY *ec = NULL;
-	SM2_PKEY_CTX *dctx = ctx->data;
-	int ret = 0;
-	if (dctx->gen_group == NULL) {
-		SM2error(SM2_R_NO_PARAMETERS_SET);
-		return 0;
-	}
-	ec = EC_KEY_new();
-	if (ec == NULL)
-		return 0;
-	ret = EC_KEY_set_group(ec, dctx->gen_group);
-	if (ret)
-		EVP_PKEY_assign_EC_KEY(pkey, ec);
-	else
-		EC_KEY_free(ec);
-	return ret;
-}
-
-static int pkey_sm2_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
-{
-	EC_KEY *ec = NULL;
-	SM2_PKEY_CTX *dctx = ctx->data;
-	if (ctx->pkey == NULL && dctx->gen_group == NULL) {
-		SM2error(SM2_R_NO_PARAMETERS_SET);
-		return 0;
-	}
-	ec = EC_KEY_new();
-	if (!ec)
-		return 0;
-	EVP_PKEY_assign_EC_KEY(pkey, ec);
-	if (ctx->pkey) {
-		/* Note: if error return, pkey is freed by parent routine */
-		if (!EVP_PKEY_copy_parameters(pkey, ctx->pkey))
-			return 0;
-	} else {
-		if (!EC_KEY_set_group(ec, dctx->gen_group))
-			return 0;
-	}
-	return EC_KEY_generate_key(pkey->pkey.ec);
 }
 
 const EVP_PKEY_METHOD sm2_pkey_meth = {
 	.pkey_id = EVP_PKEY_SM2,
-	.flags = 0,
 	.init = pkey_sm2_init,
 	.copy = pkey_sm2_copy,
 	.cleanup = pkey_sm2_cleanup,
 
-	.paramgen = pkey_sm2_paramgen,
-
-	.keygen = pkey_sm2_keygen,
-
 	.sign = pkey_sm2_sign,
 
 	.verify = pkey_sm2_verify,
+
+	.encrypt = pkey_sm2_encrypt,
+
+	.decrypt = pkey_sm2_decrypt,
 
 	.ctrl = pkey_sm2_ctrl,
 	.ctrl_str = pkey_sm2_ctrl_str

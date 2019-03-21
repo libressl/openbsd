@@ -1,3 +1,4 @@
+/*	$OpenBSD: sm2sigtest.c,v 1.1 2019/03/21 15:20:00 tb Exp $	*/
 /*
  * Copyright (c) 2019 Ribose Inc
  *

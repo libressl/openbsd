@@ -31,15 +31,15 @@ extern "C" {
 #endif
 
 /*
- * SM2 signature generation. Assumes input is an SM3 digest
+ * SM2 signature generation.
  */
-int SM2_sign(int type, const unsigned char *dgst, int dgstlen,
+int SM2_sign(const unsigned char *dgst, int dgstlen,
 			 unsigned char *sig, unsigned int *siglen, EC_KEY *eckey);
 
 /*
  * SM2 signature verification. Assumes input is an SM3 digest
  */
-int SM2_verify(int type, const unsigned char *dgst, int dgstlen,
+int SM2_verify(const unsigned char *dgst, int dgstlen,
 			   const unsigned char *sig, int siglen, EC_KEY *eckey);
 
 /*

@@ -68,10 +68,6 @@
 
 #include "evp_locl.h"
 
-#if !defined(OPENSSL_NO_SM2)
-#include <openssl/sm2.h>
-#endif
-
 /* EC pkey context structure */
 
 typedef struct {
@@ -131,7 +127,6 @@ pkey_ec_sign(EVP_PKEY_CTX * ctx, unsigned char *sig, size_t * siglen,
 	unsigned int sltmp;
 	EC_PKEY_CTX *dctx = ctx->data;
 	EC_KEY *ec = ctx->pkey->pkey.ec;
-	const int ec_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ec));
 
 	if (!sig) {
 		*siglen = ECDSA_size(ec);
@@ -145,16 +140,7 @@ pkey_ec_sign(EVP_PKEY_CTX * ctx, unsigned char *sig, size_t * siglen,
 	else
 		type = NID_sha1;
 
-
-	if (ec_nid == NID_sm2) {
-#if defined(OPENSSL_NO_SM2)
-		ret = -1;
-#else
-		ret = SM2_sign(type, tbs, tbslen, sig, &sltmp, ec);
-#endif
-	} else {
-		ret = ECDSA_sign(type, tbs, tbslen, sig, &sltmp, ec);
-	}
+	ret = ECDSA_sign(type, tbs, tbslen, sig, &sltmp, ec);
 
 	if (ret <= 0)
 		return ret;
@@ -170,22 +156,13 @@ pkey_ec_verify(EVP_PKEY_CTX * ctx,
 	int ret, type;
 	EC_PKEY_CTX *dctx = ctx->data;
 	EC_KEY *ec = ctx->pkey->pkey.ec;
-	const int ec_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ec));
 
 	if (dctx->md)
 		type = EVP_MD_type(dctx->md);
 	else
 		type = NID_sha1;
 
-	if (ec_nid == NID_sm2) {
-#if defined(OPENSSL_NO_SM2)
-		ret = -1;
-#else
-		ret = SM2_verify(type, tbs, tbslen, sig, siglen, ec);
-#endif
-	} else {
-		ret = ECDSA_verify(type, tbs, tbslen, sig, siglen, ec);
-	}
+	ret = ECDSA_verify(type, tbs, tbslen, sig, siglen, ec);
 
 	return ret;
 }
@@ -222,75 +199,6 @@ pkey_ec_derive(EVP_PKEY_CTX * ctx, unsigned char *key, size_t * keylen)
 	return 1;
 }
 
-static int pkey_ecies_encrypt(EVP_PKEY_CTX *ctx,
-							  unsigned char *out, size_t *outlen,
-							  const unsigned char *in, size_t inlen)
-{
-	int ret, md_type;
-	EC_PKEY_CTX *dctx = ctx->data;
-	EC_KEY *ec = ctx->pkey->pkey.ec;
-	const int ec_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ec));
-
-	if (dctx->md)
-		md_type = EVP_MD_type(dctx->md);
-	else if (ec_nid == NID_sm2)
-		md_type = NID_sm3;
-	else
-		md_type = NID_sha256;
-
-	if (ec_nid == NID_sm2) {
-# if defined(OPENSSL_NO_SM2)
-		ret = -1;
-# else
-		if (out == NULL) {
-			*outlen = SM2_ciphertext_size(ec, EVP_get_digestbynid(md_type), inlen);
-			ret = 1;
-		} else {
-			ret = SM2_encrypt(ec, EVP_get_digestbynid(md_type), in, inlen, out, outlen);
-		}
-# endif
-	} else {
-		/* standard ECIES not implemented */
-		ret = -1;
-	}
-
-	return ret;
-}
-
-static int pkey_ecies_decrypt(EVP_PKEY_CTX *ctx,
-							  unsigned char *out, size_t *outlen,
-							  const unsigned char *in, size_t inlen)
-{
-	int ret, md_type;
-	EC_PKEY_CTX *dctx = ctx->data;
-	EC_KEY *ec = ctx->pkey->pkey.ec;
-	const int ec_nid = EC_GROUP_get_curve_name(EC_KEY_get0_group(ec));
-
-	if (dctx->md)
-		md_type = EVP_MD_type(dctx->md);
-	else if (ec_nid == NID_sm2)
-		md_type = NID_sm3;
-	else
-		md_type = NID_sha256;
-
-	if (ec_nid == NID_sm2) {
-# if defined(OPENSSL_NO_SM2)
-		ret = -1;
-# else
-		if (out == NULL) {
-			*outlen = SM2_plaintext_size(ec, EVP_get_digestbynid(md_type), inlen);
-			ret = 1;
-		}
-		ret = SM2_decrypt(ec, EVP_get_digestbynid(md_type), in, inlen, out, outlen);
-# endif
-	} else {
-		/* standard ECIES not implemented */
-		ret = -1;
-	}
-
-	return ret;
-}
-
 static int 
 pkey_ec_ctrl(EVP_PKEY_CTX * ctx, int type, int p1, void *p2)
 {
@@ -313,8 +221,7 @@ pkey_ec_ctrl(EVP_PKEY_CTX * ctx, int type, int p1, void *p2)
 			EVP_MD_type((const EVP_MD *) p2) != NID_sha224 &&
 			EVP_MD_type((const EVP_MD *) p2) != NID_sha256 &&
 			EVP_MD_type((const EVP_MD *) p2) != NID_sha384 &&
-			EVP_MD_type((const EVP_MD *) p2) != NID_sha512 &&
-			EVP_MD_type((const EVP_MD *) p2) != NID_sm3) {
+			EVP_MD_type((const EVP_MD *) p2) != NID_sha512) {
 			ECerror(EC_R_INVALID_DIGEST_TYPE);
 			return 0;
 		}
@@ -407,10 +314,6 @@ const EVP_PKEY_METHOD ec_pkey_meth = {
 	.sign = pkey_ec_sign,
 
 	.verify = pkey_ec_verify,
-
-	.encrypt = pkey_ecies_encrypt,
-
-	.decrypt = pkey_ecies_decrypt,
 
 	.derive = pkey_ec_derive,
 
