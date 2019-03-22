@@ -28,9 +28,12 @@
 /* SM2 pkey context structure */
 
 typedef struct {
+	/* key and paramgen group */
 	EC_GROUP *gen_group;
+	/* message  digest */
 	const EVP_MD *md;
-	char* user_id;
+	/* personalization string */
+	char* uid;
 } SM2_PKEY_CTX;
 
 static int pkey_sm2_init(EVP_PKEY_CTX *ctx)
@@ -53,6 +56,7 @@ static void pkey_sm2_cleanup(EVP_PKEY_CTX *ctx)
 
 	if (dctx) {
 		EC_GROUP_free(dctx->gen_group);
+		free(dctx->uid);
 		free(dctx);
 		ctx->data = NULL;
 	}
@@ -68,10 +72,21 @@ static int pkey_sm2_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	if (sctx->gen_group) {
 		dctx->gen_group = EC_GROUP_dup(sctx->gen_group);
 		if (!dctx->gen_group) {
+			SM2error(ERR_R_MALLOC_FAILURE);
 			pkey_sm2_cleanup(dst);
 			return 0;
 		}
 	}
+
+	if (sctx->uid != NULL) {
+		dctx->uid = strdup(sctx->uid);
+		if (dctx->uid == NULL) {
+			SM2error(ERR_R_MALLOC_FAILURE);
+			pkey_sm2_cleanup(dst);
+			return 0;
+		}
+	}
+
 	dctx->md = sctx->md;
 
 	return 1;
@@ -158,6 +173,35 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 	EC_GROUP *group = NULL;
 
 	switch (type) {
+	case EVP_PKEY_CTRL_DIGESTINIT:
+		if (dctx->uid != NULL) {
+			EC_KEY *ec = ctx->pkey->pkey.ec;
+			EVP_MD_CTX *md_ctx = (EVP_MD_CTX*) p2;
+			const EVP_MD* md = NULL;
+			int md_len = 0;
+			uint8_t za[EVP_MAX_MD_SIZE] = {0};
+
+			md = EVP_MD_CTX_md(md_ctx);
+			if (md == NULL) {
+				SM2error(ERR_R_EVP_LIB);
+				return 0;
+			}
+
+			md_len = EVP_MD_size(md);
+			if (md_len <= 0) {
+				SM2error(SM2_R_INVALID_DIGEST);
+				return 0;
+			}
+
+			if (SM2_compute_userid_digest(za, md, dctx->uid, ec) != 1) {
+				SM2error(SM2_R_DIGEST_FAILURE);
+				return 0;
+			}
+
+			return EVP_DigestUpdate(md_ctx, za, md_len);
+		}
+		return 1;
+
 	case EVP_PKEY_CTRL_EC_PARAMGEN_CURVE_NID:
 		group = EC_GROUP_new_by_curve_name(p1);
 		if (group == NULL) {
@@ -166,6 +210,19 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 		}
 		EC_GROUP_free(dctx->gen_group);
 		dctx->gen_group = group;
+		return 1;
+
+	case EVP_PKEY_CTRL_SM2_SET_UID:
+		free(dctx->uid);
+		dctx->uid = strdup(p2);
+		if (dctx->uid == NULL) {
+			SM2error(ERR_R_MALLOC_FAILURE);
+			return 0;
+		}
+		return 1;
+
+	case EVP_PKEY_CTRL_SM2_GET_UID:
+		*(char **)p2 = dctx->uid;
 		return 1;
 
 	case EVP_PKEY_CTRL_MD:
@@ -191,6 +248,8 @@ static int pkey_sm2_ctrl_str(EVP_PKEY_CTX *ctx,
 			return 0;
 		}
 		return EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid);
+	} else if (strcmp(type, "sm2_uid") == 0) {
+		return EVP_PKEY_CTX_set_sm2_uid(ctx, value);
 	}
 
 	return -2;
