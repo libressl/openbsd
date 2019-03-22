@@ -384,7 +384,7 @@ int SM2_sign(const unsigned char *dgst, int dgstlen,
 	}
 
 	*siglen = outlen;
-	ret = 0;
+	ret = 1;
 
  done:
 	ECDSA_SIG_free(s);
