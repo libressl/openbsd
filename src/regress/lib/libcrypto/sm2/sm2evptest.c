@@ -23,6 +23,8 @@
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 
+#include "tests.h"
+
 #ifdef OPENSSL_NO_SM2
 int main(int argc, char *argv[])
 {
@@ -65,42 +67,31 @@ static int test_EVP_SM2_verify(void)
 	EVP_PKEY_CTX *verify_ctx = NULL;
 
 	bufio = BIO_new_mem_buf(pubkey, strlen(pubkey));
-	if (bufio == NULL)
-		goto done;
+	CHECK_GOTO(bufio != NULL);
 
 	pkey = PEM_read_bio_PUBKEY(bufio, NULL, NULL, NULL);
-	if (pkey == NULL)
-		goto done;
+	CHECK_GOTO(pkey != NULL);
 
-	if (!EVP_PKEY_set_alias_type(pkey, EVP_PKEY_SM2))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_set_alias_type(pkey, EVP_PKEY_SM2));
 
 	md_ctx_verify = EVP_MD_CTX_new();
-	if (md_ctx_verify == NULL)
-		goto done;
+	CHECK_GOTO(md_ctx_verify != NULL);
 
-	if (!EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey))
-		goto done;
+	CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey));
 
-	if (!EVP_PKEY_CTX_set_sm2_uid(verify_ctx, user_id) > 0)
-		goto done;
+	CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, user_id) > 0);
 
-	if (!EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey))
-		goto done;
+	CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey));
 
-	if (!EVP_DigestVerifyUpdate(md_ctx_verify, input, strlen(input)))
-		goto done;
+	CHECK_GOTO(EVP_DigestVerifyUpdate(md_ctx_verify, input, strlen(input)));
 
-	if (!EVP_DigestVerifyFinal(md_ctx_verify, signature, sizeof(signature)))
-		goto done;
+	CHECK_GOTO(EVP_DigestVerifyFinal(md_ctx_verify, signature, sizeof(signature)));
 
 	rc = 1;
-
-done:
+err:
 	BIO_free(bufio);
 	EVP_PKEY_free(pkey);
 	EVP_MD_CTX_free(md_ctx_verify);
-
 	return rc;
 }
 
@@ -131,96 +122,71 @@ static int test_EVP_SM2(void)
 	char *uid_output = NULL;
 
 	pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
-	if (pctx == NULL)
-		goto done;
+	CHECK_GOTO(pctx != NULL);
 
-	if (EVP_PKEY_paramgen_init(pctx) != 1)
-		goto done;
+	CHECK_GOTO(EVP_PKEY_paramgen_init(pctx) == 1);
 
-	if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_sm2))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_sm2));
 
-	if (!EVP_PKEY_paramgen(pctx, &params))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_paramgen(pctx, &params));
 
 	kctx = EVP_PKEY_CTX_new(params, NULL);
-	if (kctx == NULL)
-		goto done;
+	CHECK_GOTO(kctx != NULL);
 
-	if (!EVP_PKEY_keygen_init(kctx))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_keygen_init(kctx));
 
-	if (!EVP_PKEY_keygen(kctx, &pkey))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_keygen(kctx, &pkey));
 
-	if (!EVP_PKEY_set_alias_type(pkey, EVP_PKEY_SM2))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_set_alias_type(pkey, EVP_PKEY_SM2));
 
-	if ((md_ctx = EVP_MD_CTX_new()) == NULL)
-		goto done;
+	md_ctx = EVP_MD_CTX_new();
+	CHECK_GOTO(md_ctx != NULL);
 
-	if ((md_ctx_verify = EVP_MD_CTX_new()) == NULL)
-		goto done;
+	md_ctx_verify = EVP_MD_CTX_new();
+	CHECK_GOTO(md_ctx_verify != NULL);
 
-	for (use_uid = 0; use_uid <= 1; ++use_uid) {
-		if (!EVP_DigestSignInit(md_ctx, &sign_ctx, EVP_sm3(), NULL, pkey))
-			goto done;
+	for (useid = 0; useid <= 1; ++useid) {
+		CHECK_GOTO(EVP_DigestSignInit(md_ctx, &sign_ctx, EVP_sm3(), NULL, pkey));
 
-		if (use_uid) {
-			if (EVP_PKEY_CTX_set_sm2_uid(sign_ctx, "nobody@example.com") <= 0)
-				goto done;
+		if (useid) {
+			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(sign_ctx, "nobody@example.com") > 0);
 
-			if (EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) <= 0)
-				goto done;
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) > 0);
 
-			if (strcmp(uid_output, "nobody@example.com") != 0)
-				goto done;
+			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
 
-			if (!EVP_DigestSignInit(md_ctx, NULL, EVP_sm3(), NULL, pkey))
-				goto done;
+			CHECK_GOTO(EVP_DigestSignInit(md_ctx, NULL, EVP_sm3(), NULL, pkey));
 		}
 
-		if(!EVP_DigestSignUpdate(md_ctx, kMsg, sizeof(kMsg)))
-			goto done;
+		CHECK_GOTO(EVP_DigestSignUpdate(md_ctx, kMsg, sizeof(kMsg)));
 
 		/* Determine the size of the signature. */
-		if (!EVP_DigestSignFinal(md_ctx, NULL, &sig_len))
-			goto done;
+		CHECK_GOTO(EVP_DigestSignFinal(md_ctx, NULL, &sig_len));
 
-		if (sig_len != (size_t) EVP_PKEY_size(pkey))
-			goto done;
+		CHECK_GOTO(sig_len == (size_t) EVP_PKEY_size(pkey));
 
 		sig = malloc(sig_len);
-		if (sig == NULL)
-			goto done;
+		CHECK_GOTO(sig != NULL);
 
-		if (!EVP_DigestSignFinal(md_ctx, sig, &sig_len))
-			goto done;
+		CHECK_GOTO(EVP_DigestSignFinal(md_ctx, sig, &sig_len));
 
 		/* Ensure that the signature round-trips. */
 
-		if (!EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey))
-			goto done;
+		CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey));
 
-		if (use_uid) {
-			if (EVP_PKEY_CTX_set_sm2_uid(verify_ctx, "nobody@example.com") <= 0)
-				goto done;
+		if (useid) {
+			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, "nobody@example.com") > 0);
 
-			if (EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) <= 0)
-				goto done;
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) > 0);
 
-			if (strcmp(uid_output, "nobody@example.com") != 0)
-				goto done;
+			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
 
-			if (!EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey))
-				goto done;
+			CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey));
 		}
 
-		if (!EVP_DigestVerifyUpdate(md_ctx_verify, kMsg, sizeof(kMsg)))
-			goto done;
+		CHECK_GOTO(EVP_DigestVerifyUpdate(md_ctx_verify, kMsg, sizeof(kMsg)));
 
-		if (!EVP_DigestVerifyFinal(md_ctx_verify, sig, sig_len))
-			goto done;
+		CHECK_GOTO(EVP_DigestVerifyFinal(md_ctx_verify, sig, sig_len));
 		
 		free(sig);
 		sig = NULL; 
@@ -228,29 +194,23 @@ static int test_EVP_SM2(void)
 
 	/* now check encryption/decryption */
 
-	if ((cctx = EVP_PKEY_CTX_new(pkey, NULL)) == NULL)
-		goto done;
+	cctx = EVP_PKEY_CTX_new(pkey, NULL);
+	CHECK_GOTO(cctx != NULL);
 
-	if (!EVP_PKEY_encrypt_init(cctx))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_encrypt_init(cctx));
 
-	if (!EVP_PKEY_encrypt(cctx, ciphertext, &ctext_len, kMsg, sizeof(kMsg)))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_encrypt(cctx, ciphertext, &ctext_len, kMsg, sizeof(kMsg)));
 
-	if (!EVP_PKEY_decrypt_init(cctx))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_decrypt_init(cctx));
 
-	if (!EVP_PKEY_decrypt(cctx, plaintext, &ptext_len, ciphertext, ctext_len))
-		goto done;
+	CHECK_GOTO(EVP_PKEY_decrypt(cctx, plaintext, &ptext_len, ciphertext, ctext_len));
 
-	if (ptext_len != sizeof(kMsg))
-		goto done;
+	CHECK_GOTO(ptext_len == sizeof(kMsg));
 
-	if (memcmp(plaintext, kMsg, sizeof(kMsg)) != 0)
-		goto done;
+	CHECK_GOTO(memcmp(plaintext, kMsg, sizeof(kMsg)) == 0);
 
 	ret = 1;
-done:
+err:
 	EVP_PKEY_free(params);
 	EVP_MD_CTX_free(md_ctx);
 	EVP_MD_CTX_free(md_ctx_verify);
@@ -264,11 +224,16 @@ done:
 
 int main(int argc, char *argv[])
 {
-	if (!test_EVP_SM2())
+	if (!test_EVP_SM2()) {
+		fprintf(stderr, "test_EVP_SM2() failed.\n");
+		fflush(stderr);
 		return 1;
-	if (!test_EVP_SM2_verify())
+	}
+	if (!test_EVP_SM2_verify()) {
+		fprintf(stderr, "test_EVP_SM2_verify() failed.\n");
+		fflush(stderr);
 		return 1;
-	
+	}
 	return 0;
 }
 
