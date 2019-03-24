@@ -21,6 +21,7 @@
 #include <openssl/err.h>
 #include <openssl/bn.h>
 
+#include "bn_lcl.h"
 #include "sm2_locl.h"
 
 static BIGNUM *SM2_compute_msg_hash(const EVP_MD *digest,
@@ -175,7 +176,7 @@ ECDSA_SIG *SM2_sig_gen(const EC_KEY *key, const BIGNUM *e)
 			goto done;
 		}
 
-		if (BN_mod_inverse(s, s, order, ctx) == 0) {
+		if (BN_mod_inverse_ct(s, s, order, ctx) == 0) {
 			SM2error(ERR_R_BN_LIB);
 			goto done;
 		}
