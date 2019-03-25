@@ -68,7 +68,9 @@
 .Nm EVP_PKEY_CTX_set_dsa_paramgen_bits ,
 .Nm EVP_PKEY_CTX_set_dh_paramgen_prime_len ,
 .Nm EVP_PKEY_CTX_set_dh_paramgen_generator ,
-.Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid
+.Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid ,
+.Nm EVP_PKEY_CTX_get_sm2_uid, 
+.Nm EVP_PKEY_CTX_set_sm2_uid
 .Nd algorithm specific control operations
 .Sh SYNOPSIS
 .In openssl/evp.h
@@ -155,6 +157,16 @@
 .Fo EVP_PKEY_CTX_set_ec_paramgen_curve_nid
 .Fa "EVP_PKEY_CTX *ctx"
 .Fa "int nid"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_get_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "char **uid"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_set_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "const char *uid"
 .Fc
 .Sh DESCRIPTION
 The function
@@ -327,6 +339,19 @@ sets the EC curve for EC parameter generation to
 .Fa nid .
 For EC parameter generation, this macro must be called or an error occurs
 because there is no default curve.
+.Pp
+The
+.Fn EVP_PKEY_CTX_set_sm2_uid
+macro sets the user identifier string, which is used
+for the SM2 signature scheme. The uid string is assumed to be NUL
+terminated, and is copied. If set, the SM2 UID string can be
+retrieved with
+.Fn EVP_PKEY_CTX_get_sm2_uid
+which sets the output parameter to either NUL (if the UID has not been
+set) or to the address of a NUL terminated string which contains the UID.
+Ownership of this memory pointed to by the result of
+.Fn EVP_PKEY_CTX_get_sm2_uid
+is retained by the library.
 .Sh RETURN VALUES
 .Fn EVP_PKEY_CTX_ctrl
 and its macros return a positive value for success and 0 or a negative

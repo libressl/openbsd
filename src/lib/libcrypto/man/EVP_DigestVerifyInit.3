@@ -107,6 +107,22 @@ of the verification operation will be written to
 .Pf * Fa pctx :
 this can be used to set alternative verification options.
 .Pp
+In some rare cases (including SM2 signatures) it is necessary to
+reinitialize the digest computation after setting some parameters on the
+.Fa pctx .
+This is done by calling
+.Fa EVP_DigestVerifyInit
+twice. The first time,
+.Fa pctx
+should be non NULL. Then any necesssary options can be set on
+.Fa pctx
+using for instance
+.Xr EVP_PKEY_CTX_ctrl_str 3 .
+Afterwards,
+.Fa EVP_DigestVerifyInit
+is called again, using the same verification context
+.Fa pctx .
+.Pp
 .Fn EVP_DigestVerifyUpdate
 hashes
 .Fa cnt
