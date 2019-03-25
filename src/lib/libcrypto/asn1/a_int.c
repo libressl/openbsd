@@ -59,7 +59,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <sys/limits.h>
+#include <limits.h>
 
 #include <openssl/asn1.h>
 #include <openssl/bn.h>
