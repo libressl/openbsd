@@ -107,21 +107,15 @@ static size_t EC_field_size(const EC_GROUP *group)
 {
 	/* Is there some simpler way to do this? */
 	BIGNUM *p = BN_new();
-	BIGNUM *a = BN_new();
-	BIGNUM *b = BN_new();
 	size_t field_size = 0;
 
-	if (p == NULL || a == NULL || b == NULL)
+	if (p == NULL)
 	   goto done;
 
-	EC_GROUP_get_curve_GFp(group, p, a, b, NULL);
-	field_size = (BN_num_bits(p) + 7) / 8;
-
+	EC_GROUP_get_curve_GFp(group, p, NULL, NULL, NULL);
+	field_size = BN_num_bytes(p);
  done:
 	BN_free(p);
-	BN_free(a);
-	BN_free(b);
-
 	return field_size;
 }
 
@@ -161,6 +155,7 @@ SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest,
 {
 	size_t field_size = 0;
 	int md_size = 0;
+	size_t asn_size = 0;
 
 	field_size = EC_field_size(EC_KEY_get0_group(key));
 	if (!field_size) {
@@ -174,7 +169,11 @@ SM2_ciphertext_size(const EC_KEY *key, const EVP_MD *digest,
 		return 0;
 	}
 
-	*c_size = 10 + 2 * field_size + md_size + msg_len;
+	asn_size = 2 * ASN1_object_size(0, field_size, V_ASN1_INTEGER) +
+			   ASN1_object_size(0, md_size, V_ASN1_OCTET_STRING) +
+			   ASN1_object_size(0, msg_len, V_ASN1_OCTET_STRING);
+
+	*c_size = ASN1_object_size(1, asn_size, V_ASN1_SEQUENCE);
 	return 1;
 }
 
@@ -247,8 +246,8 @@ int SM2_encrypt(const EC_KEY *key,
 {
 	int rc = 0;
 	size_t i;
-	int x2size = 0;
-	int y2size = 0;
+	size_t x2size = 0;
+	size_t y2size = 0;
 	BN_CTX *ctx = NULL;
 	BIGNUM *k = NULL;
 	BIGNUM *x1 = NULL;
