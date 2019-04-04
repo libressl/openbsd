@@ -94,8 +94,7 @@ static EC_GROUP *create_EC_group(const char *p_hex, const char *a_hex,
 static int test_sm2(const EC_GROUP *group,
 					const char *userid,
 					const char *privkey_hex,
-					const char *message,
-					const char *r_hex, const char *s_hex)
+					const char *message)
 {
 	const size_t msg_len = strlen(message);
 	int ok = -1;
@@ -105,8 +104,6 @@ static int test_sm2(const EC_GROUP *group,
 	ECDSA_SIG *sig = NULL;
 	const BIGNUM *sig_r = NULL;
 	const BIGNUM *sig_s = NULL;
-	BIGNUM *r = NULL;
-	BIGNUM *s = NULL;
 
 	BN_hex2bn(&priv, privkey_hex);
 
@@ -125,34 +122,12 @@ static int test_sm2(const EC_GROUP *group,
 
 	ECDSA_SIG_get0(sig, &sig_r, &sig_s);
 
-	BN_hex2bn(&r, r_hex);
-	BN_hex2bn(&s, s_hex);
-
-	if (BN_cmp(r, sig_r) != 0) {
-		printf("Signature R mismatch: ");
-		BN_print_fp(stdout, r);
-		printf(" != ");
-		BN_print_fp(stdout, sig_r);
-		printf("\n");
-		ok = 0;
-	}
-	if (BN_cmp(s, sig_s) != 0) {
-		printf("Signature S mismatch: ");
-		BN_print_fp(stdout, s);
-		printf(" != ");
-		BN_print_fp(stdout, sig_s);
-		printf("\n");
-		ok = 0;
-	}
-
 	ok = SM2_do_verify(key, EVP_sm3(), sig, userid, (const uint8_t *)message, msg_len);
 
 	ECDSA_SIG_free(sig);
 	EC_POINT_free(pt);
 	EC_KEY_free(key);
 	BN_free(priv);
-	BN_free(r);
-	BN_free(s);
 
 	return ok;
 }
@@ -177,9 +152,7 @@ int main(int argc, char **argv)
 	rc = test_sm2(test_group,
 					"ALICE123@YAHOO.COM",
 					"128B2FA8BD433C6C068C8D803DFF79792A519A55171B1B650C23661D15897263",
-					"message digest",
-					"40F1EC59F793D9F49E09DCEF49130D4194F79FB1EED2CAA55BACDB49C4E755D1",
-					"6FC6DAC32C5D5CF10C77DFB20F7C2EB667A457872FB09EC56327A67EC7DEEBE7");
+					"message digest");
 
 	EC_GROUP_free(test_group);
 

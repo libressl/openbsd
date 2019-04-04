@@ -93,26 +93,19 @@ static EC_GROUP *create_EC_group(const char *p_hex, const char *a_hex,
 static int test_sm2(const EC_GROUP *group,
 					const EVP_MD *digest,
 					const char *privkey_hex,
-					const char *message,
-					const char *ctext_hex)
+					const char *message)
 {
 	const size_t msg_len = strlen(message);
 
 	BIGNUM *priv = NULL;
-	BIGNUM *expbn = NULL;
 	EC_KEY *key = NULL;
 	EC_POINT *pt = NULL;
-	unsigned char *expected = NULL;
 	size_t ctext_len = 0;
 	uint8_t *ctext = NULL;
 	uint8_t *recovered = NULL;
 	size_t recovered_len = msg_len;
 	int rc = 0;
 
-	BN_hex2bn(&expbn, ctext_hex);
-	expected = malloc(BN_num_bytes(expbn));
-	BN_bn2bin(expbn, expected);
-	BN_free(expbn);
 	BN_hex2bn(&priv, privkey_hex);
 
 	key = EC_KEY_new();
@@ -134,7 +127,7 @@ static int test_sm2(const EC_GROUP *group,
 
 	rc = SM2_encrypt(key, digest, (const uint8_t *)message, msg_len, ctext, &ctext_len);
 
-	if ((rc == 0) || (memcmp(ctext, expected, ctext_len) != 0))
+	if (rc == 0)
 		goto done;
 
 	recovered = calloc(1, msg_len);
@@ -154,7 +147,6 @@ static int test_sm2(const EC_GROUP *group,
 
 	free(ctext);
 	free(recovered);
-	free(expected);
 	EC_KEY_free(key);
 	return rc;
 }
@@ -179,11 +171,7 @@ main(int argc, char **argv)
 	rc = test_sm2(test_group,
 				  EVP_sm3(),
 				  "1649AB77A00637BD5E2EFE283FBF353534AA7F7CB89463F208DDBC2920BB0DA0",
-				  "encryption standard",
-				  "307B0220245C26FB68B1DDDDB12C4B6BF9F2B6D5FE60A383B0D18D1C4144ABF1"
-				  "7F6252E7022076CB9264C2A7E88E52B19903FDC47378F605E36811F5C07423A2"
-				  "4B84400F01B804209C3D7360C30156FAB7C80A0276712DA9D8094A634B766D3A"
-				  "285E07480653426D0413650053A89B41C418B0C3AAD00D886C00286467");
+				  "encryption standard");
 
 	if (rc == 0)
 		return 1;
@@ -192,11 +180,7 @@ main(int argc, char **argv)
 	rc = test_sm2(test_group,
 				  EVP_sha256(),
 				  "1649AB77A00637BD5E2EFE283FBF353534AA7F7CB89463F208DDBC2920BB0DA0",
-				  "encryption standard",
-				  "307B0220245C26FB68B1DDDDB12C4B6BF9F2B6D5FE60A383B0D18D1C4144ABF1"
-				  "7F6252E7022076CB9264C2A7E88E52B19903FDC47378F605E36811F5C07423A2"
-				  "4B84400F01B80420BE89139D07853100EFA763F60CBE30099EA3DF7F8F364F9D"
-				  "10A5E988E3C5AAFC0413229E6C9AEE2BB92CAD649FE2C035689785DA33");
+				  "encryption standard");
 	if (rc == 0)
 		return 1;
 
