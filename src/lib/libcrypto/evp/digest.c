@@ -198,19 +198,16 @@ EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 #ifndef OPENSSL_NO_ENGINE
 skip_to_init:
 #endif
-	if (ctx->flags & EVP_MD_CTX_FLAG_NO_INIT)
-		return 1;
-	if (ctx->digest->init(ctx) == 0)
-		return 0;
-
-	if (ctx->pctx != NULL) {
+	if (ctx->pctx) {
 		int r;
 		r = EVP_PKEY_CTX_ctrl(ctx->pctx, -1, EVP_PKEY_OP_TYPE_SIG,
-							  EVP_PKEY_CTRL_DIGESTINIT, 0, ctx);
+		    EVP_PKEY_CTRL_DIGESTINIT, 0, ctx);
 		if (r <= 0 && (r != -2))
 			return 0;
 	}
-	return 1;
+	if (ctx->flags & EVP_MD_CTX_FLAG_NO_INIT)
+		return 1;
+	return ctx->digest->init(ctx);
 }
 
 int
