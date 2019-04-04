@@ -70,7 +70,8 @@
 .Nm EVP_PKEY_CTX_set_dh_paramgen_generator ,
 .Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid ,
 .Nm EVP_PKEY_CTX_get_sm2_uid, 
-.Nm EVP_PKEY_CTX_set_sm2_uid
+.Nm EVP_PKEY_CTX_set_sm2_uid,
+.Nm EVP_PKEY_CTX_hash_sm2_uid
 .Nd algorithm specific control operations
 .Sh SYNOPSIS
 .In openssl/evp.h
@@ -167,6 +168,10 @@
 .Fo EVP_PKEY_CTX_set_sm2_uid
 .Fa "EVP_PKEY_CTX *ctx"
 .Fa "const char *uid"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_hash_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
 .Fc
 .Sh DESCRIPTION
 The function
@@ -352,6 +357,13 @@ set) or to the address of a NUL terminated string which contains the UID.
 Ownership of this memory pointed to by the result of
 .Fn EVP_PKEY_CTX_get_sm2_uid
 is retained by the library.
+.Pp
+To make use of the UID string you should call
+.Fn EVP_PKEY_CTX_hash_sm2_uid
+after it is set and before populating digest with data via
+.Fn EVP_DigestSignUpdate
+or
+.Fn EVP_DigestVerifyUpdate .
 .Sh RETURN VALUES
 .Fn EVP_PKEY_CTX_ctrl
 and its macros return a positive value for success and 0 or a negative

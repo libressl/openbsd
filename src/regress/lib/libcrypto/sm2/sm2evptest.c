@@ -81,7 +81,7 @@ static int test_EVP_SM2_verify(void)
 
 	CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, user_id) > 0);
 
-	CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey));
+	CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(verify_ctx) > 0);
 
 	CHECK_GOTO(EVP_DigestVerifyUpdate(md_ctx_verify, input, strlen(input)));
 
@@ -155,7 +155,7 @@ static int test_EVP_SM2(void)
 
 			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
 
-			CHECK_GOTO(EVP_DigestSignInit(md_ctx, NULL, EVP_sm3(), NULL, pkey));
+			CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(sign_ctx) > 0);
 		}
 
 		CHECK_GOTO(EVP_DigestSignUpdate(md_ctx, kMsg, sizeof(kMsg)));
@@ -177,11 +177,11 @@ static int test_EVP_SM2(void)
 		if (useid) {
 			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, "nobody@example.com") > 0);
 
-			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) > 0);
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(verify_ctx, &uid_output) > 0);
 
 			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
 
-			CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, NULL, EVP_sm3(), NULL, pkey));
+			CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(verify_ctx) > 0);
 		}
 
 		CHECK_GOTO(EVP_DigestVerifyUpdate(md_ctx_verify, kMsg, sizeof(kMsg)));

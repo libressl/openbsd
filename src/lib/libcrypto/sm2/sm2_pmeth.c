@@ -32,6 +32,7 @@ typedef struct {
 	EC_GROUP *gen_group;
 	/* message  digest */
 	const EVP_MD *md;
+	EVP_MD_CTX *md_ctx;
 	/* personalization string */
 	char* uid;
 } SM2_PKEY_CTX;
@@ -174,32 +175,7 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 
 	switch (type) {
 	case EVP_PKEY_CTRL_DIGESTINIT:
-		if (dctx->uid != NULL) {
-			EC_KEY *ec = ctx->pkey->pkey.ec;
-			EVP_MD_CTX *md_ctx = (EVP_MD_CTX*) p2;
-			const EVP_MD* md = NULL;
-			int md_len = 0;
-			uint8_t za[EVP_MAX_MD_SIZE] = {0};
-
-			md = EVP_MD_CTX_md(md_ctx);
-			if (md == NULL) {
-				SM2error(ERR_R_EVP_LIB);
-				return 0;
-			}
-
-			md_len = EVP_MD_size(md);
-			if (md_len <= 0) {
-				SM2error(SM2_R_INVALID_DIGEST);
-				return 0;
-			}
-
-			if (SM2_compute_userid_digest(za, md, dctx->uid, ec) != 1) {
-				SM2error(SM2_R_DIGEST_FAILURE);
-				return 0;
-			}
-
-			return EVP_DigestUpdate(md_ctx, za, md_len);
-		}
+		dctx->md_ctx = p2;
 		return 1;
 
 	case EVP_PKEY_CTRL_EC_PARAMGEN_CURVE_NID:
@@ -220,6 +196,35 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			return 0;
 		}
 		return 1;
+
+	case EVP_PKEY_CTRL_SM2_HASH_UID:
+		if (dctx->uid == NULL) {
+			SM2error(SM2_R_INVALID_ARGUMENT);
+			return 0;
+		}
+
+		EC_KEY *ec = ctx->pkey->pkey.ec;
+		const EVP_MD* md = NULL;
+		int md_len = 0;
+		uint8_t za[EVP_MAX_MD_SIZE] = {0};
+
+		md = EVP_MD_CTX_md(dctx->md_ctx);
+		if (md == NULL) {
+			SM2error(ERR_R_EVP_LIB);
+			return 0;
+		}
+
+		md_len = EVP_MD_size(md);
+		if (md_len <= 0) {
+			SM2error(SM2_R_INVALID_DIGEST);
+			return 0;
+		}
+
+		if (SM2_compute_userid_digest(za, md, dctx->uid, ec) != 1) {
+			SM2error(SM2_R_DIGEST_FAILURE);
+			return 0;
+		}
+		return EVP_DigestUpdate(dctx->md_ctx, za, md_len);
 
 	case EVP_PKEY_CTRL_SM2_GET_UID:
 		*(char **)p2 = dctx->uid;
