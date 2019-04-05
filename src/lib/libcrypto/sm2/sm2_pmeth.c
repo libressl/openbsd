@@ -34,7 +34,8 @@ typedef struct {
 	const EVP_MD *md;
 	EVP_MD_CTX *md_ctx;
 	/* personalization string */
-	char* uid;
+	uint8_t* uid;
+	size_t uid_len;
 } SM2_PKEY_CTX;
 
 static int pkey_sm2_init(EVP_PKEY_CTX *ctx)
@@ -80,12 +81,14 @@ static int pkey_sm2_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	}
 
 	if (sctx->uid != NULL) {
-		dctx->uid = strdup(sctx->uid);
+		dctx->uid = malloc(sctx->uid_len);
 		if (dctx->uid == NULL) {
 			SM2error(ERR_R_MALLOC_FAILURE);
 			pkey_sm2_cleanup(dst);
 			return 0;
 		}
+		memcpy(dctx->uid, sctx->uid, sctx->uid_len);
+		dctx->uid_len = sctx->uid_len;
 	}
 
 	dctx->md = sctx->md;
@@ -189,12 +192,28 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 		return 1;
 
 	case EVP_PKEY_CTRL_SM2_SET_UID:
-		free(dctx->uid);
-		dctx->uid = strdup(p2);
-		if (dctx->uid == NULL) {
-			SM2error(ERR_R_MALLOC_FAILURE);
+		if ((p1 < 0) || ((p1 == 0) && (p2 != NULL)))  {
+			SM2error(SM2_R_INVALID_ARGUMENT);
 			return 0;
 		}
+		if ((p1 > 0) && (p2 == NULL)) {
+			SM2error(ERR_R_PASSED_NULL_PARAMETER);
+			return 0;
+		}
+		free(dctx->uid);
+		if (p2 == NULL) {
+			dctx->uid = NULL;
+			dctx->uid_len = 0;
+			return 1;
+		}
+
+		dctx->uid = malloc((size_t) p1);
+		if (dctx->uid == NULL) {
+			SM2error(ERR_R_MALLOC_FAILURE);
+			return 1;
+		}
+		memcpy(dctx->uid, p2, (size_t) p1);
+		dctx->uid_len = (size_t) p1;
 		return 1;
 
 	case EVP_PKEY_CTRL_SM2_HASH_UID:
@@ -220,14 +239,29 @@ static int pkey_sm2_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			return 0;
 		}
 
-		if (SM2_compute_userid_digest(za, md, dctx->uid, ec) != 1) {
+		if (SM2_compute_userid_digest(za, md, dctx->uid, dctx->uid_len, ec) != 1) {
 			SM2error(SM2_R_DIGEST_FAILURE);
 			return 0;
 		}
 		return EVP_DigestUpdate(dctx->md_ctx, za, md_len);
 
+	case EVP_PKEY_CTRL_SM2_GET_UID_LEN:
+		if (p2 == NULL) {
+			SM2error(ERR_R_PASSED_NULL_PARAMETER);
+			return 0;
+		}
+		*(size_t *)p2 = dctx->uid_len;
+		return 1;
+
 	case EVP_PKEY_CTRL_SM2_GET_UID:
-		*(char **)p2 = dctx->uid;
+		if (p2 == NULL) {
+			SM2error(ERR_R_PASSED_NULL_PARAMETER);
+			return 0;
+		}
+		if (dctx->uid_len == 0) {
+			return 1;
+		}
+		memcpy(p2, dctx->uid, dctx->uid_len);
 		return 1;
 
 	case EVP_PKEY_CTRL_MD:
@@ -254,7 +288,7 @@ static int pkey_sm2_ctrl_str(EVP_PKEY_CTX *ctx,
 		}
 		return EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid);
 	} else if (strcmp(type, "sm2_uid") == 0) {
-		return EVP_PKEY_CTX_set_sm2_uid(ctx, value);
+		return EVP_PKEY_CTX_set_sm2_uid(ctx, (void*) value, (int) strlen(value));
 	}
 
 	return -2;

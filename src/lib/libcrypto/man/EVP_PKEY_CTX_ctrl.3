@@ -69,6 +69,7 @@
 .Nm EVP_PKEY_CTX_set_dh_paramgen_prime_len ,
 .Nm EVP_PKEY_CTX_set_dh_paramgen_generator ,
 .Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid ,
+.Nm EVP_PKEY_CTX_get_sm2_uid_len, 
 .Nm EVP_PKEY_CTX_get_sm2_uid, 
 .Nm EVP_PKEY_CTX_set_sm2_uid,
 .Nm EVP_PKEY_CTX_hash_sm2_uid
@@ -160,14 +161,20 @@
 .Fa "int nid"
 .Fc
 .Ft int
+.Fo EVP_PKEY_CTX_get_sm2_uid_len
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "size_t *len"
+.Fc
+.Ft int
 .Fo EVP_PKEY_CTX_get_sm2_uid
 .Fa "EVP_PKEY_CTX *ctx"
-.Fa "char **uid"
+.Fa "uint8_t *uid"
 .Fc
 .Ft int
 .Fo EVP_PKEY_CTX_set_sm2_uid
 .Fa "EVP_PKEY_CTX *ctx"
-.Fa "const char *uid"
+.Fa "const uint8_t *uid"
+.Fa "int len"
 .Fc
 .Ft int
 .Fo EVP_PKEY_CTX_hash_sm2_uid
@@ -347,16 +354,14 @@ because there is no default curve.
 .Pp
 The
 .Fn EVP_PKEY_CTX_set_sm2_uid
-macro sets the user identifier string, which is used
-for the SM2 signature scheme. The uid string is assumed to be NUL
-terminated, and is copied. If set, the SM2 UID string can be
-retrieved with
-.Fn EVP_PKEY_CTX_get_sm2_uid
-which sets the output parameter to either NUL (if the UID has not been
-set) or to the address of a NUL terminated string which contains the UID.
-Ownership of this memory pointed to by the result of
-.Fn EVP_PKEY_CTX_get_sm2_uid
-is retained by the library.
+macro sets the user identifier, which is used
+for the SM2 signature scheme. Data from the uid buffer is copied.
+If set, the SM2 UID data can be retrieved with
+.Fn EVP_PKEY_CTX_get_sm2_uid_len
+and
+.Fn EVP_PKEY_CTX_get_sm2_uid .
+First function returns the length of the UID (or 0 if the UID has not been set),
+second - copies the UID to preallocated buffer.
 .Pp
 To make use of the UID string you should call
 .Fn EVP_PKEY_CTX_hash_sm2_uid

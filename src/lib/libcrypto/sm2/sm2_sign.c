@@ -26,7 +26,7 @@
 
 static BIGNUM *SM2_compute_msg_hash(const EVP_MD *digest,
 									const EC_KEY *key,
-									const char *user_id,
+									const uint8_t *uid, size_t uid_len,
 									const uint8_t *msg, size_t msg_len)
 {
 	EVP_MD_CTX *hash = NULL;
@@ -46,7 +46,7 @@ static BIGNUM *SM2_compute_msg_hash(const EVP_MD *digest,
 		goto done;
 	}
 
-	if (SM2_compute_userid_digest(za, digest, user_id, key) == 0) {
+	if (SM2_compute_userid_digest(za, digest, uid, uid_len, key) == 0) {
 		SM2error(SM2_R_DIGEST_FAILURE);
 		goto done;
 	}
@@ -320,12 +320,13 @@ int SM2_sig_verify(const EC_KEY *key, const ECDSA_SIG *sig, const BIGNUM *e)
 
 ECDSA_SIG *SM2_do_sign(const EC_KEY *key,
 					   const EVP_MD *digest,
-					   const char *user_id, const uint8_t *msg, size_t msg_len)
+					   const uint8_t *uid, size_t uid_len,
+					   const uint8_t *msg, size_t msg_len)
 {
 	BIGNUM *e = NULL;
 	ECDSA_SIG *sig = NULL;
 
-	e = SM2_compute_msg_hash(digest, key, user_id, msg, msg_len);
+	e = SM2_compute_msg_hash(digest, key, uid, uid_len, msg, msg_len);
 	if (e == NULL) {
 		SM2error(SM2_R_DIGEST_FAILURE);
 		goto done;
@@ -341,12 +342,13 @@ ECDSA_SIG *SM2_do_sign(const EC_KEY *key,
 int SM2_do_verify(const EC_KEY *key,
 				  const EVP_MD *digest,
 				  const ECDSA_SIG *sig,
-				  const char *user_id, const uint8_t *msg, size_t msg_len)
+				  const uint8_t *uid, size_t uid_len,
+				  const uint8_t *msg, size_t msg_len)
 {
 	BIGNUM *e = NULL;
 	int ret = -1;
 
-	e = SM2_compute_msg_hash(digest, key, user_id, msg, msg_len);
+	e = SM2_compute_msg_hash(digest, key, uid, uid_len, msg, msg_len);
 	if (e == NULL) {
 		SM2error(SM2_R_DIGEST_FAILURE);
 		goto done;

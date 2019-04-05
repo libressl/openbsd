@@ -79,7 +79,7 @@ static int test_EVP_SM2_verify(void)
 
 	CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey));
 
-	CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, user_id) > 0);
+	CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, user_id, strlen(user_id)) > 0);
 
 	CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(verify_ctx) > 0);
 
@@ -110,6 +110,9 @@ static int test_EVP_SM2(void)
 	EVP_MD_CTX *md_ctx_verify = NULL;
 	EVP_PKEY_CTX *cctx = NULL;
 	int useid;
+	const char *uid_str = "nobody@example.com";
+	uint8_t uid_buf[32] = {0};
+	size_t uid_len = 0;
 
 	uint8_t ciphertext[128];
 	size_t ctext_len = sizeof(ciphertext);
@@ -118,8 +121,6 @@ static int test_EVP_SM2(void)
 	size_t ptext_len = sizeof(plaintext);
 
 	uint8_t kMsg[4] = {1, 2, 3, 4};
-
-	char *uid_output = NULL;
 
 	pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
 	CHECK_GOTO(pctx != NULL);
@@ -149,11 +150,15 @@ static int test_EVP_SM2(void)
 		CHECK_GOTO(EVP_DigestSignInit(md_ctx, &sign_ctx, EVP_sm3(), NULL, pkey));
 
 		if (useid) {
-			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(sign_ctx, "nobody@example.com") > 0);
+			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(sign_ctx, uid_str, strlen(uid_str)) > 0);
 
-			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(sign_ctx, &uid_output) > 0);
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid_len(sign_ctx, &uid_len) > 0);
 
-			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
+			CHECK_GOTO(uid_len == strlen(uid_str));
+
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(sign_ctx, uid_buf) > 0);
+
+			CHECK_GOTO(memcmp(uid_buf, uid_str, uid_len) == 0);
 
 			CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(sign_ctx) > 0);
 		}
@@ -175,11 +180,15 @@ static int test_EVP_SM2(void)
 		CHECK_GOTO(EVP_DigestVerifyInit(md_ctx_verify, &verify_ctx, EVP_sm3(), NULL, pkey));
 
 		if (useid) {
-			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, "nobody@example.com") > 0);
+			CHECK_GOTO(EVP_PKEY_CTX_set_sm2_uid(verify_ctx, uid_str, strlen(uid_str)) > 0);
 
-			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(verify_ctx, &uid_output) > 0);
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid_len(verify_ctx, &uid_len) > 0);
 
-			CHECK_GOTO(strcmp(uid_output, "nobody@example.com") == 0);
+			CHECK_GOTO(uid_len == strlen(uid_str));
+
+			CHECK_GOTO(EVP_PKEY_CTX_get_sm2_uid(verify_ctx, uid_buf) > 0);
+
+			CHECK_GOTO(memcmp(uid_buf, uid_str, uid_len) == 0);
 
 			CHECK_GOTO(EVP_PKEY_CTX_hash_sm2_uid(verify_ctx) > 0);
 		}

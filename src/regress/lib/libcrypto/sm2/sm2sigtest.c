@@ -115,14 +115,14 @@ static int test_sm2(const EC_GROUP *group,
 	EC_POINT_mul(group, pt, priv, NULL, NULL, NULL);
 	EC_KEY_set_public_key(key, pt);
 
-	sig = SM2_do_sign(key, EVP_sm3(), userid, (const uint8_t *)message, msg_len);
+	sig = SM2_do_sign(key, EVP_sm3(), userid, strlen(userid), (const uint8_t *)message, msg_len);
 
 	if (sig == NULL)
 		return 0;
 
 	ECDSA_SIG_get0(sig, &sig_r, &sig_s);
 
-	ok = SM2_do_verify(key, EVP_sm3(), sig, userid, (const uint8_t *)message, msg_len);
+	ok = SM2_do_verify(key, EVP_sm3(), sig, userid, strlen(userid), (const uint8_t *)message, msg_len);
 
 	ECDSA_SIG_free(sig);
 	EC_POINT_free(pt);

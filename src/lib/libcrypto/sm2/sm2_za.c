@@ -21,7 +21,8 @@
 
 int SM2_compute_userid_digest(uint8_t *out,
 							  const EVP_MD *digest,
-							  const char *user_id,
+							  uint8_t *uid,
+							  size_t uid_len,
 							  const EC_KEY *key)
 {
 	int rc = 0;
@@ -43,7 +44,6 @@ int SM2_compute_userid_digest(uint8_t *out,
 	int p_bytes = 0;
 	int bytes = 0;
 	uint8_t *buf = NULL;
-	size_t uid_len = 0;
 	uint16_t entla = 0;
 	uint8_t e_byte = 0;
 
@@ -76,8 +76,6 @@ int SM2_compute_userid_digest(uint8_t *out,
 	   ZA=H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
 	 */
 
-	uid_len = strlen(user_id);
-
 	if (uid_len >= 8192)		/* too large */
 		goto done;
 
@@ -90,7 +88,7 @@ int SM2_compute_userid_digest(uint8_t *out,
 	if (EVP_DigestUpdate(hash, &e_byte, 1) == 0)
 		goto done;
 
-	if (EVP_DigestUpdate(hash, user_id, uid_len) == 0)
+	if (EVP_DigestUpdate(hash, uid, uid_len) == 0)
 		goto done;
 
 	if (EC_GROUP_get_curve_GFp(group, p, a, b, ctx) == 0)

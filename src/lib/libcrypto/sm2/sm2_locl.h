@@ -28,7 +28,9 @@ __BEGIN_HIDDEN_DECLS
 
 int SM2_compute_userid_digest(uint8_t *out,
 							  const EVP_MD *digest,
-							  const char *user_id, const EC_KEY *key);
+							  const uint8_t *uid,
+							  size_t uid_len,
+							  const EC_KEY *key);
 
 /*
  * SM2 signature operation. Computes ZA (user id digest) and then signs
@@ -36,12 +38,14 @@ int SM2_compute_userid_digest(uint8_t *out,
  */
 ECDSA_SIG *SM2_do_sign(const EC_KEY *key,
 					   const EVP_MD *digest,
-					   const char *user_id, const uint8_t *msg, size_t msg_len);
+					   const uint8_t *uid, size_t uid_len,
+					   const uint8_t *msg, size_t msg_len);
 
 int SM2_do_verify(const EC_KEY *key,
 				  const EVP_MD *digest,
 				  const ECDSA_SIG *signature,
-				  const char *user_id, const uint8_t *msg, size_t msg_len);
+				  const uint8_t *uid, size_t uid_len,
+				  const uint8_t *msg, size_t msg_len);
 
 __END_HIDDEN_DECLS
 
