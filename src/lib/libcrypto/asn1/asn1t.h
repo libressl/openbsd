@@ -81,6 +81,9 @@ extern "C" {
 #define ASN1_ITEM_start(itname) \
 	const ASN1_ITEM itname##_it = {
 
+#define static_ASN1_ITEM_start(itname) \
+	static const ASN1_ITEM itname##_it = {
+
 #define ASN1_ITEM_end(itname) \
 		};
 
@@ -94,6 +97,17 @@ extern "C" {
 #define ASN1_ITEM_TEMPLATE_END(tname) \
 	;\
 	ASN1_ITEM_start(tname) \
+		ASN1_ITYPE_PRIMITIVE,\
+		-1,\
+		&tname##_item_tt,\
+		0,\
+		NULL,\
+		0,\
+		#tname \
+	ASN1_ITEM_end(tname)
+#define static_ASN1_ITEM_TEMPLATE_END(tname) \
+	;\
+	static_ASN1_ITEM_start(tname) \
 		ASN1_ITYPE_PRIMITIVE,\
 		-1,\
 		&tname##_item_tt,\
@@ -130,10 +144,22 @@ extern "C" {
 	static const ASN1_TEMPLATE tname##_seq_tt[] 
 
 #define ASN1_SEQUENCE_END(stname) ASN1_SEQUENCE_END_name(stname, stname)
+#define static_ASN1_SEQUENCE_END(stname) static_ASN1_SEQUENCE_END_name(stname, stname)
 
 #define ASN1_SEQUENCE_END_name(stname, tname) \
 	;\
 	ASN1_ITEM_start(tname) \
+		ASN1_ITYPE_SEQUENCE,\
+		V_ASN1_SEQUENCE,\
+		tname##_seq_tt,\
+		sizeof(tname##_seq_tt) / sizeof(ASN1_TEMPLATE),\
+		NULL,\
+		sizeof(stname),\
+		#stname \
+	ASN1_ITEM_end(tname)
+#define static_ASN1_SEQUENCE_END_name(stname, tname) \
+	;\
+	static_ASN1_ITEM_start(tname) \
 		ASN1_ITYPE_SEQUENCE,\
 		V_ASN1_SEQUENCE,\
 		tname##_seq_tt,\
@@ -176,14 +202,37 @@ extern "C" {
 		sizeof(tname),\
 		#tname \
 	ASN1_ITEM_end(tname)
+#define static_ASN1_NDEF_SEQUENCE_END(tname) \
+	;\
+	static_ASN1_ITEM_start(tname) \
+		ASN1_ITYPE_NDEF_SEQUENCE,\
+		V_ASN1_SEQUENCE,\
+		tname##_seq_tt,\
+		sizeof(tname##_seq_tt) / sizeof(ASN1_TEMPLATE),\
+		NULL,\
+		sizeof(tname),\
+		#tname \
+	ASN1_ITEM_end(tname)
 
 #define ASN1_BROKEN_SEQUENCE_END(stname) ASN1_SEQUENCE_END_ref(stname, stname)
 
 #define ASN1_SEQUENCE_END_enc(stname, tname) ASN1_SEQUENCE_END_ref(stname, tname)
 
 #define ASN1_SEQUENCE_END_cb(stname, tname) ASN1_SEQUENCE_END_ref(stname, tname)
+#define static_ASN1_SEQUENCE_END_cb(stname, tname) static_ASN1_SEQUENCE_END_ref(stname, tname)
 
 #define ASN1_SEQUENCE_END_ref(stname, tname) \
+	;\
+	ASN1_ITEM_start(tname) \
+		ASN1_ITYPE_SEQUENCE,\
+		V_ASN1_SEQUENCE,\
+		tname##_seq_tt,\
+		sizeof(tname##_seq_tt) / sizeof(ASN1_TEMPLATE),\
+		&tname##_aux,\
+		sizeof(stname),\
+		#stname \
+	ASN1_ITEM_end(tname)
+#define static_ASN1_SEQUENCE_END_ref(stname, tname) \
 	;\
 	ASN1_ITEM_start(tname) \
 		ASN1_ITYPE_SEQUENCE,\
@@ -238,12 +287,25 @@ extern "C" {
 	ASN1_CHOICE(tname)
 
 #define ASN1_CHOICE_END(stname) ASN1_CHOICE_END_name(stname, stname)
+#define static_ASN1_CHOICE_END(stname) static_ASN1_CHOICE_END_name(stname, stname)
 
 #define ASN1_CHOICE_END_name(stname, tname) ASN1_CHOICE_END_selector(stname, tname, type)
+#define static_ASN1_CHOICE_END_name(stname, tname) static_ASN1_CHOICE_END_selector(stname, tname, type)
 
 #define ASN1_CHOICE_END_selector(stname, tname, selname) \
 	;\
 	ASN1_ITEM_start(tname) \
+		ASN1_ITYPE_CHOICE,\
+		offsetof(stname,selname) ,\
+		tname##_ch_tt,\
+		sizeof(tname##_ch_tt) / sizeof(ASN1_TEMPLATE),\
+		NULL,\
+		sizeof(stname),\
+		#stname \
+	ASN1_ITEM_end(tname)
+#define static_ASN1_CHOICE_END_selector(stname, tname, selname) \
+	;\
+	static_ASN1_ITEM_start(tname) \
 		ASN1_ITYPE_CHOICE,\
 		offsetof(stname,selname) ,\
 		tname##_ch_tt,\
