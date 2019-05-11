@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile.inc,v 1.2 2014/11/17 20:31:22 miod Exp $
+# $OpenBSD: Makefile.inc,v 1.3 2019/05/11 13:05:25 tb Exp $
 
 # sparc-specific libcrypto build rules
 
@@ -23,7 +23,5 @@ des_enc-sparc.S: ${LCRYPTO_SRC}/des/asm/des_enc.m4
 	m4 ${LCRYPTO_SRC}/des/asm/des_enc.m4 > ${.TARGET}
 # rc4
 SRCS+= rc4_enc.c rc4_skey.c
-## rc5
-#SRCS+= rc5_enc.c 
 # whrlpool
 SRCS+= wp_block.c
