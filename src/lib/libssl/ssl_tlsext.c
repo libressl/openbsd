@@ -1,4 +1,4 @@
-/* $OpenBSD: ssl_tlsext.c,v 1.44.2.1 2019/05/15 19:25:15 tb Exp $ */
+/* $OpenBSD: ssl_tlsext.c,v 1.44.2.2 2019/06/07 15:09:44 sthen Exp $ */
 /*
  * Copyright (c) 2016, 2017, 2019 Joel Sing <jsing@openbsd.org>
  * Copyright (c) 2017 Doug Hogan <doug@openbsd.org>
@@ -1269,7 +1269,6 @@ tlsext_keyshare_server_parse(SSL *s, CBS *cbs, int *alert)
 	CBS key_exchange;
 	uint16_t group;
 	size_t out_len;
-	int ret = 0;
 
 	if (!CBS_get_u16_length_prefixed(cbs, &client_shares))
 		goto err;
@@ -1301,11 +1300,9 @@ tlsext_keyshare_server_parse(SSL *s, CBS *cbs, int *alert)
 		if (!CBS_stow(&key_exchange, &S3I(s)->hs_tls13.x25519_peer_public,
 		    &out_len))
 			goto err;
-
-		ret = 1;
 	}
 
-	return ret;
+	return 1;
 
  err:
 	*alert = SSL_AD_DECODE_ERROR;
