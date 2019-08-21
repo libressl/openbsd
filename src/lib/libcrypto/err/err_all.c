@@ -103,6 +103,9 @@
 #ifndef OPENSSL_NO_GOST
 #include <openssl/gost.h>
 #endif
+#ifndef OPENSSL_NO_SM2
+#include <openssl/sm2.h>
+#endif
 
 void ERR_load_ERR_strings_internal(void);
 
@@ -153,6 +156,9 @@ ERR_load_crypto_strings_internal(void)
 	ERR_load_UI_strings();
 #ifndef OPENSSL_NO_GOST
 	ERR_load_GOST_strings();
+#endif
+#ifndef OPENSSL_NO_SM2
+	ERR_load_SM2_strings();
 #endif
 #endif
 }

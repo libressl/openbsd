@@ -68,7 +68,11 @@
 .Nm EVP_PKEY_CTX_set_dsa_paramgen_bits ,
 .Nm EVP_PKEY_CTX_set_dh_paramgen_prime_len ,
 .Nm EVP_PKEY_CTX_set_dh_paramgen_generator ,
-.Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid
+.Nm EVP_PKEY_CTX_set_ec_paramgen_curve_nid ,
+.Nm EVP_PKEY_CTX_get_sm2_uid_len, 
+.Nm EVP_PKEY_CTX_get_sm2_uid, 
+.Nm EVP_PKEY_CTX_set_sm2_uid,
+.Nm EVP_PKEY_CTX_hash_sm2_uid
 .Nd algorithm specific control operations
 .Sh SYNOPSIS
 .In openssl/evp.h
@@ -155,6 +159,26 @@
 .Fo EVP_PKEY_CTX_set_ec_paramgen_curve_nid
 .Fa "EVP_PKEY_CTX *ctx"
 .Fa "int nid"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_get_sm2_uid_len
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "size_t *len"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_get_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "uint8_t *uid"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_set_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
+.Fa "const uint8_t *uid"
+.Fa "int len"
+.Fc
+.Ft int
+.Fo EVP_PKEY_CTX_hash_sm2_uid
+.Fa "EVP_PKEY_CTX *ctx"
 .Fc
 .Sh DESCRIPTION
 The function
@@ -327,6 +351,24 @@ sets the EC curve for EC parameter generation to
 .Fa nid .
 For EC parameter generation, this macro must be called or an error occurs
 because there is no default curve.
+.Pp
+The
+.Fn EVP_PKEY_CTX_set_sm2_uid
+macro sets the user identifier, which is used
+for the SM2 signature scheme. Data from the uid buffer is copied.
+If set, the SM2 UID data can be retrieved with
+.Fn EVP_PKEY_CTX_get_sm2_uid_len
+and
+.Fn EVP_PKEY_CTX_get_sm2_uid .
+First function returns the length of the UID (or 0 if the UID has not been set),
+second - copies the UID to preallocated buffer.
+.Pp
+To make use of the UID string you should call
+.Fn EVP_PKEY_CTX_hash_sm2_uid
+after it is set and before populating digest with data via
+.Fn EVP_DigestSignUpdate
+or
+.Fn EVP_DigestVerifyUpdate .
 .Sh RETURN VALUES
 .Fn EVP_PKEY_CTX_ctrl
 and its macros return a positive value for success and 0 or a negative

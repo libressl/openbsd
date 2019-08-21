@@ -78,7 +78,7 @@ eckey_param2type(int *pptype, void **ppval, EC_KEY * ec_key)
 		return 0;
 	}
 	if (EC_GROUP_get_asn1_flag(group) &&
-	    (nid = EC_GROUP_get_curve_name(group))) {
+		(nid = EC_GROUP_get_curve_name(group))) {
 		/* we have a 'named curve' => just set the OID */
 		*ppval = OBJ_nid2obj(nid);
 		*pptype = V_ASN1_OBJECT;
@@ -435,7 +435,7 @@ do_EC_KEY_print(BIO * bp, const EC_KEY * x, int off, int ktype)
 		public_key = EC_KEY_get0_public_key(x);
 		if (public_key != NULL) {
 			if ((pub_key = EC_POINT_point2bn(group, public_key,
-			    EC_KEY_get_conv_form(x), NULL, ctx)) == NULL) {
+				EC_KEY_get_conv_form(x), NULL, ctx)) == NULL) {
 				reason = ERR_R_EC_LIB;
 				goto err;
 			}
@@ -495,7 +495,7 @@ do_EC_KEY_print(BIO * bp, const EC_KEY * x, int off, int ktype)
 
 static int 
 eckey_param_decode(EVP_PKEY * pkey,
-    const unsigned char **pder, int derlen)
+	const unsigned char **pder, int derlen)
 {
 	EC_KEY *eckey;
 	if (!(eckey = d2i_ECParameters(NULL, pder, derlen))) {
@@ -514,14 +514,14 @@ eckey_param_encode(const EVP_PKEY * pkey, unsigned char **pder)
 
 static int 
 eckey_param_print(BIO * bp, const EVP_PKEY * pkey, int indent,
-    ASN1_PCTX * ctx)
+	ASN1_PCTX * ctx)
 {
 	return do_EC_KEY_print(bp, pkey->pkey.ec, indent, 0);
 }
 
 static int 
 eckey_pub_print(BIO * bp, const EVP_PKEY * pkey, int indent,
-    ASN1_PCTX * ctx)
+	ASN1_PCTX * ctx)
 {
 	return do_EC_KEY_print(bp, pkey->pkey.ec, indent, 1);
 }
@@ -529,14 +529,14 @@ eckey_pub_print(BIO * bp, const EVP_PKEY * pkey, int indent,
 
 static int 
 eckey_priv_print(BIO * bp, const EVP_PKEY * pkey, int indent,
-    ASN1_PCTX * ctx)
+	ASN1_PCTX * ctx)
 {
 	return do_EC_KEY_print(bp, pkey->pkey.ec, indent, 2);
 }
 
 static int 
 old_ec_priv_decode(EVP_PKEY * pkey,
-    const unsigned char **pder, int derlen)
+	const unsigned char **pder, int derlen)
 {
 	EC_KEY *ec;
 	if (!(ec = d2i_ECPrivateKey(NULL, pder, derlen))) {
@@ -615,3 +615,11 @@ const EVP_PKEY_ASN1_METHOD eckey_asn1_meth = {
 	.old_priv_decode = old_ec_priv_decode,
 	.old_priv_encode = old_ec_priv_encode
 };
+
+#if !defined(OPENSSL_NO_SM2)
+const EVP_PKEY_ASN1_METHOD sm2_asn1_meth = {
+	.pkey_id = EVP_PKEY_SM2,
+	.pkey_base_id = EVP_PKEY_EC,
+	.pkey_flags = ASN1_PKEY_ALIAS
+};
+#endif

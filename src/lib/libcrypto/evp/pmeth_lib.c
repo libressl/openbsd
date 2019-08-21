@@ -81,6 +81,7 @@ STACK_OF(EVP_PKEY_METHOD) *app_pkey_methods = NULL;
 extern const EVP_PKEY_METHOD rsa_pkey_meth, dh_pkey_meth, dsa_pkey_meth;
 extern const EVP_PKEY_METHOD ec_pkey_meth, hmac_pkey_meth, cmac_pkey_meth;
 extern const EVP_PKEY_METHOD gostimit_pkey_meth, gostr01_pkey_meth;
+extern const EVP_PKEY_METHOD sm2_pkey_meth;
 
 static const EVP_PKEY_METHOD *standard_methods[] = {
 #ifndef OPENSSL_NO_RSA
@@ -101,6 +102,9 @@ static const EVP_PKEY_METHOD *standard_methods[] = {
 #endif
 	&hmac_pkey_meth,
 	&cmac_pkey_meth,
+#ifndef OPENSSL_NO_SM2
+	&sm2_pkey_meth,
+#endif
 };
 
 static int pmeth_cmp_BSEARCH_CMP_FN(const void *, const void *);
@@ -156,9 +160,7 @@ int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
 	const EVP_PKEY_METHOD *pmeth;
 
 	if (id == -1) {
-		if (!pkey || !pkey->ameth)
-			return NULL;
-		id = pkey->ameth->pkey_id;
+		id = pkey->type;
 	}
 #ifndef OPENSSL_NO_ENGINE
 	if (pkey && pkey->engine)

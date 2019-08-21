@@ -72,7 +72,8 @@
 .Nm EVP_PKEY_assign_EC_KEY ,
 .Nm EVP_PKEY_base_id ,
 .Nm EVP_PKEY_id ,
-.Nm EVP_PKEY_type
+.Nm EVP_PKEY_type ,
+.Nm EVP_PKEY_set_alias_type
 .Nd EVP_PKEY assignment functions
 .Sh SYNOPSIS
 .In openssl/evp.h
@@ -163,6 +164,11 @@
 .Fc
 .Ft int
 .Fo EVP_PKEY_type
+.Fa "int type"
+.Fc
+.Ft int
+.Fo EVP_PKEY_set_alias_type
+.Fa "EVP_PKEY *pkey"
 .Fa "int type"
 .Fc
 .Sh DESCRIPTION
@@ -260,6 +266,13 @@ Most applications wishing to know a key type will simply call
 and will not care about the actual type,
 which will be identical in almost all cases.
 .Pp
+.Fn EVP_PKEY_set_alias_type
+allows modifying a
+.Dv EVP_PKEY
+to use a different set of algorithms than the default.
+This is currently used to support SM2 keys, which use an
+identical encoding to ECDSA.
+.Pp
 In accordance with the OpenSSL naming convention, the key obtained from
 or assigned to
 .Fa pkey
@@ -274,6 +287,11 @@ functions must be freed as well as
 and
 .Fn EVP_PKEY_assign_EC_KEY
 are implemented as macros.
+.Sh EXAMPLES
+After loading an ECC key, it is possible to convert it to using SM2
+algorithms with
+.Fn EVP_PKEY_set_alias_type :
+.Fn EVP_PKEY_set_alias_type pkey  EVP_PKEY_SM2 ;
 .Sh RETURN VALUES
 .Fn EVP_PKEY_set1_RSA ,
 .Fn EVP_PKEY_set1_DSA ,
@@ -312,6 +330,9 @@ return a key type or
 (equivalently
 .Dv EVP_PKEY_NONE )
 on error.
+.Pp
+.Fn EVP_PKEY_set_alias_type
+returns 1 for success and 0 for error.
 .Sh SEE ALSO
 .Xr DH_new 3 ,
 .Xr DSA_new 3 ,

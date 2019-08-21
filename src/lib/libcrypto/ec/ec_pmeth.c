@@ -121,7 +121,7 @@ pkey_ec_cleanup(EVP_PKEY_CTX * ctx)
 
 static int 
 pkey_ec_sign(EVP_PKEY_CTX * ctx, unsigned char *sig, size_t * siglen,
-    const unsigned char *tbs, size_t tbslen)
+	const unsigned char *tbs, size_t tbslen)
 {
 	int ret, type;
 	unsigned int sltmp;
@@ -140,7 +140,6 @@ pkey_ec_sign(EVP_PKEY_CTX * ctx, unsigned char *sig, size_t * siglen,
 	else
 		type = NID_sha1;
 
-
 	ret = ECDSA_sign(type, tbs, tbslen, sig, &sltmp, ec);
 
 	if (ret <= 0)
@@ -151,8 +150,8 @@ pkey_ec_sign(EVP_PKEY_CTX * ctx, unsigned char *sig, size_t * siglen,
 
 static int 
 pkey_ec_verify(EVP_PKEY_CTX * ctx,
-    const unsigned char *sig, size_t siglen,
-    const unsigned char *tbs, size_t tbslen)
+	const unsigned char *sig, size_t siglen,
+	const unsigned char *tbs, size_t tbslen)
 {
 	int ret, type;
 	EC_PKEY_CTX *dctx = ctx->data;
@@ -218,11 +217,11 @@ pkey_ec_ctrl(EVP_PKEY_CTX * ctx, int type, int p1, void *p2)
 
 	case EVP_PKEY_CTRL_MD:
 		if (EVP_MD_type((const EVP_MD *) p2) != NID_sha1 &&
-		    EVP_MD_type((const EVP_MD *) p2) != NID_ecdsa_with_SHA1 &&
-		    EVP_MD_type((const EVP_MD *) p2) != NID_sha224 &&
-		    EVP_MD_type((const EVP_MD *) p2) != NID_sha256 &&
-		    EVP_MD_type((const EVP_MD *) p2) != NID_sha384 &&
-		    EVP_MD_type((const EVP_MD *) p2) != NID_sha512) {
+			EVP_MD_type((const EVP_MD *) p2) != NID_ecdsa_with_SHA1 &&
+			EVP_MD_type((const EVP_MD *) p2) != NID_sha224 &&
+			EVP_MD_type((const EVP_MD *) p2) != NID_sha256 &&
+			EVP_MD_type((const EVP_MD *) p2) != NID_sha384 &&
+			EVP_MD_type((const EVP_MD *) p2) != NID_sha512) {
 			ECerror(EC_R_INVALID_DIGEST_TYPE);
 			return 0;
 		}
@@ -244,7 +243,7 @@ pkey_ec_ctrl(EVP_PKEY_CTX * ctx, int type, int p1, void *p2)
 
 static int 
 pkey_ec_ctrl_str(EVP_PKEY_CTX * ctx,
-    const char *type, const char *value)
+	const char *type, const char *value)
 {
 	if (!strcmp(type, "ec_paramgen_curve")) {
 		int nid;
