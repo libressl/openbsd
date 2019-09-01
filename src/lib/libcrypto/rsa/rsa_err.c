@@ -96,6 +96,7 @@ static ERR_STRING_DATA RSA_str_reasons[] = {
 	{ERR_REASON(RSA_R_D_E_NOT_CONGRUENT_TO_1), "d e not congruent to 1"},
 	{ERR_REASON(RSA_R_FIRST_OCTET_INVALID)   , "first octet invalid"},
 	{ERR_REASON(RSA_R_ILLEGAL_OR_UNSUPPORTED_PADDING_MODE), "illegal or unsupported padding mode"},
+	{ERR_REASON(RSA_R_INVALID_DIGEST)        , "invalid digest"},
 	{ERR_REASON(RSA_R_INVALID_DIGEST_LENGTH) , "invalid digest length"},
 	{ERR_REASON(RSA_R_INVALID_HEADER)        , "invalid header"},
 	{ERR_REASON(RSA_R_INVALID_KEYBITS)       , "invalid keybits"},
