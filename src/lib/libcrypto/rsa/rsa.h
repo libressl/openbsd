@@ -345,7 +345,7 @@ RSA *d2i_RSAPrivateKey(RSA **a, const unsigned char **in, long len);
 int i2d_RSAPrivateKey(const RSA *a, unsigned char **out);
 extern const ASN1_ITEM RSAPrivateKey_it;
 
-typedef struct rsa_pss_params_st {
+struct rsa_pss_params_st {
 	X509_ALGOR *hashAlgorithm;
 	X509_ALGOR *maskGenAlgorithm;
 	ASN1_INTEGER *saltLength;
@@ -353,7 +353,7 @@ typedef struct rsa_pss_params_st {
 
 	/* Hash algorithm decoded from maskGenAlgorithm. */
 	X509_ALGOR *maskHash;
-} RSA_PSS_PARAMS;
+};
 
 RSA_PSS_PARAMS *RSA_PSS_PARAMS_new(void);
 void RSA_PSS_PARAMS_free(RSA_PSS_PARAMS *a);
