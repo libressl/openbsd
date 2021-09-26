@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_constraints.c,v 1.10 2020/09/21 05:41:43 tb Exp $ */
+/* $OpenBSD: x509_constraints.c,v 1.10.4.1 2021/09/26 14:07:09 deraadt Exp $ */
 /*
  * Copyright (c) 2020 Bob Beck <beck@openbsd.org>
  *
@@ -323,16 +323,16 @@ x509_constraints_parse_mailbox(uint8_t *candidate, size_t len,
 			if (c == '.')
 				goto bad;
 		}
-		if (wi > DOMAIN_PART_MAX_LEN)
-			goto bad;
 		if (accept) {
+			if (wi >= DOMAIN_PART_MAX_LEN)
+				goto bad;
 			working[wi++] = c;
 			accept = 0;
 			continue;
 		}
 		if (candidate_local != NULL) {
 			/* We are looking for the domain part */
-			if (wi > DOMAIN_PART_MAX_LEN)
+			if (wi >= DOMAIN_PART_MAX_LEN)
 				goto bad;
 			working[wi++] = c;
 			if (i == len - 1) {
@@ -347,7 +347,7 @@ x509_constraints_parse_mailbox(uint8_t *candidate, size_t len,
 			continue;
 		}
 		/* We are looking for the local part */
-		if (wi > LOCAL_PART_MAX_LEN)
+		if (wi >= LOCAL_PART_MAX_LEN)
 			break;
 
 		if (quoted) {
@@ -366,6 +366,8 @@ x509_constraints_parse_mailbox(uint8_t *candidate, size_t len,
 			 * mimic that for now
 			 */
 			if (c == 9)
+				goto bad;
+			if (wi >= LOCAL_PART_MAX_LEN)
 				goto bad;
 			working[wi++] = c;
 			continue; /* all's good inside our quoted string */
@@ -395,6 +397,8 @@ x509_constraints_parse_mailbox(uint8_t *candidate, size_t len,
 			accept = 1;
 		}
 		if (!local_part_ok(c))
+			goto bad;
+		if (wi >= LOCAL_PART_MAX_LEN)
 			goto bad;
 		working[wi++] = c;
 	}
