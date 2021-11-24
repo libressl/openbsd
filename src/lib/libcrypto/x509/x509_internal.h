@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_internal.h,v 1.12 2021/09/03 08:58:53 beck Exp $ */
+/* $OpenBSD: x509_internal.h,v 1.12.2.1 2021/11/24 09:28:55 tb Exp $ */
 /*
  * Copyright (c) 2020 Bob Beck <beck@openbsd.org>
  *
@@ -90,7 +90,7 @@ int x509_vfy_check_revocation(X509_STORE_CTX *ctx);
 int x509_vfy_check_policy(X509_STORE_CTX *ctx);
 int x509_vfy_check_trust(X509_STORE_CTX *ctx);
 int x509_vfy_check_chain_extensions(X509_STORE_CTX *ctx);
-int x509_vfy_callback_indicate_success(X509_STORE_CTX *ctx);
+int x509_vfy_callback_indicate_completion(X509_STORE_CTX *ctx);
 void x509v3_cache_extensions(X509 *x);
 X509 *x509_vfy_lookup_cert_match(X509_STORE_CTX *ctx, X509 *x);
 
