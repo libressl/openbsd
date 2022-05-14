@@ -1,4 +1,4 @@
-/* $OpenBSD: a_object.c,v 1.46 2022/04/10 12:42:33 inoguchi Exp $ */
+/* $OpenBSD: a_object.c,v 1.46.2.1 2022/05/14 15:06:09 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -651,7 +651,7 @@ d2i_ASN1_OBJECT(ASN1_OBJECT **out_aobj, const unsigned char **pp, long length)
 	if (!c2i_ASN1_OBJECT_cbs(&aobj, &content))
 		return NULL;
 
-	*pp = CBS_data(&content);
+	*pp = CBS_data(&cbs);
 
 	if (out_aobj != NULL)
 		*out_aobj = aobj;
