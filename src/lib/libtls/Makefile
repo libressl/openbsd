@@ -32,6 +32,7 @@ SRCS=	tls.c \
 	tls_client.c \
 	tls_config.c \
 	tls_conninfo.c \
+	tls_init.c \
 	tls_keypair.c \
 	tls_peer.c \
 	tls_server.c \
