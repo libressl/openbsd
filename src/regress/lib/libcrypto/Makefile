@@ -44,6 +44,7 @@ SUBDIR += rc2
 SUBDIR += rc4
 SUBDIR += rmd
 SUBDIR += rsa
+SUBDIR += sha
 SUBDIR += sha1
 SUBDIR += sha2
 SUBDIR += sha256
