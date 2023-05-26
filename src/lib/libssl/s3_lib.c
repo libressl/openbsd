@@ -1,4 +1,4 @@
-/* $OpenBSD: s3_lib.c,v 1.242 2022/11/26 16:08:55 tb Exp $ */
+/* $OpenBSD: s3_lib.c,v 1.242.4.1 2023/05/26 08:49:20 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1580,6 +1580,7 @@ ssl3_free(SSL *s)
 
 	sk_X509_NAME_pop_free(s->s3->hs.tls12.ca_names, X509_NAME_free);
 	sk_X509_pop_free(s->verified_chain, X509_free);
+	s->verified_chain = NULL;
 
 	tls1_transcript_free(s);
 	tls1_transcript_hash_free(s);
