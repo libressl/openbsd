@@ -18,7 +18,6 @@ print<<___;
 .extern		OPENSSL_cpuid_setup
 .hidden		OPENSSL_cpuid_setup
 .section	.init
-	_CET_ENDBR
 	call	OPENSSL_cpuid_setup
 
 .extern	OPENSSL_ia32cap_P
