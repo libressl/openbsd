@@ -1,4 +1,4 @@
-/* $OpenBSD: lhash.c,v 1.22 2024/03/02 11:11:11 tb Exp $ */
+/* $OpenBSD: lhash.c,v 1.22.2.1 2024/05/11 02:18:20 mlarkin Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -294,7 +294,9 @@ doall_util_fn(_LHASH *lh, int use_arg, LHASH_DOALL_FN_TYPE func,
 
 	/* Restore down load factor and trigger contraction. */
 	lh->down_load = down_load;
-	contract(lh);
+	if ((lh->num_nodes > MIN_NODES) &&
+	    (lh->down_load >= (lh->num_items * LH_LOAD_MULT / lh->num_nodes)))
+		contract(lh);
 }
 
 void
