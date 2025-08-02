@@ -1,9 +1,0 @@
-[workspace]
-resolver = "2"
-members = [
-    "openssl",
-    "openssl-errors",
-    "openssl-macros",
-    "openssl-sys",
-    "systest",
-]
