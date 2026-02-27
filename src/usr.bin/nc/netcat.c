@@ -1,4 +1,4 @@
-/* $OpenBSD: netcat.c,v 1.234 2025/06/24 13:37:11 tb Exp $ */
+/* $OpenBSD: netcat.c,v 1.234.2.1 2026/02/27 20:31:13 bluhm Exp $ */
 /*
  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
  * Copyright (c) 2015 Bob Beck.  All rights reserved.
@@ -381,6 +381,8 @@ main(int argc, char *argv[])
 		 */
 	} else {
 		if (family == AF_UNIX) {
+			if (unveil("/tmp", "rwc") == -1)
+				err(1, "unveil /tmp");
 			if (unveil(host, "rwc") == -1)
 				err(1, "unveil %s", host);
 			if (uflag && !kflag) {
@@ -400,7 +402,7 @@ main(int argc, char *argv[])
 	}
 
 	if (family == AF_UNIX) {
-		if (pledge("stdio rpath wpath cpath tmppath unix", NULL) == -1)
+		if (pledge("stdio rpath wpath cpath unix", NULL) == -1)
 			err(1, "pledge");
 	} else if (Fflag && Pflag) {
 		if (pledge("stdio inet dns sendfd tty", NULL) == -1)
