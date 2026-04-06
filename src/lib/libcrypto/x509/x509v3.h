@@ -1,4 +1,4 @@
-/* $OpenBSD: x509v3.h,v 1.40 2024/12/23 09:57:23 tb Exp $ */
+/* $OpenBSD: x509v3.h,v 1.41 2026/04/06 08:24:57 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 1999.
  */
@@ -595,7 +595,6 @@ GENERAL_NAME *a2i_GENERAL_NAME(GENERAL_NAME *out,
 			       const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
 			       int gen_type, const char *value, int is_nc);
 
-#ifdef HEADER_CONF_H
 GENERAL_NAME *v2i_GENERAL_NAME(const X509V3_EXT_METHOD *method, X509V3_CTX *ctx,
 			       CONF_VALUE *cnf);
 GENERAL_NAME *v2i_GENERAL_NAME_ex(GENERAL_NAME *out,
@@ -622,7 +621,6 @@ X509_EXTENSION *X509V3_EXT_conf(LHASH_OF(CONF_VALUE) *conf, X509V3_CTX *ctx,
     const char *name, const char *value);
 
 void X509V3_set_nconf(X509V3_CTX *ctx, CONF *conf);
-#endif
 
 void X509V3_set_ctx(X509V3_CTX *ctx, X509 *issuer, X509 *subject,
 				 X509_REQ *req, X509_CRL *crl, int flags);
