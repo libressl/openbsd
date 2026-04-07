@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_pmeth.c,v 1.45 2026/04/07 13:15:29 tb Exp $ */
+/* $OpenBSD: rsa_pmeth.c,v 1.46 2026/04/07 13:16:41 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -97,7 +97,7 @@ typedef struct {
 	unsigned char *tbuf;
 	/* OAEP label */
 	unsigned char *oaep_label;
-	size_t oaep_labellen;
+	size_t oaep_label_len;
 } RSA_PKEY_CTX;
 
 /* True if PSS parameters are restricted */
@@ -150,10 +150,10 @@ pkey_rsa_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	dctx->mgf1md = sctx->mgf1md;
 	if (sctx->oaep_label != NULL) {
 		free(dctx->oaep_label);
-		if ((dctx->oaep_label = calloc(1, sctx->oaep_labellen)) == NULL)
+		if ((dctx->oaep_label = calloc(1, sctx->oaep_label_len)) == NULL)
 			return 0;
-		memcpy(dctx->oaep_label, sctx->oaep_label, sctx->oaep_labellen);
-		dctx->oaep_labellen = sctx->oaep_labellen;
+		memcpy(dctx->oaep_label, sctx->oaep_label, sctx->oaep_label_len);
+		dctx->oaep_label_len = sctx->oaep_label_len;
 	}
 
 	return 1;
@@ -357,7 +357,7 @@ pkey_rsa_encrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
 		if (!setup_tbuf(rctx, ctx))
 			return -1;
 		if (!RSA_padding_add_PKCS1_OAEP_mgf1(rctx->tbuf, klen,
-		    in, inlen, rctx->oaep_label, rctx->oaep_labellen,
+		    in, inlen, rctx->oaep_label, rctx->oaep_label_len,
 		    rctx->md, rctx->mgf1md))
 			return -1;
 		ret = RSA_public_encrypt(klen, rctx->tbuf, out,
@@ -387,7 +387,7 @@ pkey_rsa_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
 		if (ret <= 0)
 			return ret;
 		ret = RSA_padding_check_PKCS1_OAEP_mgf1(out, ret, rctx->tbuf,
-		    ret, ret, rctx->oaep_label, rctx->oaep_labellen, rctx->md,
+		    ret, ret, rctx->oaep_label, rctx->oaep_label_len, rctx->md,
 		    rctx->mgf1md);
 	} else {
 		ret = RSA_private_decrypt(inlen, in, out, ctx->pkey->pkey.rsa,
@@ -583,13 +583,13 @@ pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			RSAerror(RSA_R_INVALID_PADDING_MODE);
 			return -2;
 		}
-		freezero(rctx->oaep_label, rctx->oaep_labellen);
+		freezero(rctx->oaep_label, rctx->oaep_label_len);
 		if (p2 != NULL && p1 > 0) {
 			rctx->oaep_label = p2;
-			rctx->oaep_labellen = p1;
+			rctx->oaep_label_len = p1;
 		} else {
 			rctx->oaep_label = NULL;
-			rctx->oaep_labellen = 0;
+			rctx->oaep_label_len = 0;
 		}
 		return 1;
 
@@ -599,7 +599,7 @@ pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			return -2;
 		}
 		*(unsigned char **)p2 = rctx->oaep_label;
-		return rctx->oaep_labellen;
+		return rctx->oaep_label_len;
 
 	case EVP_PKEY_CTRL_DIGESTINIT:
 	case EVP_PKEY_CTRL_PKCS7_SIGN:

@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_ameth.c,v 1.64 2026/04/07 13:15:29 tb Exp $ */
+/* $OpenBSD: rsa_ameth.c,v 1.65 2026/04/07 13:16:41 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -994,15 +994,15 @@ rsa_alg_set_oaep_padding(X509_ALGOR *alg, EVP_PKEY_CTX *pkey_ctx)
 	ASN1_STRING *astr = NULL;
 	ASN1_OCTET_STRING *ostr = NULL;
 	unsigned char *label;
-	int labellen;
+	int label_len;
 	int ret = 0;
 
 	if (EVP_PKEY_CTX_get_rsa_oaep_md(pkey_ctx, &md) <= 0)
 		goto err;
 	if (EVP_PKEY_CTX_get_rsa_mgf1_md(pkey_ctx, &mgf1md) <= 0)
 		goto err;
-	labellen = EVP_PKEY_CTX_get0_rsa_oaep_label(pkey_ctx, &label);
-	if (labellen < 0)
+	label_len = EVP_PKEY_CTX_get0_rsa_oaep_label(pkey_ctx, &label);
+	if (label_len < 0)
 		goto err;
 
 	if ((oaep = RSA_OAEP_PARAMS_new()) == NULL)
@@ -1015,12 +1015,12 @@ rsa_alg_set_oaep_padding(X509_ALGOR *alg, EVP_PKEY_CTX *pkey_ctx)
 
 	/* XXX - why do we not set oaep->maskHash here? */
 
-	if (labellen > 0) {
+	if (label_len > 0) {
 		if ((oaep->pSourceFunc = X509_ALGOR_new()) == NULL)
 			goto err;
 		if ((ostr = ASN1_OCTET_STRING_new()) == NULL)
 			goto err;
-		if (!ASN1_OCTET_STRING_set(ostr, label, labellen))
+		if (!ASN1_OCTET_STRING_set(ostr, label, label_len))
 			goto err;
 		if (!X509_ALGOR_set0_by_nid(oaep->pSourceFunc, NID_pSpecified,
 		    V_ASN1_OCTET_STRING, ostr))
@@ -1117,7 +1117,7 @@ rsa_cms_decrypt(CMS_RecipientInfo *ri)
 	int nid;
 	int rv = -1;
 	unsigned char *label = NULL;
-	int labellen = 0;
+	int label_len = 0;
 	const EVP_MD *mgf1md = NULL, *md = NULL;
 	RSA_OAEP_PARAMS *oaep;
 
@@ -1164,14 +1164,14 @@ rsa_cms_decrypt(CMS_RecipientInfo *ri)
 			goto err;
 		}
 
-		if ((labellen = ASN1_STRING_length(parameter)) == 0) {
+		if ((label_len = ASN1_STRING_length(parameter)) == 0) {
 			RSAerror(RSA_R_INVALID_LABEL);
 			goto err;
 		}
 
-		if ((label = calloc(1, labellen)) == NULL)
+		if ((label = calloc(1, label_len)) == NULL)
 			goto err;
-		memcpy(label, ASN1_STRING_get0_data(parameter), labellen);
+		memcpy(label, ASN1_STRING_get0_data(parameter), label_len);
 	}
 
 	if (EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_OAEP_PADDING) <= 0)
@@ -1180,16 +1180,16 @@ rsa_cms_decrypt(CMS_RecipientInfo *ri)
 		goto err;
 	if (EVP_PKEY_CTX_set_rsa_mgf1_md(pkctx, mgf1md) <= 0)
 		goto err;
-	if (EVP_PKEY_CTX_set0_rsa_oaep_label(pkctx, label, labellen) <= 0)
+	if (EVP_PKEY_CTX_set0_rsa_oaep_label(pkctx, label, label_len) <= 0)
 		goto err;
 	label = NULL;
-	labellen = 0;
+	label_len = 0;
 
 	rv = 1;
 
  err:
 	RSA_OAEP_PARAMS_free(oaep);
-	freezero(label, labellen);
+	freezero(label, label_len);
 
 	return rv;
 }
