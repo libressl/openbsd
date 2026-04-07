@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_vfy.c,v 1.148 2025/05/10 05:54:39 tb Exp $ */
+/* $OpenBSD: x509_vfy.c,v 1.149 2026/04/07 12:48:37 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1148,11 +1148,15 @@ crl_extension_match(X509_CRL *a, X509_CRL *b, int nid)
 static int
 check_delta_base(X509_CRL *delta, X509_CRL *base)
 {
-	/* Delta CRL must be a delta */
-	if (!delta->base_crl_number)
+	/*
+	 * Delta CRL must be a delta and have a CRL number.
+	 * XXX - This means EXFLAG_INVALID was set by crl_cb(),
+	 * which we should check somewhere and bail out.
+	 */
+	if (delta->base_crl_number == NULL || delta->crl_number == NULL)
 		return 0;
 	/* Base must have a CRL number */
-	if (!base->crl_number)
+	if (base->crl_number == NULL)
 		return 0;
 	/* Issuer names must match */
 	if (X509_NAME_cmp(X509_CRL_get_issuer(base),
