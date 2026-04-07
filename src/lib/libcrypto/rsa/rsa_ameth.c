@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_ameth.c,v 1.63 2025/05/10 05:54:38 tb Exp $ */
+/* $OpenBSD: rsa_ameth.c,v 1.64 2026/04/07 13:15:29 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -59,6 +59,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <openssl/opensslconf.h>
 
@@ -1148,23 +1149,29 @@ rsa_cms_decrypt(CMS_RecipientInfo *ri)
 		goto err;
 
 	if (oaep->pSourceFunc != NULL) {
-		X509_ALGOR *plab = oaep->pSourceFunc;
+		const ASN1_OBJECT *aobj;
+		const void *parameter;
+		int parameter_type;
 
-		if (OBJ_obj2nid(plab->algorithm) != NID_pSpecified) {
+		X509_ALGOR_get0(&aobj, &parameter_type, &parameter,
+		    oaep->pSourceFunc);
+		if (OBJ_obj2nid(aobj) != NID_pSpecified) {
 			RSAerror(RSA_R_UNSUPPORTED_LABEL_SOURCE);
 			goto err;
 		}
-		if (plab->parameter->type != V_ASN1_OCTET_STRING) {
+		if (parameter_type != V_ASN1_OCTET_STRING) {
 			RSAerror(RSA_R_INVALID_LABEL);
 			goto err;
 		}
 
-		label = plab->parameter->value.octet_string->data;
+		if ((labellen = ASN1_STRING_length(parameter)) == 0) {
+			RSAerror(RSA_R_INVALID_LABEL);
+			goto err;
+		}
 
-		/* Stop label being freed when OAEP parameters are freed */
-		/* XXX - this leaks label on error... */
-		plab->parameter->value.octet_string->data = NULL;
-		labellen = plab->parameter->value.octet_string->length;
+		if ((label = calloc(1, labellen)) == NULL)
+			goto err;
+		memcpy(label, ASN1_STRING_get0_data(parameter), labellen);
 	}
 
 	if (EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_OAEP_PADDING) <= 0)
@@ -1175,11 +1182,15 @@ rsa_cms_decrypt(CMS_RecipientInfo *ri)
 		goto err;
 	if (EVP_PKEY_CTX_set0_rsa_oaep_label(pkctx, label, labellen) <= 0)
 		goto err;
+	label = NULL;
+	labellen = 0;
 
 	rv = 1;
 
  err:
 	RSA_OAEP_PARAMS_free(oaep);
+	freezero(label, labellen);
+
 	return rv;
 }
 

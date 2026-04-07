@@ -1,4 +1,4 @@
-/* $OpenBSD: rsa_pmeth.c,v 1.44 2025/05/10 05:54:38 tb Exp $ */
+/* $OpenBSD: rsa_pmeth.c,v 1.45 2026/04/07 13:15:29 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -583,7 +583,7 @@ pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 			RSAerror(RSA_R_INVALID_PADDING_MODE);
 			return -2;
 		}
-		free(rctx->oaep_label);
+		freezero(rctx->oaep_label, rctx->oaep_labellen);
 		if (p2 != NULL && p1 > 0) {
 			rctx->oaep_label = p2;
 			rctx->oaep_labellen = p1;
