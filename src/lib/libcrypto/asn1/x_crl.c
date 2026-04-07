@@ -1,4 +1,4 @@
-/* $OpenBSD: x_crl.c,v 1.51 2025/08/19 21:54:11 tb Exp $ */
+/* $OpenBSD: x_crl.c,v 1.52 2026/04/07 12:52:19 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -282,6 +282,11 @@ crl_cb(int operation, ASN1_VALUE **pval, const ASN1_ITEM *it, void *exarg)
 		break;
 
 	case ASN1_OP_D2I_POST:
+		/*
+		 * XXX - This sets EXFLAG_INVALID but there's no code checking
+		 * it. The verifier treats CRLs with EXFLAG_INVALID as valid.
+		 * Also fix all the missing and incomplete error checks here.
+		 */
 		X509_CRL_digest(crl, X509_CRL_HASH_EVP, crl->hash, NULL);
 		crl->idp = X509_CRL_get_ext_d2i(crl,
 		    NID_issuing_distribution_point, NULL, NULL);
