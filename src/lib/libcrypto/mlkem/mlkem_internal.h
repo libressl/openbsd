@@ -1,4 +1,4 @@
-/*	$OpenBSD: mlkem_internal.h,v 1.14 2026/01/18 08:58:31 tb Exp $ */
+/*	$OpenBSD: mlkem_internal.h,v 1.15 2026/04/20 08:14:29 tb Exp $ */
 /*
  * Copyright (c) 2023, Google Inc.
  * Copyright (c) 2025, Bob Beck <beck@obtuse.com>
@@ -19,8 +19,9 @@
 #ifndef OPENSSL_HEADER_CRYPTO_MLKEM_INTERNAL_H
 #define OPENSSL_HEADER_CRYPTO_MLKEM_INTERNAL_H
 
+#include <openssl/mlkem.h>
+
 #include "bytestring.h"
-#include "mlkem.h"
 
 #if defined(__cplusplus)
 extern "C" {
