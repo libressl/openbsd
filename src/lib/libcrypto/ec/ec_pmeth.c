@@ -1,4 +1,4 @@
-/* $OpenBSD: ec_pmeth.c,v 1.27 2025/05/10 05:54:38 tb Exp $ */
+/* $OpenBSD: ec_pmeth.c,v 1.28 2026/04/20 04:26:12 tb Exp $ */
 /* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
  * project 2006.
  */
@@ -228,7 +228,7 @@ pkey_ec_derive(EVP_PKEY_CTX *ctx, unsigned char *key, size_t *keylen)
 	pubkey = EC_KEY_get0_public_key(ctx->peerkey->pkey.ec);
 
 	/*
-	 * NB: unlike PKCS#3 DH, if *outlen is less than maximum size this is
+	 * NB: unlike PKCS#3 DH, if *keylen is less than maximum size this is
 	 * not an error, the result is truncated.
 	 */
 
