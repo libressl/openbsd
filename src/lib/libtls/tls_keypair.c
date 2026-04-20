@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_keypair.c,v 1.12 2026/04/16 07:29:53 tb Exp $ */
+/* $OpenBSD: tls_keypair.c,v 1.13 2026/04/20 04:35:00 tb Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -14,6 +14,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+#include <limits.h>
 
 #include <openssl/bio.h>
 #include <openssl/err.h>
