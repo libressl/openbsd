@@ -1,4 +1,4 @@
-/* $OpenBSD: wycheproof.go,v 1.201 2026/01/22 09:08:56 tb Exp $ */
+/* $OpenBSD: wycheproof.go,v 1.202 2026/04/21 20:55:21 tb Exp $ */
 /*
  * Copyright (c) 2018,2023 Joel Sing <jsing@openbsd.org>
  * Copyright (c) 2018,2019,2022-2025 Theo Buehler <tb@openbsd.org>
@@ -3078,6 +3078,8 @@ func testGroupFromTestVector(wtv *wycheproofTestVectorsV1) (wycheproofTestGroupR
 	case "ARIA-CBC-PKCS5", "ARIA-CCM", "ARIA-CMAC", "ARIA-GCM", "ARIA-KWP", "ARIA-WRAP":
 		return nil, Skip
 	case "ASCON128", "ASCON128A", "ASCON80PQ":
+		return nil, Skip
+	case "BLS":
 		return nil, Skip
 	case "CAMELLIA-CBC-PKCS5", "CAMELLIA-CCM", "CAMELLIA-CMAC", "CAMELLIA-WRAP":
 		return nil, Skip
