@@ -1,4 +1,4 @@
-/*	$OpenBSD: pkcs7test.c,v 1.5 2021/04/07 17:21:40 tb Exp $	*/
+/*	$OpenBSD: pkcs7test.c,v 1.6 2026/04/21 05:18:35 tb Exp $	*/
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -123,8 +123,8 @@ message_compare(const char *out, size_t len)
 	}
 }
 
-int
-main(int argc, char **argv)
+static int
+pkcs7_basics(void)
 {
 	BIO *bio_in, *bio_content, *bio_out, *bio_cert, *bio_pkey;
 	STACK_OF(X509) *certs;
@@ -298,4 +298,14 @@ main(int argc, char **argv)
 	sk_X509_free(certs);
 
 	return 0;
+}
+
+int
+main(int argc, char **argv)
+{
+	int failed = 0;
+
+	failed |= pkcs7_basics();
+
+	return failed;
 }
