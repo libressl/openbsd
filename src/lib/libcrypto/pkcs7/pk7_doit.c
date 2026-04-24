@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.61 2025/07/27 07:06:41 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.62 2026/04/24 15:10:20 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1101,20 +1101,17 @@ PKCS7_get_issuer_and_serial(PKCS7 *p7, int idx)
 {
 	STACK_OF(PKCS7_RECIP_INFO) *rsk;
 	PKCS7_RECIP_INFO *ri;
-	int i;
 
-	i = OBJ_obj2nid(p7->type);
-	if (i != NID_pkcs7_signedAndEnveloped)
+	if (OBJ_obj2nid(p7->type) != NID_pkcs7_signedAndEnveloped)
 		return NULL;
+
 	if (p7->d.signed_and_enveloped == NULL)
 		return NULL;
-	rsk = p7->d.signed_and_enveloped->recipientinfo;
-	if (rsk == NULL)
+	if ((rsk = p7->d.signed_and_enveloped->recipientinfo) == NULL)
 		return NULL;
-	ri = sk_PKCS7_RECIP_INFO_value(rsk, 0);
-	if (sk_PKCS7_RECIP_INFO_num(rsk) <= idx)
+	if ((ri = sk_PKCS7_RECIP_INFO_value(rsk, idx)) == NULL)
 		return NULL;
-	ri = sk_PKCS7_RECIP_INFO_value(rsk, idx);
+
 	return ri->issuer_and_serial;
 }
 LCRYPTO_ALIAS(PKCS7_get_issuer_and_serial);
