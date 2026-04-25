@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.62 2026/04/24 15:10:20 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.63 2026/04/25 10:30:11 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -71,25 +71,17 @@
 static int
 PKCS7_type_is_other(PKCS7* p7)
 {
-	int isOther = 1;
-
-	int nid = OBJ_obj2nid(p7->type);
-
-	switch (nid ) {
+	switch (OBJ_obj2nid(p7->type)) {
 	case NID_pkcs7_data:
 	case NID_pkcs7_signed:
 	case NID_pkcs7_enveloped:
 	case NID_pkcs7_signedAndEnveloped:
 	case NID_pkcs7_digest:
 	case NID_pkcs7_encrypted:
-		isOther = 0;
-		break;
-	default:
-		isOther = 1;
+		return 0;
 	}
 
-	return isOther;
-
+	return 1;
 }
 
 ASN1_OCTET_STRING *
