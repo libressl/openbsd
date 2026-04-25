@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.65 2026/04/25 10:50:50 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.66 2026/04/25 10:53:13 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -681,14 +681,14 @@ do_pkcs7_signed_attrib(PKCS7_SIGNER_INFO *si, EVP_MD_CTX *mctx)
 int
 PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 {
-	int ret = 0;
-	int i, j;
 	BIO *btmp;
 	PKCS7_SIGNER_INFO *si;
 	EVP_MD_CTX *mdc, ctx_tmp;
 	STACK_OF(X509_ATTRIBUTE) *sk;
 	STACK_OF(PKCS7_SIGNER_INFO) *si_sk = NULL;
 	ASN1_OCTET_STRING *os = NULL;
+	int i, nid;
+	int ret = 0;
 
 	if (p7 == NULL) {
 		PKCS7error(PKCS7_R_INVALID_NULL_POINTER);
@@ -701,10 +701,9 @@ PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 	}
 
 	EVP_MD_CTX_legacy_clear(&ctx_tmp);
-	i = OBJ_obj2nid(p7->type);
 	p7->state = PKCS7_S_HEADER;
 
-	switch (i) {
+	switch (nid = OBJ_obj2nid(p7->type)) {
 	case NID_pkcs7_data:
 		os = p7->d.data;
 		break;
@@ -774,9 +773,8 @@ PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 			if (si->pkey == NULL)
 				continue;
 
-			j = OBJ_obj2nid(si->digest_alg->algorithm);
-
-			if ((btmp = PKCS7_find_digest(&mdc, bio, j)) == NULL)
+			nid = OBJ_obj2nid(si->digest_alg->algorithm);
+			if ((btmp = PKCS7_find_digest(&mdc, bio, nid)) == NULL)
 				goto err;
 
 			/* We now have the EVP_MD_CTX, lets do the
@@ -808,7 +806,7 @@ PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
 				ASN1_STRING_set0(si->enc_digest, abuf, abuflen);
 			}
 		}
-	} else if (i == NID_pkcs7_digest) {
+	} else if (nid == NID_pkcs7_digest) {
 		unsigned char md_data[EVP_MAX_MD_SIZE];
 		unsigned int md_len;
 
