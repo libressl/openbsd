@@ -1,4 +1,4 @@
-/* $OpenBSD: sha256.c,v 1.33 2025/02/14 12:01:58 jsing Exp $ */
+/* $OpenBSD: sha256.c,v 1.34 2026/04/25 05:47:03 jsing Exp $ */
 /* ====================================================================
  * Copyright (c) 1998-2011 The OpenSSL Project.  All rights reserved.
  *
@@ -72,6 +72,9 @@ void sha256_block_data_order(SHA256_CTX *ctx, const void *_in, size_t num);
 void sha256_block_generic(SHA256_CTX *ctx, const void *_in, size_t num);
 
 #ifndef HAVE_SHA256_BLOCK_GENERIC
+/*
+ * SHA-256 constants - see FIPS 180-4 section 4.2.2.
+ */
 static const SHA_LONG K256[64] = {
 	0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
 	0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
@@ -291,6 +294,7 @@ SHA224_Init(SHA256_CTX *c)
 {
 	memset(c, 0, sizeof(*c));
 
+	/* FIPS 180-4 section 5.3.2. */	
 	c->h[0] = 0xc1059ed8UL;
 	c->h[1] = 0x367cd507UL;
 	c->h[2] = 0x3070dd17UL;
@@ -340,6 +344,7 @@ SHA256_Init(SHA256_CTX *c)
 {
 	memset(c, 0, sizeof(*c));
 
+	/* FIPS 180-4 section 5.3.3. */	
 	c->h[0] = 0x6a09e667UL;
 	c->h[1] = 0xbb67ae85UL;
 	c->h[2] = 0x3c6ef372UL;
