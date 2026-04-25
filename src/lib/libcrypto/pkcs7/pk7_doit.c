@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.66 2026/04/25 10:53:13 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.67 2026/04/25 10:54:30 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -917,9 +917,9 @@ PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
     PKCS7 *p7, PKCS7_SIGNER_INFO *si)
 {
 	PKCS7_ISSUER_AND_SERIAL *ias;
-	int ret = 0, i;
 	STACK_OF(X509) *cert;
 	X509 *x509;
+	int ret = 0;
 
 	if (p7 == NULL) {
 		PKCS7error(PKCS7_R_INVALID_NULL_POINTER);
@@ -959,8 +959,7 @@ PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
 		X509_STORE_CTX_cleanup(ctx);
 		goto err;
 	}
-	i = X509_verify_cert(ctx);
-	if (i <= 0) {
+	if (X509_verify_cert(ctx) <= 0) {
 		PKCS7error(ERR_R_X509_LIB);
 		X509_STORE_CTX_cleanup(ctx);
 		goto err;
