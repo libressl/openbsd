@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.64 2026/04/25 10:48:59 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.65 2026/04/25 10:50:50 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -415,7 +415,6 @@ pkcs7_cmp_ri(PKCS7_RECIP_INFO *ri, X509 *pcert)
 BIO *
 PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 {
-	int i, j;
 	BIO *out = NULL, *btmp = NULL, *etmp = NULL, *bio = NULL;
 	X509_ALGOR *xa;
 	ASN1_OCTET_STRING *data_body = NULL;
@@ -428,6 +427,7 @@ PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 	PKCS7_RECIP_INFO *ri = NULL;
 	unsigned char *ek = NULL, *tkey = NULL;
 	int eklen = 0, tkeylen = 0;
+	int i;
 
 	if (p7 == NULL) {
 		PKCS7error(PKCS7_R_INVALID_NULL_POINTER);
@@ -439,10 +439,9 @@ PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 		return NULL;
 	}
 
-	i = OBJ_obj2nid(p7->type);
 	p7->state = PKCS7_S_HEADER;
 
-	switch (i) {
+	switch (OBJ_obj2nid(p7->type)) {
 	case NID_pkcs7_signed:
 		data_body = PKCS7_get_octet_string(p7->d.sign->contents);
 		md_sk = p7->d.sign->md_algs;
@@ -482,8 +481,7 @@ PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
 				goto err;
 			}
 
-			j = OBJ_obj2nid(xa->algorithm);
-			evp_md = EVP_get_digestbynid(j);
+			evp_md = EVP_get_digestbynid(OBJ_obj2nid(xa->algorithm));
 			if (evp_md == NULL) {
 				PKCS7error(PKCS7_R_UNKNOWN_DIGEST_TYPE);
 				goto err;
