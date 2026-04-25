@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.63 2026/04/25 10:30:11 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.64 2026/04/25 10:48:59 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -276,10 +276,9 @@ PKCS7_dataInit(PKCS7 *p7, BIO *bio)
 		return NULL;
 	}
 
-	i = OBJ_obj2nid(p7->type);
 	p7->state = PKCS7_S_HEADER;
 
-	switch (i) {
+	switch (OBJ_obj2nid(p7->type)) {
 	case NID_pkcs7_signed:
 		md_sk = p7->d.sign->md_algs;
 		os = PKCS7_get_octet_string(p7->d.sign->contents);
