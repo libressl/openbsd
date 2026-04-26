@@ -1,4 +1,4 @@
-/* $OpenBSD: pk7_doit.c,v 1.67 2026/04/25 10:54:30 tb Exp $ */
+/* $OpenBSD: pk7_doit.c,v 1.68 2026/04/26 04:19:11 tb Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -1147,24 +1147,42 @@ PKCS7_digest_from_attributes(STACK_OF(X509_ATTRIBUTE) *sk)
 }
 LCRYPTO_ALIAS(PKCS7_digest_from_attributes);
 
-int
-PKCS7_set_signed_attributes(PKCS7_SIGNER_INFO *p7si,
-    STACK_OF(X509_ATTRIBUTE) *sk)
+static STACK_OF(X509_ATTRIBUTE) *
+sk_X509_ATTRIBUTE_deep_copy(const STACK_OF(X509_ATTRIBUTE) *in_attrs)
 {
+	STACK_OF(X509_ATTRIBUTE) *attrs = NULL;
+	X509_ATTRIBUTE *attr = NULL;
 	int i;
 
-	if (p7si->auth_attr != NULL)
-		sk_X509_ATTRIBUTE_pop_free(p7si->auth_attr,
-		    X509_ATTRIBUTE_free);
-	p7si->auth_attr = sk_X509_ATTRIBUTE_dup(sk);
-	if (p7si->auth_attr == NULL)
-		return 0;
-	for (i = 0; i < sk_X509_ATTRIBUTE_num(sk); i++) {
-		if ((sk_X509_ATTRIBUTE_set(p7si->auth_attr, i,
-		    X509_ATTRIBUTE_dup(sk_X509_ATTRIBUTE_value(sk, i))))
-		    == NULL)
-			return 0;
+	if ((attrs = sk_X509_ATTRIBUTE_new_null()) == NULL) {
+		X509error(ERR_R_MALLOC_FAILURE);
+		goto err;
 	}
+
+	for (i = 0; i < sk_X509_ATTRIBUTE_num(in_attrs); i++) {
+		attr = X509_ATTRIBUTE_dup(sk_X509_ATTRIBUTE_value(in_attrs, i));
+		if (attr == NULL)
+			goto err;
+		if (!sk_X509_ATTRIBUTE_push(attrs, attr))
+			goto err;
+		attr = NULL;
+	}
+
+	return attrs;
+
+ err:
+	X509_ATTRIBUTE_free(attr);
+	sk_X509_ATTRIBUTE_pop_free(attrs, X509_ATTRIBUTE_free);
+
+	return NULL;
+}
+
+int
+PKCS7_set_signed_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) *sk)
+{
+	sk_X509_ATTRIBUTE_pop_free(p7si->auth_attr, X509_ATTRIBUTE_free);
+	if ((p7si->auth_attr = sk_X509_ATTRIBUTE_deep_copy(sk)) == NULL)
+		return 0;
 	return 1;
 }
 LCRYPTO_ALIAS(PKCS7_set_signed_attributes);
@@ -1172,20 +1190,9 @@ LCRYPTO_ALIAS(PKCS7_set_signed_attributes);
 int
 PKCS7_set_attributes(PKCS7_SIGNER_INFO *p7si, STACK_OF(X509_ATTRIBUTE) *sk)
 {
-	int i;
-
-	if (p7si->unauth_attr != NULL)
-		sk_X509_ATTRIBUTE_pop_free(p7si->unauth_attr,
-		    X509_ATTRIBUTE_free);
-	p7si->unauth_attr = sk_X509_ATTRIBUTE_dup(sk);
-	if (p7si->unauth_attr == NULL)
+	sk_X509_ATTRIBUTE_pop_free(p7si->unauth_attr, X509_ATTRIBUTE_free);
+	if ((p7si->unauth_attr = sk_X509_ATTRIBUTE_deep_copy(sk)) == NULL)
 		return 0;
-	for (i = 0; i < sk_X509_ATTRIBUTE_num(sk); i++) {
-		if ((sk_X509_ATTRIBUTE_set(p7si->unauth_attr, i,
-		    X509_ATTRIBUTE_dup(sk_X509_ATTRIBUTE_value(sk, i))))
-		    == NULL)
-			return 0;
-	}
 	return 1;
 }
 LCRYPTO_ALIAS(PKCS7_set_attributes);
