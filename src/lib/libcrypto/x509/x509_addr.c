@@ -1,4 +1,4 @@
-/*	$OpenBSD: x509_addr.c,v 1.94 2025/05/10 05:54:39 tb Exp $ */
+/*	$OpenBSD: x509_addr.c,v 1.95 2026/04/26 17:58:58 tb Exp $ */
 /*
  * Contributed to the OpenSSL Project by the American Registry for
  * Internet Numbers ("ARIN").
@@ -961,18 +961,22 @@ trim_end_u8(CBS *cbs, uint8_t trim)
  * RFC 3779, 2.1.2.
  */
 static int
-make_addressRange(IPAddressOrRange **out_aor, uint8_t *min, uint8_t *max,
+make_addressRange(IPAddressOrRange **out_aor, uint8_t *min, uint8_t *in_max,
     uint32_t afi, int length)
 {
 	IPAddressOrRange *aor = NULL;
 	IPAddressRange *range;
 	int prefix_len;
 	CBS cbs;
+	CBB cbb;
+	uint8_t max[ADDR_RAW_BUF_LEN];
 	size_t max_len, min_len;
 	uint8_t unused_bits_min, unused_bits_max;
 	uint8_t octet;
 
-	if (memcmp(min, max, length) > 0)
+	memset(&cbb, 0, sizeof(cbb));
+
+	if (memcmp(min, in_max, length) > 0)
 		goto err;
 
 	/*
@@ -980,7 +984,7 @@ make_addressRange(IPAddressOrRange **out_aor, uint8_t *min, uint8_t *max,
 	 * must be encoded as a prefix.
 	 */
 
-	if ((prefix_len = range_should_be_prefix(min, max, length)) >= 0)
+	if ((prefix_len = range_should_be_prefix(min, in_max, length)) >= 0)
 		return make_addressPrefix(out_aor, min, afi, prefix_len);
 
 	/*
@@ -1008,18 +1012,30 @@ make_addressRange(IPAddressOrRange **out_aor, uint8_t *min, uint8_t *max,
 	 * the trailing ones of the last octet.
 	 */
 
-	CBS_init(&cbs, max, length);
+	CBS_init(&cbs, in_max, length);
+	if (!CBB_init_fixed(&cbb, max, sizeof(max)))
+		goto err;
 
 	if (!trim_end_u8(&cbs, 0xff))
 		goto err;
 
 	unused_bits_max = 0;
 	if ((max_len = CBS_len(&cbs)) > 0) {
-		if (!CBS_peek_last_u8(&cbs, &octet))
+		if (!CBS_get_last_u8(&cbs, &octet))
 			goto err;
 
 		unused_bits_max = count_trailing_zeroes(octet + 1);
+		octet &= 0xff << unused_bits_max;
 	}
+
+	if (!CBB_add_bytes(&cbb, CBS_data(&cbs), CBS_len(&cbs)))
+		goto err;
+	if (max_len > 0) {
+		if (!CBB_add_u8(&cbb, octet))
+			goto err;
+	}
+	if (!CBB_finish(&cbb, NULL, NULL))
+		goto err;
 
 	/*
 	 * Populate IPAddressOrRange.
@@ -1048,6 +1064,7 @@ make_addressRange(IPAddressOrRange **out_aor, uint8_t *min, uint8_t *max,
 	return 1;
 
  err:
+	CBB_cleanup(&cbb);
 	IPAddressOrRange_free(aor);
 	return 0;
 }
