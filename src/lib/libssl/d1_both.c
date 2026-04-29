@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.88 2026/04/29 14:59:26 jsing Exp $ */
+/* $OpenBSD: d1_both.c,v 1.89 2026/04/29 15:00:53 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -899,8 +899,7 @@ dtls1_get_queue_priority(unsigned short seq, int is_ccs)
 }
 
 static int
-dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
-    int *found)
+dtls1_retransmit_message(SSL *s, unsigned short seq, int *found)
 {
 	int ret;
 	/* XDTLS: for now assuming that read/writes are blocking */
@@ -988,7 +987,7 @@ dtls1_retransmit_buffered_messages(SSL *s)
 		frag = (hm_fragment *)item->data;
 		if (dtls1_retransmit_message(s,
 		    (unsigned short)dtls1_get_queue_priority(
-		    frag->msg_header.seq, frag->msg_header.is_ccs), 0,
+		    frag->msg_header.seq, frag->msg_header.is_ccs),
 		    &found) <= 0 && found) {
 #ifdef DEBUG
 			fprintf(stderr, "dtls1_retransmit_message() failed\n");
