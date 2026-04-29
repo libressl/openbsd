@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.89 2026/04/29 15:00:53 jsing Exp $ */
+/* $OpenBSD: d1_both.c,v 1.90 2026/04/29 15:04:15 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -899,37 +899,11 @@ dtls1_get_queue_priority(unsigned short seq, int is_ccs)
 }
 
 static int
-dtls1_retransmit_message(SSL *s, unsigned short seq, int *found)
+dtls1_retransmit_message(SSL *s, hm_fragment *frag)
 {
-	int ret;
-	/* XDTLS: for now assuming that read/writes are blocking */
-	pitem *item;
-	hm_fragment *frag;
-	unsigned long header_length;
-	unsigned char seq64be[8];
 	struct dtls1_retransmit_state saved_state;
-
-	/*
-	  OPENSSL_assert(s->init_num == 0);
-	  OPENSSL_assert(s->init_off == 0);
-	 */
-
-	/* XDTLS:  the requested message ought to be found, otherwise error */
-	memset(seq64be, 0, sizeof(seq64be));
-	seq64be[6] = (unsigned char)(seq >> 8);
-	seq64be[7] = (unsigned char)seq;
-
-	item = pqueue_find(s->d1->sent_messages, seq64be);
-	if (item == NULL) {
-#ifdef DEBUG
-		fprintf(stderr, "retransmit:  message %d non-existent\n", seq);
-#endif
-		*found = 0;
-		return 0;
-	}
-
-	*found = 1;
-	frag = (hm_fragment *)item->data;
+	unsigned long header_length;
+	int ret;
 
 	if (frag->msg_header.is_ccs)
 		header_length = DTLS1_CCS_HEADER_LENGTH;
@@ -978,17 +952,12 @@ dtls1_retransmit_buffered_messages(SSL *s)
 	piterator iter;
 	pitem *item;
 	hm_fragment *frag;
-	int found = 0;
 
 	iter = pqueue_iterator(sent);
 
-	for (item = pqueue_next(&iter); item != NULL;
-	    item = pqueue_next(&iter)) {
+	for (item = pqueue_next(&iter); item != NULL; item = pqueue_next(&iter)) {
 		frag = (hm_fragment *)item->data;
-		if (dtls1_retransmit_message(s,
-		    (unsigned short)dtls1_get_queue_priority(
-		    frag->msg_header.seq, frag->msg_header.is_ccs),
-		    &found) <= 0 && found) {
+		if (dtls1_retransmit_message(s, frag) <= 0) {
 #ifdef DEBUG
 			fprintf(stderr, "dtls1_retransmit_message() failed\n");
 #endif
