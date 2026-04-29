@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.86 2026/04/29 14:55:21 jsing Exp $ */
+/* $OpenBSD: d1_both.c,v 1.87 2026/04/29 14:57:29 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -159,8 +159,6 @@ static const unsigned char bitmask_end_values[] = {
 static const unsigned int g_probable_mtu[] = {1500 - 28, 512 - 28, 256 - 28};
 
 static unsigned int dtls1_guess_mtu(unsigned int curr_mtu);
-static void dtls1_fix_message_header(SSL *s, unsigned long frag_off,
-    unsigned long frag_len);
 static int dtls1_write_message_header(const struct hm_header_st *msg_hdr,
     unsigned long frag_off, unsigned long frag_len, unsigned char *p);
 static long dtls1_get_message_fragment(SSL *s, int st1, int stn, long max,
@@ -276,15 +274,15 @@ dtls1_do_write(SSL *s, int type)
 					len = s->init_num;
 			}
 
-			dtls1_fix_message_header(s, frag_off,
-			    len - DTLS1_HM_HEADER_LENGTH);
+			OPENSSL_assert(len >= DTLS1_HM_HEADER_LENGTH);
+
+			s->d1->w_msg_hdr.frag_off = frag_off;
+			s->d1->w_msg_hdr.frag_len = len - DTLS1_HM_HEADER_LENGTH;
 
 			if (!dtls1_write_message_header(&s->d1->w_msg_hdr,
 			    s->d1->w_msg_hdr.frag_off, s->d1->w_msg_hdr.frag_len,
 			    (unsigned char *)&s->init_buf->data[s->init_off]))
 				return -1;
-
-			OPENSSL_assert(len >= DTLS1_HM_HEADER_LENGTH);
 		}
 
 		ret = dtls1_write_bytes(s, type,
@@ -1097,15 +1095,6 @@ dtls1_set_message_header_int(SSL *s, unsigned char mt, unsigned long len,
 	msg_hdr->type = mt;
 	msg_hdr->msg_len = len;
 	msg_hdr->seq = seq_num;
-	msg_hdr->frag_off = frag_off;
-	msg_hdr->frag_len = frag_len;
-}
-
-static void
-dtls1_fix_message_header(SSL *s, unsigned long frag_off, unsigned long frag_len)
-{
-	struct hm_header_st *msg_hdr = &s->d1->w_msg_hdr;
-
 	msg_hdr->frag_off = frag_off;
 	msg_hdr->frag_len = frag_len;
 }
