@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.90 2026/04/29 15:04:15 jsing Exp $ */
+/* $OpenBSD: d1_both.c,v 1.91 2026/04/29 15:13:27 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -204,9 +204,8 @@ dtls1_hm_fragment_free(hm_fragment *frag)
 	free(frag);
 }
 
-/* send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or SSL3_RT_CHANGE_CIPHER_SPEC) */
-int
-dtls1_do_write(SSL *s, int type)
+static int
+dtls1_do_write_handshake_message(SSL *s)
 {
 	int ret;
 	int curr_mtu;
@@ -235,7 +234,7 @@ dtls1_do_write(SSL *s, int type)
 	OPENSSL_assert(s->d1->mtu >= dtls1_min_mtu());
 	/* should have something reasonable now */
 
-	if (s->init_off == 0  && type == SSL3_RT_HANDSHAKE)
+	if (s->init_off == 0)
 		OPENSSL_assert(s->init_num ==
 		    (int)s->d1->w_msg_hdr.msg_len + DTLS1_HM_HEADER_LENGTH);
 
@@ -243,7 +242,7 @@ dtls1_do_write(SSL *s, int type)
 		return -1;
 
 	frag_off = 0;
-	while (s->init_num) {
+	while (s->init_num > 0) {
 		curr_mtu = s->d1->mtu - BIO_wpending(SSL_get_wbio(s)) -
 		    DTLS1_RT_HEADER_LENGTH - overhead;
 
@@ -261,31 +260,28 @@ dtls1_do_write(SSL *s, int type)
 		else
 			len = s->init_num;
 
-		/* XDTLS: this function is too long.  split out the CCS part */
-		if (type == SSL3_RT_HANDSHAKE) {
-			if (s->init_off != 0) {
-				OPENSSL_assert(s->init_off > DTLS1_HM_HEADER_LENGTH);
-				s->init_off -= DTLS1_HM_HEADER_LENGTH;
-				s->init_num += DTLS1_HM_HEADER_LENGTH;
+		if (s->init_off != 0) {
+			OPENSSL_assert(s->init_off > DTLS1_HM_HEADER_LENGTH);
+			s->init_off -= DTLS1_HM_HEADER_LENGTH;
+			s->init_num += DTLS1_HM_HEADER_LENGTH;
 
-				if (s->init_num > curr_mtu)
-					len = curr_mtu;
-				else
-					len = s->init_num;
-			}
-
-			OPENSSL_assert(len >= DTLS1_HM_HEADER_LENGTH);
-
-			s->d1->w_msg_hdr.frag_off = frag_off;
-			s->d1->w_msg_hdr.frag_len = len - DTLS1_HM_HEADER_LENGTH;
-
-			if (!dtls1_write_message_header(&s->d1->w_msg_hdr,
-			    s->d1->w_msg_hdr.frag_off, s->d1->w_msg_hdr.frag_len,
-			    (unsigned char *)&s->init_buf->data[s->init_off]))
-				return -1;
+			if (s->init_num > curr_mtu)
+				len = curr_mtu;
+			else
+				len = s->init_num;
 		}
 
-		ret = dtls1_write_bytes(s, type,
+		OPENSSL_assert(len >= DTLS1_HM_HEADER_LENGTH);
+
+		s->d1->w_msg_hdr.frag_off = frag_off;
+		s->d1->w_msg_hdr.frag_len = len - DTLS1_HM_HEADER_LENGTH;
+
+		if (!dtls1_write_message_header(&s->d1->w_msg_hdr,
+		    s->d1->w_msg_hdr.frag_off, s->d1->w_msg_hdr.frag_len,
+		    (unsigned char *)&s->init_buf->data[s->init_off]))
+			return -1;
+
+		ret = dtls1_write_bytes(s, SSL3_RT_HANDSHAKE,
 		    &s->init_buf->data[s->init_off], len);
 		if (ret < 0) {
 			/*
@@ -310,8 +306,7 @@ dtls1_do_write(SSL *s, int type)
 			 */
 			OPENSSL_assert(len == (unsigned int)ret);
 
-			if (type == SSL3_RT_HANDSHAKE &&
-			    !s->d1->retransmitting) {
+			if (!s->d1->retransmitting) {
 				/*
 				 * Should not be done for 'Hello Request's,
 				 * but in that case we'll ignore the result
@@ -339,14 +334,13 @@ dtls1_do_write(SSL *s, int type)
 			}
 
 			if (ret == s->init_num) {
-				ssl_msg_callback(s, 1, type, s->init_buf->data,
-				    s->init_off + s->init_num);
+				ssl_msg_callback(s, 1, SSL3_RT_HANDSHAKE,
+				    s->init_buf->data, s->init_off + s->init_num);
 
 				s->init_off = 0;
-				/* done writing this message */
 				s->init_num = 0;
 
-				return (1);
+				return 1;
 			}
 			s->init_off += ret;
 			s->init_num -= ret;
@@ -356,6 +350,38 @@ dtls1_do_write(SSL *s, int type)
 	return (0);
 }
 
+static int
+dtls1_do_write_ccs(SSL *s)
+{
+	int ret;
+
+	OPENSSL_assert(s->d1->mtu >= dtls1_min_mtu());
+
+	if ((ret = dtls1_write_bytes(s, SSL3_RT_CHANGE_CIPHER_SPEC,
+	    &s->init_buf->data[s->init_off], s->init_num)) < 0)
+		return -1;
+
+	OPENSSL_assert(s->init_num == ret);
+
+	ssl_msg_callback(s, 1, SSL3_RT_CHANGE_CIPHER_SPEC,
+	    s->init_buf->data, s->init_num);
+
+	s->init_off = 0;
+	s->init_num = 0;
+
+	return 1;
+}
+
+int
+dtls1_do_write(SSL *s, int msg_type)
+{
+	if (msg_type == SSL3_RT_HANDSHAKE)
+		return dtls1_do_write_handshake_message(s);
+	if (msg_type == SSL3_RT_CHANGE_CIPHER_SPEC)
+		return dtls1_do_write_ccs(s);
+
+	return -1;
+}
 
 /*
  * Obtain handshake message of message type 'mt' (any if mt == -1),
