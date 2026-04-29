@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.87 2026/04/29 14:57:29 jsing Exp $ */
+/* $OpenBSD: d1_both.c,v 1.88 2026/04/29 14:59:26 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -898,6 +898,80 @@ dtls1_get_queue_priority(unsigned short seq, int is_ccs)
 	return seq * 2 - is_ccs;
 }
 
+static int
+dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
+    int *found)
+{
+	int ret;
+	/* XDTLS: for now assuming that read/writes are blocking */
+	pitem *item;
+	hm_fragment *frag;
+	unsigned long header_length;
+	unsigned char seq64be[8];
+	struct dtls1_retransmit_state saved_state;
+
+	/*
+	  OPENSSL_assert(s->init_num == 0);
+	  OPENSSL_assert(s->init_off == 0);
+	 */
+
+	/* XDTLS:  the requested message ought to be found, otherwise error */
+	memset(seq64be, 0, sizeof(seq64be));
+	seq64be[6] = (unsigned char)(seq >> 8);
+	seq64be[7] = (unsigned char)seq;
+
+	item = pqueue_find(s->d1->sent_messages, seq64be);
+	if (item == NULL) {
+#ifdef DEBUG
+		fprintf(stderr, "retransmit:  message %d non-existent\n", seq);
+#endif
+		*found = 0;
+		return 0;
+	}
+
+	*found = 1;
+	frag = (hm_fragment *)item->data;
+
+	if (frag->msg_header.is_ccs)
+		header_length = DTLS1_CCS_HEADER_LENGTH;
+	else
+		header_length = DTLS1_HM_HEADER_LENGTH;
+
+	memcpy(s->init_buf->data, frag->fragment,
+	    frag->msg_header.msg_len + header_length);
+	s->init_num = frag->msg_header.msg_len + header_length;
+
+	dtls1_set_message_header_int(s, frag->msg_header.type,
+	    frag->msg_header.msg_len, frag->msg_header.seq, 0,
+	    frag->msg_header.frag_len);
+
+	/* save current state */
+	saved_state.session = s->session;
+	saved_state.epoch = tls12_record_layer_write_epoch(s->rl);
+
+	s->d1->retransmitting = 1;
+
+	/* restore state in which the message was originally sent */
+	s->session = frag->msg_header.saved_retransmit_state.session;
+	if (!tls12_record_layer_use_write_epoch(s->rl,
+	    frag->msg_header.saved_retransmit_state.epoch))
+		return 0;
+
+	ret = dtls1_do_write(s, frag->msg_header.is_ccs ?
+	    SSL3_RT_CHANGE_CIPHER_SPEC : SSL3_RT_HANDSHAKE);
+
+	/* restore current state */
+	s->session = saved_state.session;
+	if (!tls12_record_layer_use_write_epoch(s->rl,
+	    saved_state.epoch))
+		return 0;
+
+	s->d1->retransmitting = 0;
+
+	(void)BIO_flush(SSL_get_wbio(s));
+	return ret;
+}
+
 int
 dtls1_retransmit_buffered_messages(SSL *s)
 {
@@ -977,80 +1051,6 @@ dtls1_buffer_message(SSL *s, int is_ccs)
 
 	pqueue_insert(s->d1->sent_messages, item);
 	return 1;
-}
-
-int
-dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
-    int *found)
-{
-	int ret;
-	/* XDTLS: for now assuming that read/writes are blocking */
-	pitem *item;
-	hm_fragment *frag;
-	unsigned long header_length;
-	unsigned char seq64be[8];
-	struct dtls1_retransmit_state saved_state;
-
-	/*
-	  OPENSSL_assert(s->init_num == 0);
-	  OPENSSL_assert(s->init_off == 0);
-	 */
-
-	/* XDTLS:  the requested message ought to be found, otherwise error */
-	memset(seq64be, 0, sizeof(seq64be));
-	seq64be[6] = (unsigned char)(seq >> 8);
-	seq64be[7] = (unsigned char)seq;
-
-	item = pqueue_find(s->d1->sent_messages, seq64be);
-	if (item == NULL) {
-#ifdef DEBUG
-		fprintf(stderr, "retransmit:  message %d non-existent\n", seq);
-#endif
-		*found = 0;
-		return 0;
-	}
-
-	*found = 1;
-	frag = (hm_fragment *)item->data;
-
-	if (frag->msg_header.is_ccs)
-		header_length = DTLS1_CCS_HEADER_LENGTH;
-	else
-		header_length = DTLS1_HM_HEADER_LENGTH;
-
-	memcpy(s->init_buf->data, frag->fragment,
-	    frag->msg_header.msg_len + header_length);
-	s->init_num = frag->msg_header.msg_len + header_length;
-
-	dtls1_set_message_header_int(s, frag->msg_header.type,
-	    frag->msg_header.msg_len, frag->msg_header.seq, 0,
-	    frag->msg_header.frag_len);
-
-	/* save current state */
-	saved_state.session = s->session;
-	saved_state.epoch = tls12_record_layer_write_epoch(s->rl);
-
-	s->d1->retransmitting = 1;
-
-	/* restore state in which the message was originally sent */
-	s->session = frag->msg_header.saved_retransmit_state.session;
-	if (!tls12_record_layer_use_write_epoch(s->rl,
-	    frag->msg_header.saved_retransmit_state.epoch))
-		return 0;
-
-	ret = dtls1_do_write(s, frag->msg_header.is_ccs ?
-	    SSL3_RT_CHANGE_CIPHER_SPEC : SSL3_RT_HANDSHAKE);
-
-	/* restore current state */
-	s->session = saved_state.session;
-	if (!tls12_record_layer_use_write_epoch(s->rl,
-	    saved_state.epoch))
-		return 0;
-
-	s->d1->retransmitting = 0;
-
-	(void)BIO_flush(SSL_get_wbio(s));
-	return ret;
 }
 
 /* call this function when the buffered messages are no longer needed */
