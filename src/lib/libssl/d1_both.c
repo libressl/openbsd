@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.85 2025/03/09 15:12:18 tb Exp $ */
+/* $OpenBSD: d1_both.c,v 1.86 2026/04/29 14:55:21 jsing Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -341,11 +341,8 @@ dtls1_do_write(SSL *s, int type)
 			}
 
 			if (ret == s->init_num) {
-				if (s->msg_callback)
-					s->msg_callback(1, s->version, type,
-					    s->init_buf->data,
-					    (size_t)(s->init_off + s->init_num),
-					    s, s->msg_callback_arg);
+				ssl_msg_callback(s, 1, type, s->init_buf->data,
+				    s->init_off + s->init_num);
 
 				s->init_off = 0;
 				/* done writing this message */
@@ -413,9 +410,8 @@ dtls1_get_message(SSL *s, int st1, int stn, int mt, long max)
 	msg_len += DTLS1_HM_HEADER_LENGTH;
 
 	tls1_transcript_record(s, p, msg_len);
-	if (s->msg_callback)
-		s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, p, msg_len,
-		    s, s->msg_callback_arg);
+
+	ssl_msg_callback(s, 0, SSL3_RT_HANDSHAKE, p, msg_len);
 
 	memset(msg_hdr, 0, sizeof(struct hm_header_st));
 
@@ -797,11 +793,8 @@ dtls1_get_message_fragment(SSL *s, int st1, int stn, long max, int *ok)
 		 * 'Finished' MAC.
 		 */
 		if (wire[1] == 0 && wire[2] == 0 && wire[3] == 0) {
-			if (s->msg_callback)
-				s->msg_callback(0, s->version,
-				    SSL3_RT_HANDSHAKE, wire,
-				    DTLS1_HM_HEADER_LENGTH, s,
-				    s->msg_callback_arg);
+			ssl_msg_callback(s, 0, SSL3_RT_HANDSHAKE, wire,
+			    DTLS1_HM_HEADER_LENGTH);
 
 			s->init_num = 0;
 			goto again;
