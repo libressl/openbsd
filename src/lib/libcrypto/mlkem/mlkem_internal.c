@@ -1137,6 +1137,7 @@ mlkem_decap(const MLKEM_private_key *private_key, const uint8_t *ciphertext,
  err:
 	freezero(expected_ciphertext, expected_ciphertext_length);
 	explicit_bzero(key_and_randomness, sizeof(key_and_randomness));
+	explicit_bzero(failure_key, sizeof(failure_key));
 	explicit_bzero(decrypted, sizeof(decrypted));
 
 	return ret;
