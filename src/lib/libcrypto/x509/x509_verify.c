@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_verify.c,v 1.73 2025/02/08 10:12:00 tb Exp $ */
+/* $OpenBSD: x509_verify.c,v 1.73.2.1 2026/09/27 15:50:00 tb Exp $ */
 /*
  * Copyright (c) 2020-2021 Bob Beck <beck@openbsd.org>
  *
@@ -154,6 +154,11 @@ x509_verify_chain_append(struct x509_verify_chain *chain, X509 *cert,
 {
 	int verify_err = X509_V_ERR_UNSPECIFIED;
 	size_t idx;
+
+	if (sk_X509_num(chain->certs) >= X509_VERIFY_MAX_CHAIN_CERTS) {
+		*error = X509_V_ERR_CERT_CHAIN_TOO_LONG;
+		return 0;
+	}
 
 	if (!x509_constraints_extract_names(chain->names, cert,
 	    sk_X509_num(chain->certs) == 0, &verify_err)) {
@@ -757,8 +762,11 @@ x509_verify_cert_hostname(struct x509_verify_ctx *ctx, X509 *cert, char *name)
 		if (ctx->xsc != NULL) {
 			int ret;
 
-			if ((ret = x509_vfy_check_id(ctx->xsc)) == 0)
+			ret = x509_vfy_check_id(ctx->xsc);
+			if (ctx->xsc->error != X509_V_OK) {
 				ctx->error = ctx->xsc->error;
+				ctx->error_depth = ctx->xsc->error_depth;
+			}
 			return ret;
 		}
 		return 1;
@@ -973,8 +981,8 @@ x509_verify_ctx_new_from_xsc(X509_STORE_CTX *xsc)
 	    (ctx->intermediates = X509_chain_up_ref(xsc->untrusted)) == NULL)
 		goto err;
 
-	max_depth = X509_VERIFY_MAX_CHAIN_CERTS;
-	if (xsc->param->depth > 0 && xsc->param->depth < X509_VERIFY_MAX_CHAIN_CERTS)
+	max_depth = X509_VERIFY_MAX_CHAIN_CERTS - 1;
+	if (xsc->param->depth > 0 && xsc->param->depth < max_depth)
 		max_depth = xsc->param->depth;
 	if (!x509_verify_ctx_set_max_depth(ctx, max_depth))
 		goto err;
@@ -1003,7 +1011,7 @@ x509_verify_ctx_new(STACK_OF(X509) *roots)
 			goto err;
 	}
 
-	ctx->max_depth = X509_VERIFY_MAX_CHAIN_CERTS;
+	ctx->max_depth = X509_VERIFY_MAX_CHAIN_CERTS - 1;
 	ctx->max_chains = X509_VERIFY_MAX_CHAINS;
 	ctx->max_sigs = X509_VERIFY_MAX_SIGCHECKS;
 
@@ -1030,7 +1038,7 @@ x509_verify_ctx_free(struct x509_verify_ctx *ctx)
 int
 x509_verify_ctx_set_max_depth(struct x509_verify_ctx *ctx, size_t max)
 {
-	if (max < 1 || max > X509_VERIFY_MAX_CHAIN_CERTS)
+	if (max < 1 || max >= X509_VERIFY_MAX_CHAIN_CERTS)
 		return 0;
 	ctx->max_depth = max;
 	return 1;
