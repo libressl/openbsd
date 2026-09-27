@@ -1,4 +1,4 @@
-/* $OpenBSD: x509_verify.c,v 1.76 2026/05/04 13:55:20 tb Exp $ */
+/* $OpenBSD: x509_verify.c,v 1.76.2.1 2026/09/27 15:49:55 tb Exp $ */
 /*
  * Copyright (c) 2020-2021 Bob Beck <beck@openbsd.org>
  *
@@ -760,8 +760,11 @@ x509_verify_cert_hostname(struct x509_verify_ctx *ctx, X509 *cert, char *name)
 		if (ctx->xsc != NULL) {
 			int ret;
 
-			if ((ret = x509_vfy_check_id(ctx->xsc)) == 0)
+			ret = x509_vfy_check_id(ctx->xsc);
+			if (ctx->xsc->error != X509_V_OK) {
 				ctx->error = ctx->xsc->error;
+				ctx->error_depth = ctx->xsc->error_depth;
+			}
 			return ret;
 		}
 		return 1;
