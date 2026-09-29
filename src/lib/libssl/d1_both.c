@@ -1,4 +1,4 @@
-/* $OpenBSD: d1_both.c,v 1.85.6.1 2026/09/27 15:49:55 tb Exp $ */
+/* $OpenBSD: d1_both.c,v 1.85.6.2 2026/09/29 14:11:47 tb Exp $ */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -1040,6 +1040,7 @@ dtls1_retransmit_message(SSL *s, unsigned short seq, unsigned long frag_off,
 	memcpy(s->init_buf->data, frag->fragment,
 	    frag->msg_header.msg_len + header_length);
 	s->init_num = frag->msg_header.msg_len + header_length;
+	s->init_off = 0;
 
 	dtls1_set_message_header_int(s, frag->msg_header.type,
 	    frag->msg_header.msg_len, frag->msg_header.seq, 0,
